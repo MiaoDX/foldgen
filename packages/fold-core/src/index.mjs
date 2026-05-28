@@ -9,7 +9,12 @@ export {
 
 export { createCreasePatternSvg } from "./svg.mjs";
 export { createPreviewModel } from "./preview.mjs";
-export { applyLocalFoldOperation, deterministicDemoOperation } from "./operations.mjs";
+export {
+  applyLocalFoldOperation,
+  applyLocalFoldOperations,
+  deterministicDemoOperation,
+  deterministicDemoOperations
+} from "./operations.mjs";
 export {
   createDiagramSequence,
   createDiagramStep,

@@ -10,6 +10,7 @@
     "validate:claims": "node packages/foldgen-agent/bin/validate-claim-labels.mjs",
     "validate:embodiment": "node packages/foldgen-agent/bin/validate-embodiment-gate.mjs",
     "m1:deterministic": "node packages/fold-core/bin/run-deterministic-case.mjs",
+    "m6:multistep": "node packages/fold-core/bin/run-multistep-case.mjs",
     "m2:pipeline": "node packages/foldgen-agent/bin/run-pipeline.mjs",
     "demo": "node demo/server.mjs"
   },

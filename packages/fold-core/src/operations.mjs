@@ -6,6 +6,17 @@ export const deterministicDemoOperation = {
   instruction: "Fold the left midpoint to the right midpoint along the centerline valley crease."
 };
 
+export const deterministicDemoOperations = Object.freeze([
+  deterministicDemoOperation,
+  Object.freeze({
+    id: "m6-reinforce-main-diagonal",
+    name: "Reinforce main diagonal mountain fold",
+    assignment: "M",
+    edge: [0, 2],
+    instruction: "Fold the top-left corner to the bottom-right corner to reinforce the main diagonal."
+  })
+]);
+
 export function applyLocalFoldOperation(fold, operation = deterministicDemoOperation) {
   const next = clone(fold);
   const operationEdge = [...operation.edge];
@@ -32,6 +43,13 @@ export function applyLocalFoldOperation(fold, operation = deterministicDemoOpera
   }
 
   return next;
+}
+
+export function applyLocalFoldOperations(fold, operations = deterministicDemoOperations) {
+  if (!Array.isArray(operations) || operations.length === 0) {
+    throw new Error("applyLocalFoldOperations requires at least one operation");
+  }
+  return operations.reduce((current, operation) => applyLocalFoldOperation(current, operation), fold);
 }
 
 function findEdgeIndex(edges, [a, b]) {

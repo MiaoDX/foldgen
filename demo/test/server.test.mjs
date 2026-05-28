@@ -36,11 +36,15 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     const firstCase = summary.cases[0];
     assert.equal(firstCase.executor_readable, true);
     assert.deepEqual(firstCase.executor_profiles, ["human-hand", "two-finger-gripper", "cat-paw-profile", "dog-paw-profile"]);
+    assert.equal(firstCase.selected_operation_count > 1, true);
     const sequence = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.diagram_sequence}`);
+    assert.equal(sequence.step_count, firstCase.selected_operation_count);
+    assert.equal(sequence.steps.length, firstCase.selected_operation_count);
     assert.equal(sequence.steps[0].executor_profile, "human-hand");
     assert.ok(sequence.steps[0].actions.some((action) => action.phase === "align"));
     const dogSequence = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.diagram_sequences["dog-paw-profile"]}`);
     assert.equal(dogSequence.steps[0].executor_profile, "dog-paw-profile");
+    assert.equal(dogSequence.step_count, firstCase.selected_operation_count);
 
     const preview = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.preview}`);
     assert.equal(preview.type, "foldgen.preview.v1");

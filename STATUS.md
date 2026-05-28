@@ -1,6 +1,7 @@
 # STATUS
 
-Current focus: Stage 1 MVP technical closeout via `intuitive-flow`.
+Current focus: post-Stage-1 continuation via `intuitive-flow`, moving from
+completed Phase 6 multi-step fold foundations into Phase 7 local search.
 
 Active source of truth: `docs/plans/stage-1-mvp.md`, derived from
 `docs/PLAN.md`.
@@ -12,7 +13,21 @@ renders a selector for human hand, robot gripper, cat paw, and dog paw action
 flows. Current valid cases use the label
 `simulator-valid / executor-readable / embodiment-untested`.
 
+Phase 6 status: implemented and verified. `fold-core` can apply ordered
+operation sequences, `npm run m6:multistep` writes multi-step artifacts for all
+four executor profiles, and the five curated pipeline cases now select two-step
+operation sequences.
+
+Continuation order:
+1. Multi-step fold operation foundation.
+2. Local search loop.
+3. Critic v0.
+4. Image-to-fold path.
+5. Expanded testbed.
+6. Preview and animation improvement.
+
 Latest verification:
+- `npm run m6:multistep`
 - `npm test`
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
@@ -23,7 +38,10 @@ Latest verification:
 - `npm run validate:stage1`
 
 Current stop gate:
-- Current technical gate: `npm run validate:stage1`
+- Stage 1 technical gate: `npm run validate:stage1`
+- Phase 6 gate passed: `npm run m6:multistep`, `npm test`, and
+  `npm run validate:stage1`
+- Active Phase 7 gate: `npm run m7:search` and `npm test`
 - Refined contract source: `docs/contracts/stage-1-output-contract.md`
 
 Final-stage claim gate:
@@ -32,6 +50,5 @@ Final-stage claim gate:
 - Do not claim a case is embodiment-validated until a final record exists under
   `docs/embodiment-validation/attempts/`.
 
-Next action: no repo-local Stage 1 implementation action remains unless launch
-copy needs final physical-executor evidence. No external participation is
-required for the repo-local Stage 1 technical gate.
+Next action: implement Phase 7 deterministic local search loop. No external
+participation is required for the repo-local continuation gates.

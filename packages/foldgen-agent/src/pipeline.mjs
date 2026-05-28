@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import {
-  applyLocalFoldOperation,
+  applyLocalFoldOperations,
   createCreasePatternSvg,
   createDiagramSequence,
   createDiagramStep,
@@ -21,8 +21,11 @@ export const targetProfiles = {
     baseForm: "bird-base.fold",
     targetFeatures: ["wings", "beak", "upright silhouette"],
     candidates: [
+      sequenceCandidate("bird-wing-beak-sequence", "Add wing and beak folds", [
+        operation("bird-centerline-wing", "Add a centerline wing valley", "V", [5, 6], "Adds a broad wing crease across the bird base."),
+        operation("bird-diagonal-beak", "Sharpen the beak diagonal", "M", [0, 2], "Reuses the diagonal to emphasize a beak-like point.")
+      ], 0.86, "Combines a broad wing crease with a diagonal beak cue."),
       candidate("bird-centerline-wing", "Add a centerline wing valley", "V", [5, 6], 0.82, "Adds a broad wing crease across the bird base."),
-      candidate("bird-diagonal-beak", "Sharpen the beak diagonal", "M", [0, 2], 0.68, "Reuses the diagonal to emphasize a beak-like point."),
       invalidCandidate("bird-overextended-tail")
     ]
   },
@@ -31,8 +34,11 @@ export const targetProfiles = {
     baseForm: "fish-base.fold",
     targetFeatures: ["tail", "body", "horizontal silhouette"],
     candidates: [
+      sequenceCandidate("fish-tail-body-sequence", "Add tail and body folds", [
+        operation("fish-tail-centerline", "Add a tail centerline valley", "V", [5, 6], "Adds a tail/body separation crease to the fish base."),
+        operation("fish-body-diagonal", "Bias the body diagonal", "M", [0, 2], "Keeps a simple asymmetric body cue.")
+      ], 0.87, "Combines tail separation with a body diagonal."),
       candidate("fish-tail-centerline", "Add a tail centerline valley", "V", [5, 6], 0.84, "Adds a tail/body separation crease to the fish base."),
-      candidate("fish-body-diagonal", "Bias the body diagonal", "M", [0, 2], 0.64, "Keeps a simple asymmetric body cue."),
       invalidCandidate("fish-overextended-fin")
     ]
   },
@@ -41,8 +47,11 @@ export const targetProfiles = {
     baseForm: "waterbomb-base.fold",
     targetFeatures: ["petals", "radial symmetry", "center"],
     candidates: [
+      sequenceCandidate("flower-petal-cross-sequence", "Add petal and cross folds", [
+        operation("flower-petal-centerline", "Add a petal centerline valley", "V", [5, 6], "Adds a simple petal split while preserving radial structure."),
+        operation("flower-cross-diagonal", "Reinforce flower diagonal", "M", [1, 3], "Uses a crossing diagonal as a second petal cue.")
+      ], 0.85, "Combines midpoint and cross-diagonal petal cues."),
       candidate("flower-petal-centerline", "Add a petal centerline valley", "V", [5, 6], 0.8, "Adds a simple petal split while preserving radial structure."),
-      candidate("flower-cross-diagonal", "Reinforce flower diagonal", "M", [1, 3], 0.7, "Uses a crossing diagonal as a second petal cue."),
       invalidCandidate("flower-outside-paper")
     ]
   },
@@ -51,8 +60,11 @@ export const targetProfiles = {
     baseForm: "kite-base.fold",
     targetFeatures: ["sail", "hull", "mast"],
     candidates: [
+      sequenceCandidate("boat-mast-hull-sequence", "Add mast and hull folds", [
+        operation("boat-mast-centerline", "Add a mast centerline valley", "V", [5, 6], "Creates a strong mast-like vertical reference in the kite base."),
+        operation("boat-hull-diagonal", "Tilt hull diagonal", "M", [0, 2], "Keeps a hull-like diagonal cue for the lower shape.")
+      ], 0.86, "Combines a mast centerline with a hull diagonal cue."),
       candidate("boat-mast-centerline", "Add a mast centerline valley", "V", [5, 6], 0.83, "Creates a strong mast-like vertical reference in the kite base."),
-      candidate("boat-hull-diagonal", "Tilt hull diagonal", "M", [0, 2], 0.62, "Keeps a hull-like diagonal cue for the lower shape."),
       invalidCandidate("boat-overextended-sail")
     ]
   },
@@ -61,8 +73,11 @@ export const targetProfiles = {
     baseForm: "frog-base.fold",
     targetFeatures: ["points", "radial folds", "center"],
     candidates: [
+      sequenceCandidate("star-point-cross-sequence", "Add point and cross folds", [
+        operation("star-point-centerline", "Add a point centerline valley", "V", [5, 6], "Adds a symmetric point split to the frog base."),
+        operation("star-cross-diagonal", "Reinforce star diagonal", "M", [1, 3], "Adds a crossing fold useful for a point-like silhouette.")
+      ], 0.84, "Combines a symmetric point split with a cross-diagonal point cue."),
       candidate("star-point-centerline", "Add a point centerline valley", "V", [5, 6], 0.78, "Adds a symmetric point split to the frog base."),
-      candidate("star-cross-diagonal", "Reinforce star diagonal", "M", [1, 3], 0.72, "Adds a crossing fold useful for a point-like silhouette."),
       invalidCandidate("star-outside-paper")
     ]
   }
@@ -131,18 +146,25 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     artifactPaths.preview = artifactPath(join(caseDir, "preview.json"));
 
     const profileSequences = Object.fromEntries(stage1ExecutorProfiles.map((executorProfile) => {
-      const step = createDiagramStep(selected.operation, 1, {
+      const steps = selected.operations.map((operation, index) => createDiagramStep(operation, index + 1, {
         executorProfile,
         supportedExecutorProfiles: stage1ExecutorProfiles
-      });
-      const sequence = createDiagramSequence([step], { executorProfile });
-      return [executorProfile, { step, sequence, validation: validateExecutorReadableStep(step) }];
+      }));
+      const sequence = createDiagramSequence(steps, { executorProfile });
+      return [executorProfile, {
+        steps,
+        sequence,
+        validation: steps.map((step) => validateExecutorReadableStep(step))
+      }];
     }));
-    const diagramStep = profileSequences["human-hand"].step;
+    const diagramStep = profileSequences["human-hand"].steps[0];
     const diagramSequence = profileSequences["human-hand"].sequence;
-    diagramStepValidation = profileSequences["human-hand"].validation;
+    diagramStepValidation = profileSequences["human-hand"].validation[0];
     diagramProfileValidation = Object.fromEntries(
-      Object.entries(profileSequences).map(([executorProfile, value]) => [executorProfile, value.validation])
+      Object.entries(profileSequences).map(([executorProfile, value]) => [executorProfile, {
+        ok: value.validation.every((result) => result.ok),
+        steps: value.validation
+      }])
     );
     executorReadable = selectedValidation.ok && Object.values(diagramProfileValidation).every((result) => result.ok);
 
@@ -177,11 +199,11 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     validation_status: selectedValidation.ok,
     candidate_count: records.length,
     rejected_candidate_count: records.filter((record) => !record.validation.ok).length,
+    selected_operation_count: selected?.operations.length ?? 0,
     candidate_operations: records.map((record) => ({
       candidate_id: record.candidate_id,
-      operation_id: record.operation.id,
-      assignment: record.operation.assignment,
-      edge: record.operation.edge,
+      operation_ids: record.operations.map((operation) => operation.id),
+      operation_count: record.operations.length,
       validation_status: record.validation.ok ? "valid" : "invalid"
     })),
     artifact_paths: artifactPaths
@@ -195,13 +217,15 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
 }
 
 function buildCandidateRecord(baseFold, candidateConfig, index) {
-  const derived = applyLocalFoldOperation(baseFold, candidateConfig.operation);
+  const operations = normalizeOperations(candidateConfig);
+  const derived = applyLocalFoldOperations(baseFold, operations);
   const validation = validateFold(derived);
   return {
     rank: index + 1,
     candidate_id: candidateConfig.id,
     rationale: candidateConfig.rationale,
-    operation: cloneJson(candidateConfig.operation),
+    operation: cloneJson(operations[0]),
+    operations: cloneJson(operations),
     score: validation.ok ? candidateConfig.score : 0,
     validation,
     derived
@@ -230,6 +254,7 @@ function buildProposalHistory(target, profile, records, selected) {
       selected: record.candidate_id === selected?.candidate_id,
       rationale: record.rationale,
       operation: record.operation,
+      operations: record.operations,
       validation_status: record.validation.ok ? "valid" : "invalid",
       validation_errors: record.validation.errors
     }))
@@ -270,22 +295,50 @@ function selectTargets(targets, targetFiles) {
 }
 
 function candidate(id, name, assignment, edge, score, rationale) {
+  const candidateOperation = operation(id, name, assignment, edge, rationale);
   return {
     id,
     score,
     rationale,
-    operation: {
-      id,
-      name,
-      assignment,
-      edge,
-      instruction: `${name}.`
-    }
+    operation: candidateOperation,
+    operations: [candidateOperation]
   };
 }
 
 function invalidCandidate(id) {
   return candidate(id, "Reject out-of-range exploratory fold", "V", [0, 99], 0, "Records how invalid proposals are kept as pipeline data.");
+}
+
+function sequenceCandidate(id, name, operations, score, rationale) {
+  return {
+    id,
+    name,
+    score,
+    rationale,
+    operation: operations[0],
+    operations
+  };
+}
+
+function operation(id, name, assignment, edge, rationale) {
+  return {
+    id,
+    name,
+    assignment,
+    edge,
+    instruction: `${name}.`,
+    rationale
+  };
+}
+
+function normalizeOperations(candidateConfig) {
+  if (Array.isArray(candidateConfig.operations) && candidateConfig.operations.length > 0) {
+    return candidateConfig.operations;
+  }
+  if (candidateConfig.operation) {
+    return [candidateConfig.operation];
+  }
+  throw new Error(`${candidateConfig.id}: missing operations`);
 }
 
 function buildClaimStatus({ simulatorValid, executorReadable }) {

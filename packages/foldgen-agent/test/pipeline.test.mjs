@@ -40,15 +40,18 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       assert.ok(pipelineCase.artifact_paths.proposal_history);
       assert.ok(pipelineCase.artifact_paths.critic_history);
       assert.ok(pipelineCase.rejected_candidate_count > 0);
+      assert.equal(pipelineCase.selected_operation_count > 1, true);
 
       const caseDir = join(outDir, pipelineCase.case_id);
       const derived = parseFold(await readFile(join(caseDir, "derived.fold"), "utf8"));
       assert.equal(validateFold(derived).ok, true);
+      assert.equal(derived.foldgen_history.length, pipelineCase.selected_operation_count);
       assert.match(await readFile(join(caseDir, "crease.svg"), "utf8"), /<svg/);
 
       const proposalHistory = JSON.parse(await readFile(join(caseDir, "proposal-history.json"), "utf8"));
       assert.ok(proposalHistory.candidates.some((candidate) => candidate.selected));
       assert.ok(proposalHistory.candidates.some((candidate) => candidate.validation_status === "invalid"));
+      assert.ok(proposalHistory.candidates.some((candidate) => candidate.operations.length > 1));
 
       const criticHistory = JSON.parse(await readFile(join(caseDir, "critic-history.json"), "utf8"));
       assert.ok(criticHistory.entries.some((entry) => entry.verdict === "rejected-invalid"));
@@ -60,13 +63,16 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       const sequence = JSON.parse(await readFile(join(caseDir, "diagram-sequence.json"), "utf8"));
       assert.equal(sequence.type, "foldgen.diagram_sequence.v1");
       assert.equal(sequence.executor_profile, "human-hand");
-      assert.equal(sequence.steps.length, 1);
-      assert.equal(validateExecutorReadableStep(sequence.steps[0]).ok, true);
+      assert.equal(sequence.step_count, pipelineCase.selected_operation_count);
+      assert.equal(sequence.steps.length, pipelineCase.selected_operation_count);
+      assert.equal(sequence.steps.every((step) => validateExecutorReadableStep(step).ok), true);
       for (const executorProfile of stage1ExecutorProfiles) {
         const profileSequence = JSON.parse(await readFile(join(caseDir, `diagram-sequence-${executorProfile}.json`), "utf8"));
         assert.equal(profileSequence.executor_profile, executorProfile);
-        assert.equal(profileSequence.steps[0].executor_profile, executorProfile);
-        assert.equal(validateExecutorReadableStep(profileSequence.steps[0]).ok, true);
+        assert.equal(profileSequence.step_count, pipelineCase.selected_operation_count);
+        assert.equal(profileSequence.steps.length, pipelineCase.selected_operation_count);
+        assert.equal(profileSequence.steps.every((step) => step.executor_profile === executorProfile), true);
+        assert.equal(profileSequence.steps.every((step) => validateExecutorReadableStep(step).ok), true);
         assert.equal(pipelineCase.artifact_paths.diagram_sequences[executorProfile].endsWith(`diagram-sequence-${executorProfile}.json`), true);
       }
 
@@ -96,6 +102,7 @@ test("M2 pipeline CLI writes a five-case summary", async () => {
     assert.equal(summary.case_count, 5);
     assert.equal(summary.cases.length, 5);
     assert.ok(summary.cases.every((pipelineCase) => pipelineCase.status === "valid"));
+    assert.ok(summary.cases.every((pipelineCase) => pipelineCase.selected_operation_count > 1));
     assert.ok(summary.cases.every((pipelineCase) => pipelineCase.claim_status.claim_label === "simulator-valid / executor-readable / embodiment-untested"));
     assert.ok(summary.cases.every((pipelineCase) => pipelineCase.executor_readable === true));
     assert.ok(summary.cases.every((pipelineCase) => stage1ExecutorProfiles.every((executorProfile) => pipelineCase.executor_profiles.includes(executorProfile))));

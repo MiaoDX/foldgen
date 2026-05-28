@@ -8,10 +8,13 @@ import assert from "node:assert/strict";
 
 import {
   applyLocalFoldOperation,
+  applyLocalFoldOperations,
   createCreasePatternSvg,
+  createDiagramSequence,
   createDiagramStep,
   createPreviewModel,
   deterministicDemoOperation,
+  deterministicDemoOperations,
   executorProfiles,
   loadFoldFile,
   parseFold,
@@ -68,6 +71,22 @@ test("local fold operation supports optional edge assignments", () => {
   assert.deepEqual(derived.edges_assignment, ["U", "U", "U", "U", "V"]);
 });
 
+test("local fold operation sequence preserves ordered history", async () => {
+  const fold = await loadFoldFile("benchmarks/base-forms/kite-base.fold");
+  const derived = applyLocalFoldOperations(fold, deterministicDemoOperations);
+  const validation = validateFold(derived);
+
+  assert.equal(validation.ok, true, validation.errors.join("\n"));
+  assert.deepEqual(derived.foldgen_history.map((entry) => entry.id), deterministicDemoOperations.map((operation) => operation.id));
+  assert.equal(derived.foldgen_history.length, 2);
+  const centerlineIndex = derived.edges_vertices.findIndex(([a, b]) => a === 5 && b === 6);
+  assert.notEqual(centerlineIndex, -1);
+  assert.equal(derived.edges_assignment[centerlineIndex], "V");
+  const diagonalIndex = derived.edges_vertices.findIndex(([a, b]) => a === 0 && b === 2);
+  assert.notEqual(diagonalIndex, -1);
+  assert.equal(derived.edges_assignment[diagonalIndex], "M");
+});
+
 test("crease SVG output is deterministic", async () => {
   const fold = await loadFoldFile("benchmarks/base-forms/kite-base.fold");
   const derived = applyLocalFoldOperation(fold, deterministicDemoOperation);
@@ -113,6 +132,22 @@ test("diagram step contains executor-readable action structure", () => {
   assert.equal(validateExecutorReadableStep(invalid).ok, false);
 });
 
+test("diagram sequence contains multi-step executor-readable profiles", () => {
+  for (const executorProfile of ["human-hand", "two-finger-gripper", "cat-paw-profile", "dog-paw-profile"]) {
+    const steps = deterministicDemoOperations.map((operation, index) => createDiagramStep(operation, index + 1, {
+      executorProfile,
+      supportedExecutorProfiles: Object.keys(executorProfiles)
+    }));
+    const sequence = createDiagramSequence(steps, { executorProfile });
+
+    assert.equal(sequence.executor_profile, executorProfile);
+    assert.equal(sequence.step_count, deterministicDemoOperations.length);
+    assert.equal(sequence.steps.length, deterministicDemoOperations.length);
+    assert.equal(sequence.steps.every((step) => step.executor_profile === executorProfile), true);
+    assert.equal(sequence.steps.every((step) => validateExecutorReadableStep(step).ok), true);
+  }
+});
+
 test("deterministic case writes valid FOLD, SVG, validation, and diagram step", async () => {
   const outDir = await mkdtemp(join(tmpdir(), "foldgen-m1-"));
   try {
@@ -131,6 +166,40 @@ test("deterministic case writes valid FOLD, SVG, validation, and diagram step", 
     const step = JSON.parse(await readFile(join(outDir, "diagram-step.json"), "utf8"));
     assert.deepEqual(step, createDiagramStep(deterministicDemoOperation, 1));
     assert.equal(validateExecutorReadableStep(step).ok, true);
+
+    const preview = JSON.parse(await readFile(join(outDir, "preview.json"), "utf8"));
+    assert.deepEqual(preview, createPreviewModel(derived));
+  } finally {
+    await rm(outDir, { recursive: true, force: true });
+  }
+});
+
+test("multi-step case writes valid FOLD, preview, and profile sequences", async () => {
+  const outDir = await mkdtemp(join(tmpdir(), "foldgen-m6-"));
+  try {
+    const { stdout } = await execFileAsync("node", ["packages/fold-core/bin/run-multistep-case.mjs", outDir]);
+    const summary = JSON.parse(stdout);
+    assert.equal(summary.ok, true);
+    assert.equal(summary.operation_count, 2);
+    assert.equal(summary.history_count, 2);
+    assert.equal(summary.step_count, 2);
+
+    const derived = parseFold(await readFile(join(outDir, "derived.fold"), "utf8"));
+    assert.equal(validateFold(derived).ok, true);
+    assert.equal(derived.foldgen_history.length, 2);
+
+    const sequence = JSON.parse(await readFile(join(outDir, "diagram-sequence.json"), "utf8"));
+    assert.equal(sequence.step_count, 2);
+    assert.equal(sequence.steps.length, 2);
+    assert.equal(sequence.steps.every((step) => validateExecutorReadableStep(step).ok), true);
+
+    for (const executorProfile of ["human-hand", "two-finger-gripper", "cat-paw-profile", "dog-paw-profile"]) {
+      const profileSequence = JSON.parse(await readFile(join(outDir, `diagram-sequence-${executorProfile}.json`), "utf8"));
+      assert.equal(profileSequence.executor_profile, executorProfile);
+      assert.equal(profileSequence.step_count, 2);
+      assert.equal(profileSequence.steps.every((step) => step.executor_profile === executorProfile), true);
+      assert.equal(profileSequence.steps.every((step) => validateExecutorReadableStep(step).ok), true);
+    }
 
     const preview = JSON.parse(await readFile(join(outDir, "preview.json"), "utf8"));
     assert.deepEqual(preview, createPreviewModel(derived));

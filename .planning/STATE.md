@@ -1,32 +1,37 @@
 # State
 
-Current focus: Phase 5 - Executor-readable Contract Upgrade closeout.
+Current focus: Phase 7 - Local Search Loop.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
 - Roadmap: `.planning/ROADMAP.md`
 - Active contract: `docs/contracts/stage-1-output-contract.md`
-- Completed phase plan: `.planning/phases/05-executor-readable-contract-upgrade/PLAN.md`
+- Completed phase plan: `.planning/phases/06-multistep-fold-operation-foundation/PLAN.md`
 
 Status:
-- GSD ingest/plan handoff is degraded inline, not a full spawned-subagent run.
-- Phase 1 M1 output now emits executor-readable diagram steps under the refined
-  contract.
-- Phase 2 M2 output now emits per-case executor-readable diagram sequences for
-  human hand, robot gripper, cat paw, and dog paw, plus claim status.
-- Phase 3 M3 demo now renders an executor profile selector and selected action
-  flow.
-- Phase 4 M4 claim labels now require executor-readable evidence before using
-  the refined Stage 1 label.
+- Stage 1 technical gate is complete through Phase 5.
+- The next continuation sequence is ordered as Phase 6 multi-step operations,
+  Phase 7 local search, Phase 8 critic v0, Phase 9 image-to-fold, Phase 10
+  expanded testbed, and Phase 11 preview/animation.
+- Phase 6 multi-step operation foundation is implemented and verified.
+- Phase 7 local search loop is the next implementation slice.
 
 Next action:
-- No repo-local Stage 1 implementation action remains unless launch copy needs
-  final physical-executor evidence.
-- Keep final embodiment validation optional until a launch claim requires
-  physical-executor evidence.
+- Create the Phase 7 plan, then implement a deterministic local
+  propose-render-validate-score-pick loop that builds multi-step sequences while
+  preserving human hand, robot gripper, cat paw, and dog paw diagram outputs.
 
 Current Stage 1 gate:
 - `npm run validate:stage1`
+
+Current Phase 6 gate:
+- `npm run m6:multistep`
+- `npm test`
+- `npm run validate:stage1`
+
+Current Phase 7 gate:
+- `npm run m7:search`
+- `npm test`
 
 Phase 1 verification:
 - `npm test`

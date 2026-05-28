@@ -18,7 +18,8 @@ try {
       executor_profile: pipelineCase.executor_profile,
       executor_profiles: pipelineCase.executor_profiles,
       selected_base_form: pipelineCase.selected_base_form,
-      selected_candidate_id: pipelineCase.selected_candidate_id
+      selected_candidate_id: pipelineCase.selected_candidate_id,
+      selected_operation_count: pipelineCase.selected_operation_count
     }))
   }, null, 2));
 

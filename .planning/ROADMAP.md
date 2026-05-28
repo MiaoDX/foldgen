@@ -177,3 +177,156 @@ Proof:
   and action flow.
 
 Depends on: Phase 4 coarse technical spine
+
+## Continuation Roadmap: 2026-05-28
+
+The next six items are ordered by dependency, not by equal priority. Preview and
+animation work intentionally stays last so it can visualize the real local
+generation path rather than a separate display-only path.
+
+Canonical order:
+1. Phase 6: multi-step fold operation foundation.
+2. Phase 7: local search loop.
+3. Phase 8: critic v0.
+4. Phase 9: image-to-fold path.
+5. Phase 10: expanded public testbed.
+6. Phase 11: preview and animation improvement.
+
+Out of scope for this continuation:
+- Live paid provider adapters.
+- Physical execution or embodiment-validated claims.
+- Repositioning around external research code.
+
+## Phase 6: Multi-step Fold Operation Foundation
+
+Goal: local generation can represent, apply, validate, and render a sequence of
+2-5 fold operations instead of a single local fold.
+
+Requirements:
+- Multi-step operation application in `fold-core`.
+- Operation history records every step in order.
+- Deterministic and curated pipeline artifacts emit multi-step diagram
+  sequences.
+- Human hand, robot gripper, cat paw, and dog paw profiles all receive the same
+  multi-step coverage.
+
+Success criteria:
+- A focused multi-step command writes valid FOLD, SVG, preview, validation, and
+  profile-specific multi-step diagram sequences.
+- The five curated pipeline cases each select a multi-step sequence.
+- Tests prove the derived FOLD history and diagram sequence contain more than
+  one step.
+
+Status: Completed
+
+Gate:
+- `npm run m6:multistep`
+- `npm test`
+- `npm run validate:stage1`
+
+Proof:
+- `npm run m6:multistep`
+- `npm test`
+- `npm run validate:stage1`
+- M2 pipeline summary records `selected_operation_count: 2` for all five
+  curated cases.
+
+Depends on: Phase 5
+
+## Phase 7: Local Search Loop
+
+Goal: replace purely curated selection with a deterministic local
+propose-render-validate-score-pick loop that can build a sequence step by step.
+
+Success criteria:
+- Search records iterations, proposals, validation results, score history, and
+  selected sequence.
+- Search runs locally without paid APIs or private assets.
+- Search preserves all four executor profiles in emitted diagram sequences.
+
+Status: Planned
+
+Gate:
+- `npm run m7:search`
+- `npm test`
+
+Depends on: Phase 6
+
+## Phase 8: Critic v0
+
+Goal: add a cheap deterministic critic that scores local candidates using target
+features, operation coverage, structural validity, and preview geometry.
+
+Success criteria:
+- Critic decisions are recorded separately from proposal generation.
+- Invalid candidates score to rejection while valid candidates are ranked
+  deterministically.
+- Tests cover score ordering and reason output.
+
+Status: Planned
+
+Gate:
+- `npm run m8:critic`
+- `npm test`
+
+Depends on: Phase 7
+
+## Phase 9: Image-to-fold Path
+
+Goal: a reference image file enters base-form selection and local search instead
+of only being matched to an already curated case.
+
+Success criteria:
+- A local reference SVG/image path can be analyzed into image features.
+- Base form selection is recorded with reasons.
+- The selected base form runs through local search and writes fold, preview,
+  diagram, and claim artifacts.
+
+Status: Planned
+
+Gate:
+- `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
+- `npm test`
+
+Depends on: Phase 8
+
+## Phase 10: Expanded Public Testbed
+
+Goal: expand beyond the original five curated targets so local gates exercise a
+broader shape vocabulary.
+
+Success criteria:
+- Public target fixtures reach 10-15 cases.
+- At least 5 creative/reference cases are documented in metadata.
+- A local testbed command validates metadata and runs the image-to-fold path
+  across the expanded fixture set.
+
+Status: Planned
+
+Gate:
+- `npm run m10:testbed`
+- `npm run validate:fixtures`
+- `npm test`
+
+Depends on: Phase 9
+
+## Phase 11: Preview And Animation Improvement
+
+Goal: preview output shows operation progress over the generated multi-step
+sequence, and the demo can render that animation artifact.
+
+Success criteria:
+- Pipeline/image-to-fold artifacts include animation frames derived from
+  operation history.
+- Demo fetches and renders the animation artifact without dropping the static
+  preview fallback.
+- Tests cover animation frame shape and demo artifact serving.
+
+Status: Planned
+
+Gate:
+- `npm run m11:preview`
+- `npm test`
+- `npm run validate:stage1`
+
+Depends on: Phase 10
