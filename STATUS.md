@@ -1,7 +1,7 @@
 # STATUS
 
 Current focus: post-Stage-1 continuation via `intuitive-flow`, moving from
-completed Phase 9 image-to-fold into Phase 10 expanded public testbed.
+completed Phase 10 expanded public testbed into Phase 11 preview/animation.
 
 Active source of truth: `docs/plans/stage-1-mvp.md`, derived from
 `docs/PLAN.md`.
@@ -32,6 +32,10 @@ benchmarks/targets/simple-bird.svg` analyzes a local SVG reference, selects a
 profile/base form with reasons, runs local search, and writes fold/preview/
 diagram artifacts for all four executor profiles.
 
+Phase 10 status: implemented and verified. The public target set now has ten
+SVG fixtures, including five creative/reference cases, and `npm run
+m10:testbed` runs image-to-fold across all ten.
+
 Continuation order:
 1. Multi-step fold operation foundation.
 2. Local search loop.
@@ -45,6 +49,7 @@ Latest verification:
 - `npm run m7:search`
 - `npm run m8:critic`
 - `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
+- `npm run m10:testbed`
 - `npm test`
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
@@ -65,8 +70,10 @@ Current stop gate:
 - Phase 9 gate passed:
   `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`,
   `npm test`, and `npm run validate:stage1`
-- Active Phase 10 gate: `npm run m10:testbed`,
-  `npm run validate:fixtures`, and `npm test`
+- Phase 10 gate passed: `npm run m10:testbed`, `npm run validate:fixtures`,
+  `npm test`, and `npm run validate:stage1`
+- Active Phase 11 gate: `npm run m11:preview`, `npm test`, and
+  `npm run validate:stage1`
 - Refined contract source: `docs/contracts/stage-1-output-contract.md`
 
 Final-stage claim gate:
@@ -75,5 +82,5 @@ Final-stage claim gate:
 - Do not claim a case is embodiment-validated until a final record exists under
   `docs/embodiment-validation/attempts/`.
 
-Next action: implement Phase 10 expanded public testbed. No external
+Next action: implement Phase 11 preview and animation improvement. No external
 participation is required for the repo-local continuation gates.

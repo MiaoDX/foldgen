@@ -1,6 +1,6 @@
 # State
 
-Current focus: Phase 10 - Expanded Public Testbed.
+Current focus: Phase 11 - Preview And Animation Improvement.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
@@ -11,6 +11,7 @@ Source of truth:
   - `.planning/phases/07-local-search-loop/PLAN.md`
   - `.planning/phases/08-critic-v0/PLAN.md`
   - `.planning/phases/09-image-to-fold-path/PLAN.md`
+  - `.planning/phases/10-expanded-public-testbed/PLAN.md`
 
 Status:
 - Stage 1 technical gate is complete through Phase 5.
@@ -21,12 +22,13 @@ Status:
 - Phase 7 local search loop is implemented and verified.
 - Phase 8 critic v0 is implemented and verified.
 - Phase 9 image-to-fold path is implemented and verified.
-- Phase 10 expanded public testbed is the next implementation slice.
+- Phase 10 expanded public testbed is implemented and verified.
+- Phase 11 preview and animation improvement is the next implementation slice.
 
 Next action:
-- Create the Phase 10 plan, then expand public target fixtures and metadata,
-  and add a local testbed command that exercises the image-to-fold path across
-  the expanded set.
+- Create the Phase 11 plan, then add animation frames derived from operation
+  history and render them in the demo without dropping the static preview
+  fallback.
 
 Current Stage 1 gate:
 - `npm run validate:stage1`
@@ -52,6 +54,11 @@ Current Phase 10 gate:
 - `npm run m10:testbed`
 - `npm run validate:fixtures`
 - `npm test`
+
+Current Phase 11 gate:
+- `npm run m11:preview`
+- `npm test`
+- `npm run validate:stage1`
 
 Phase 1 verification:
 - `npm test`

@@ -324,12 +324,20 @@ Success criteria:
 - A local testbed command validates metadata and runs the image-to-fold path
   across the expanded fixture set.
 
-Status: Planned
+Status: Completed
 
 Gate:
 - `npm run m10:testbed`
 - `npm run validate:fixtures`
 - `npm test`
+
+Proof:
+- `npm run m10:testbed`
+- `npm run validate:fixtures`
+- `npm test`
+- `npm run validate:stage1`
+- `out/m10-testbed/summary.json` records ten image-to-fold cases, including
+  five creative/reference cases.
 
 Depends on: Phase 9
 

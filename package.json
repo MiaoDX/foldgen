@@ -15,6 +15,7 @@
     "m7:search": "node packages/foldgen-agent/bin/run-search.mjs",
     "m8:critic": "node packages/foldgen-agent/bin/run-critic.mjs",
     "m9:image-to-fold": "node packages/foldgen-agent/bin/run-image-to-fold.mjs",
+    "m10:testbed": "node packages/foldgen-agent/bin/run-testbed.mjs",
     "demo": "node demo/server.mjs"
   },
   "engines": {

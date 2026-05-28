@@ -84,26 +84,37 @@ export async function analyzeReferenceImage(referencePath) {
 
 export function selectProfileForImage(analysis, targets) {
   const targetByFile = new Map(targets.map((target) => [target.file, target]));
-  const rankedCandidates = Object.entries(targetProfiles).map(([file, profile]) => {
-    const target = targetByFile.get(file);
+  const selectableTargets = targets.flatMap((target) => {
+    const profile = targetProfiles[target.file] ?? profileByHint(target.profile_hint);
+    if (!profile) {
+      return [];
+    }
+    return [{ target, profile }];
+  });
+  const rankedCandidates = selectableTargets.map(({ target, profile }) => {
     const targetWords = [
       ...profile.targetFeatures,
       profile.caseId,
       profile.baseForm,
-      target?.name ?? "",
-      target?.executor_readability_notes ?? ""
+      target.name ?? "",
+      target.profile_hint ?? "",
+      target.executor_readability_notes ?? ""
     ].join(" ").toLowerCase().split(/[^a-z0-9-]+/).filter(Boolean);
     const matches = unique(analysis.feature_tokens.filter((token) => targetWords.some((word) => word.includes(token) || token.includes(word))));
-    const filenameMatch = analysis.tokens.some((token) => token.includes(profile.caseId.replace("simple-", "")));
-    const score = round(matches.length + (filenameMatch ? 2 : 0));
+    const targetStem = target.file.replace(/\.svg$/i, "");
+    const profileStem = profile.caseId.replace("simple-", "");
+    const filenameMatch = analysis.tokens.some((token) => token.includes(targetStem) || token.includes(profileStem));
+    const hintMatch = target.profile_hint === profile.caseId ? 0.5 : 0;
+    const score = round(matches.length + hintMatch + (filenameMatch ? 2 : 0));
     return {
       case_id: profile.caseId,
-      target_file: file,
+      target_file: target.file,
       base_form: profile.baseForm,
       score,
       matches,
       reasons: [
-        filenameMatch ? `reference filename/text includes ${profile.caseId.replace("simple-", "")}` : null,
+        target.profile_hint ? `metadata profile_hint maps to ${target.profile_hint}` : null,
+        filenameMatch ? `reference filename/text includes ${targetStem} or ${profileStem}` : null,
         matches.length > 0 ? `matched feature tokens: ${matches.join(", ")}` : null
       ].filter(Boolean)
     };
@@ -116,11 +127,18 @@ export function selectProfileForImage(analysis, targets) {
   const target = targetByFile.get(selected.target_file);
   return {
     target,
-    profile: targetProfiles[selected.target_file],
+    profile: targetProfiles[selected.target_file] ?? profileByHint(target.profile_hint),
     score: selected.score,
     reasons: selected.reasons,
     rankedCandidates
   };
+}
+
+function profileByHint(profileHint) {
+  if (!profileHint) {
+    return null;
+  }
+  return Object.values(targetProfiles).find((profile) => profile.caseId === profileHint) ?? null;
 }
 
 async function writeJson(path, value) {
