@@ -61,9 +61,9 @@ foldgen 不做 benchmark，做**生成式 demo + 可教学输出**：
 - **不做硬件**
 - **不写学术论文作为主要产出**（arXiv preprint 是顺手 bonus，不是目标）
 
-## 开放问题（请人来定）
+## Stage 1 已定 / 仍开放
 
-1. **创意输入**是文本还是图像？图像更稳，文本更酷。倾向先图像后文本。
-2. **是否在 v0 就与 origami 站联动**？倾向是——origami 站的 20 个传统 FOLD 是天然 testbed。
-3. **投 workshop 的优先级**：SIGGRAPH Posters > NeurIPS Creative AI > arXiv only？倾向 arXiv + 强博客。
-4. **agent 用什么 LLM**？OrigamiSpace 结论是"Gemini 2.5-pro / GPT-4o 最强"——v0 用 Gemini-3-Pro 或 Claude，留 fallback。
+1. **创意输入**：Stage 1 先 image-first。文本输入可以先映射到 curated target set，等图像 pipeline 跑通后再扩展。
+2. **与 origami 站联动**：Stage 1 可以借鉴 / 迁移 origami 站资产，但运行时必须依赖本 repo 中可公开发布的 fixtures，不直接依赖 private repo。
+3. **投 workshop 的优先级**：仍开放。当前倾向 arXiv + 强博客，若 demo 质量足够再投 SIGGRAPH Posters / NeurIPS Creative AI / CHI 或 UIST workshop。
+4. **agent 用什么 LLM**：Stage 1 开发期先用 Codex 会话内 GPT 做必要强模型任务，并保持 provider adapter 边界。线上 demo 若需要 live model calls，再显式接入 provider；付费调用必须遵守 v1 实验预算。

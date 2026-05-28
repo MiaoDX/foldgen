@@ -8,10 +8,29 @@
 
 > 注：以上"阶段"是依赖关系而非强制时序。实现由 AI agent 完成，origami 与 foldgen 可同步推进；真正的硬依赖是 `fold-core` 要先能用，以及 origami 的传统 FOLD 库作为 foldgen 的 testbed。
 
+### 命名澄清
+
+- **Project stages**：Stage 0 / 1 / 2 是项目层面的战略阶段。Stage 0 是观察期，Stage 1 是当前要实现的 MVP，Stage 2 是 Stage 1 成功后的传播 / workshop 阶段。
+- **Implementation milestones**：Stage 1 内部按 M0-M4 五个实现切片推进。当前讨论和文档收敛都聚焦 Stage 1；不要提前为 Stage 2 做重实现设计。
+- **后续 stage**：只有当 Stage 1 的 human reproducibility gate 通过后，才规划 Stage 2 的公开发布、投稿、外部集成或更通用的生成能力。
+
+## Stage 1 Contract（MVP 执行边界）
+
+Stage 1 先证明一件事：foldgen 能从一个小而公开的 FOLD testbed 出发，生成可验证、可展示、可让人尝试复现的折纸步骤。不要把 Stage 1 变成通用 origami 生成器或 benchmark 复现工程。
+
+- **公开 testbed 优先**：先在本 repo 放入可公开、可授权使用的 base form / target fixtures。`MiaoDX/microsites` 的 origami 资产可以作为灵感和手工迁移来源，但 Stage 1 的运行时不能依赖 private repo。
+- **输入顺序**：Stage 1 以 reference image 为主输入。文本输入可以先映射到小型 curated target set，等图像 pipeline 跑通后再扩展。
+- **目标图像来源**：Stage 1 的 reference / target raster images 可以优先用 Codex 内置 `$imagegen` skill 生成。对本项目而言，它可视为免费且质量足够高的图像生成能力；生成的项目资产必须保存到 repo，并记录 prompt / 用途元数据。
+- **外部研究依赖**：Learn2Fold / OrigamiBench / OrigamiSpace / GamiBench 是 related work 和可选未来 backend，不是 Stage 1 blocker。若它们发布可复用代码，后续通过 adapter 接入，而不是让当前 MVP 等待外部 release。
+- **强模型来源**：Stage 1 可以优先使用 Codex 当前会话里的 GPT 模型完成必要的强模型任务，例如目标拆解、候选 fold operation 提议、diagram 文案草稿、critic reasoning、prompt 设计和实验复盘。对本项目而言，这类 Codex-assisted work 可视为免费强模型能力。
+- **模型调用顺序**：M0 / M1 不依赖外部付费 LLM API。先用 deterministic、mock proposal 或 Codex-assisted 离线提议跑通 FOLD fixtures、validation、crease SVG 与 diagram 输出合同；live provider adapter 在这些 deterministic gates 通过后再接入。
+- **M1 最小有效输出**：parseable FOLD + deterministic crease pattern SVG + 能执行的 fold validation。3D preview 在 M1 可以是近似可视化，不能单独作为 flat-foldability 证明。
+- **Human reproducibility gate**：任何公开声称"人可以照着折出来"的 demo case，必须至少有一次按生成步骤进行的人类复现记录，并标注 pass/fail 与问题备注。Simulator 成功不等于 human reproducible。
+
 ## v1 Scope（MVP）
 
 - 一个 web demo（fold.miaodx.com 或 foldgen.app）：
-  - 用户上传一张目标图片或输入文字
+  - 用户上传一张目标图片；文字输入先作为 curated target 的入口
   - 输出：FOLD 文件 + crease pattern SVG + 3D 折叠动画 + 步骤分解
 - **不追求"任何输入都能折"**——先打通 5 个 base form（bird / frog / waterbomb / kite / fish）的局部变形
 - 公开 GitHub repo + README + 一篇博客文章
@@ -92,8 +111,8 @@ def foldgen(target_image_or_text):
 ## Testbed Dataset（工程 testbed，非论文 benchmark）
 
 - **Base forms（5 个）**：bird base, frog base, waterbomb base, kite base, fish base
-- **Test targets（10-15 个）**：从 origami 站的 20 个传统模型里选（有 ground truth FOLD 做 sanity check）
-- **创意测试（5-10 个）**：纯自然语言（"a fox", "a small mountain"）—— 无 ground truth，靠人因评测
+- **Test targets（10-15 个）**：优先使用本 repo 可公开发布的 target images。可从 origami 站模型中迁移 / 重建，也可用 `$imagegen` 生成目标图像；有 ground truth FOLD 时用于 sanity check。
+- **创意测试（5-10 个）**：纯自然语言（"a fox", "a small mountain"）或 `$imagegen` 生成的 reference images —— 无 ground truth，靠人因评测
 
 ## 与 origami 站的协同
 
@@ -107,14 +126,17 @@ def foldgen(target_image_or_text):
 - LLM API：每次 iteration ~2-5 个调用，30 iter × $0.02 = $0.6 / 次 foldgen 调用
 - 15 个 test target × 5 次重复 = 75 次 × $0.6 = **~$45 实验**
 - CLIP 自托管，零成本
+- Codex 会话内 GPT 用于开发期强模型任务时按项目内零边际成本处理，不计入 v1 付费 API 预算。
+- Codex `$imagegen` 用于 target/demo raster assets 时按项目内零边际成本处理，不计入 v1 付费 API 预算。
 - **总实验预算 < $100**
 
 ## Stage 1 里程碑
 
-- M1: fold-core 集成；agent loop 跑通最简单 case（一个 base form 加一道折）
+- M0: 建立公开 testbed：5 个 base form fixtures + 最少 3 个 target fixtures，且不依赖 private repo runtime。
+- M1: fold-core 集成；用 deterministic / mock proposal 跑通最简单 case（一个 base form 加一道折），输出满足 M1 最小有效输出。
 - M2: 在 5 个 test targets 上跑通端到端 pipeline
 - M3: web demo（用户上传图 → 输出 fold sequence + 3D 预览）
-- M4: 博客文章 + GitHub README + 发布（HN / 知乎 / Twitter）
+- M4: 完成至少 5 个带 human reproducibility 记录的 demo case；博客文章 + GitHub README + 发布（HN / 知乎 / Twitter）
 
 ## 成功标准
 
