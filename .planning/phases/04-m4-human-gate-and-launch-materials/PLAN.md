@@ -21,11 +21,15 @@ No real human attempt records have been provided. M4 cannot be honestly marked
 complete until those records exist.
 
 Use `docs/human-reproducibility/attempt-template.json` for each attempt.
+Records belong in `docs/human-reproducibility/attempts/`.
+Current gate result: `npm run validate:human` fails with 0 passing
+claim-allowed records.
 
 ## Verification
 
 M4 verification should include:
 
+- `npm run validate:human`
 - five committed attempt records
 - pass/fail and notes in every record
 - no public human-reproducible claim without a passing record

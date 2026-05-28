@@ -24,3 +24,12 @@ target. Each case records:
 
 The deterministic critic scores are inspection metadata only. They are not human
 reproducibility evidence.
+
+M4 human-gate records are validated with:
+
+```bash
+npm run validate:human
+```
+
+That command fails until five passing human attempts are recorded with
+`claim_allowed: true`.

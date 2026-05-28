@@ -19,5 +19,9 @@ Latest verification:
 M4 status: blocked on real human folding attempt records. Do not mark any demo
 case human-reproducible until a person records pass/fail and notes.
 
+M4 gate result:
+- `npm run validate:human` fails with 0 passing claim-allowed records.
+
 Next action: collect five human attempt records using
-`docs/human-reproducibility/attempt-template.json`.
+`docs/human-reproducibility/attempt-template.json`, then run
+`npm run validate:human`.

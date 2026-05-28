@@ -17,6 +17,11 @@ Status:
 Next action:
 - Collect five human attempt records with pass/fail and notes. Do not mark demo
   cases human-reproducible from simulator, critic, or preview output alone.
+- Run `npm run validate:human` after records are added; the command should fail
+  until at least five passing claim-allowed records exist.
+
+Current M4 gate result:
+- `npm run validate:human` fails with 0 passing claim-allowed records.
 
 Phase 1 verification:
 - `npm test`

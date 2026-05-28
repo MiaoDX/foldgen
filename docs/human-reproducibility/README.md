@@ -6,3 +6,14 @@ reproducible.
 
 Create one JSON record per attempt using `attempt-template.json`. Keep records
 out of public launch claims until the attempt status is `pass`.
+
+Records belong in `docs/human-reproducibility/attempts/`.
+
+Check the gate with:
+
+```bash
+npm run validate:human
+```
+
+This command is expected to fail until there are at least five passing records
+with `claim_allowed: true`.

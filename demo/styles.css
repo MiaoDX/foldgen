@@ -213,6 +213,12 @@ input[type="file"] {
   color: var(--muted);
 }
 
+.human-status {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  color: var(--amber);
+}
+
 .workspace {
   min-width: 0;
   padding: 20px;

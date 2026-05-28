@@ -41,7 +41,7 @@ Success criteria:
 Status: Completed
 
 Proof:
-- Commit `9df7327` (`feat(demo): add local m3 pipeline viewer`)
+- Commit `0f68672` (`feat(foldgen-agent): add deterministic m2 pipeline`)
 - `npm test`
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
@@ -66,6 +66,7 @@ Success criteria:
 Status: Completed
 
 Proof:
+- Commit `9df7327` (`feat(demo): add local m3 pipeline viewer`)
 - `npm test`
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
@@ -94,5 +95,9 @@ Blocker:
 - Requires five real human folding attempt records with pass/fail and notes.
   Simulator-valid output, deterministic preview, and critic scores are not
   human reproducibility evidence.
+
+Gate:
+- `npm run validate:human` must pass before M4 can be completed.
+- Current result: fails with 0 passing claim-allowed records.
 
 Depends on: Phase 3

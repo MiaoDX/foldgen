@@ -19,6 +19,7 @@ npm run validate:fixtures
 npm run m1:deterministic
 npm run m2:pipeline
 npm run demo
+npm run validate:human
 ```
 
 `npm run m1:deterministic` writes local artifacts to `out/m1-deterministic/`:
@@ -33,6 +34,9 @@ case includes selected output artifacts plus proposal and critic history.
 
 `npm run demo` serves the local UI at `http://localhost:4173/demo/`. Run
 `npm run m2:pipeline` first when `out/m2-pipeline/` is missing or stale.
+
+`npm run validate:human` is the M4 gate. It is expected to fail until five
+passing human attempt records exist under `docs/human-reproducibility/attempts/`.
 
 ## Why this exists (and why it's repositioned)
 
