@@ -21,6 +21,13 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
     for (const pipelineCase of summary.cases) {
       assert.equal(pipelineCase.status, "valid");
       assert.equal(pipelineCase.validation_status, true);
+      assert.deepEqual(pipelineCase.claim_status, {
+        claim_label: "simulator-valid / embodiment-untested",
+        simulator_valid: true,
+        embodiment_validated: false,
+        embodiment_status: "untested",
+        final_record_path: null
+      });
       assert.ok(pipelineCase.selected_base_form.endsWith("-base.fold"));
       assert.ok(pipelineCase.artifact_paths.derived_fold);
       assert.ok(pipelineCase.artifact_paths.crease_svg);
@@ -52,6 +59,7 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
     const writtenSummary = JSON.parse(await readFile(join(outDir, "summary.json"), "utf8"));
     assert.equal(writtenSummary.ok, true);
     assert.equal(writtenSummary.case_count, 5);
+    assert.equal(writtenSummary.claim_status.claim_label, "simulator-valid / embodiment-untested");
   } finally {
     await rm(outDir, { recursive: true, force: true });
   }
@@ -66,6 +74,7 @@ test("M2 pipeline CLI writes a five-case summary", async () => {
     assert.equal(summary.case_count, 5);
     assert.equal(summary.cases.length, 5);
     assert.ok(summary.cases.every((pipelineCase) => pipelineCase.status === "valid"));
+    assert.ok(summary.cases.every((pipelineCase) => pipelineCase.claim_status.claim_label === "simulator-valid / embodiment-untested"));
   } finally {
     await rm(outDir, { recursive: true, force: true });
   }

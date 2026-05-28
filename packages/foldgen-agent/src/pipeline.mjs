@@ -86,6 +86,7 @@ export async function runCuratedPipeline(options = {}) {
     milestone: "M2",
     ok: cases.length >= 5 && cases.every((pipelineCase) => pipelineCase.status === "valid"),
     case_count: cases.length,
+    claim_status: buildClaimStatus({ simulatorValid: cases.length >= 5 && cases.every((pipelineCase) => pipelineCase.status === "valid") }),
     cases
   };
   await writeJson(join(outDir, "summary.json"), summary);
@@ -133,6 +134,7 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     },
     selected_base_form: profile.baseForm,
     status: selected ? "valid" : "failed",
+    claim_status: buildClaimStatus({ simulatorValid: selectedValidation.ok }),
     selected_candidate_id: selected?.candidate_id ?? null,
     validation_status: selectedValidation.ok,
     candidate_count: records.length,
@@ -246,6 +248,16 @@ function candidate(id, name, assignment, edge, score, rationale) {
 
 function invalidCandidate(id) {
   return candidate(id, "Reject out-of-range exploratory fold", "V", [0, 99], 0, "Records how invalid proposals are kept as pipeline data.");
+}
+
+function buildClaimStatus({ simulatorValid }) {
+  return {
+    claim_label: simulatorValid ? "simulator-valid / embodiment-untested" : "simulator-invalid / embodiment-untested",
+    simulator_valid: simulatorValid,
+    embodiment_validated: false,
+    embodiment_status: "untested",
+    final_record_path: null
+  };
 }
 
 async function writeJson(path, value) {

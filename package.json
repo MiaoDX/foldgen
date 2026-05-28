@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test packages/fold-core/test/*.test.mjs packages/foldgen-agent/test/*.test.mjs demo/test/*.test.mjs",
     "validate:fixtures": "node packages/fold-core/bin/validate-fixtures.mjs",
-    "validate:stage1": "npm test && npm run validate:fixtures && npm run m1:deterministic && npm run m2:pipeline",
+    "validate:stage1": "npm test && npm run validate:fixtures && npm run m1:deterministic && npm run m2:pipeline && npm run validate:claims",
+    "validate:claims": "node packages/foldgen-agent/bin/validate-claim-labels.mjs",
     "validate:embodiment": "node packages/foldgen-agent/bin/validate-embodiment-gate.mjs",
     "m1:deterministic": "node packages/fold-core/bin/run-deterministic-case.mjs",
     "m2:pipeline": "node packages/foldgen-agent/bin/run-pipeline.mjs",

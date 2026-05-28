@@ -1,6 +1,7 @@
 # foldgen demo
 
-Local Stage 1 demo for rendering pipeline outputs.
+Local Stage 1 demo for rendering pipeline outputs. Current cases are labeled
+`simulator-valid / embodiment-untested`.
 
 Run from the repo root:
 

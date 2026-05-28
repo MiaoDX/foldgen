@@ -154,7 +154,7 @@ async function loadCase(pipelineCase) {
   }
 
   setUiState("success", `${pipelineCase.target.name} loaded.`);
-  setEmbodimentStatus("Simulator-valid; physical executor untested.");
+  setEmbodimentStatus(formatClaimStatus(pipelineCase.claim_status));
 }
 
 async function fetchCaseArtifacts(pipelineCase) {
@@ -334,6 +334,13 @@ function setUiState(kind, message) {
 
 function setEmbodimentStatus(message) {
   els.embodimentStatus.textContent = `Embodiment status: ${message}`;
+}
+
+function formatClaimStatus(claimStatus) {
+  if (!claimStatus?.claim_label) {
+    return "Claim label unavailable.";
+  }
+  return claimStatus.claim_label;
 }
 
 async function fetchJson(path) {

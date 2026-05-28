@@ -21,11 +21,13 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
 
     const script = await fetchText(`${baseUrl}/demo/app.js`);
     assert.match(script, /fetchCaseArtifacts/);
-    assert.match(script, /Simulator-valid; physical executor untested/);
+    assert.match(script, /formatClaimStatus/);
+    assert.match(script, /claim_status/);
 
     const summary = await fetchJson(`${baseUrl}/out/m2-pipeline/summary.json`);
     assert.equal(summary.ok, true);
     assert.equal(summary.case_count, 5);
+    assert.equal(summary.claim_status.claim_label, "simulator-valid / embodiment-untested");
 
     const firstCase = summary.cases[0];
     const preview = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.preview}`);

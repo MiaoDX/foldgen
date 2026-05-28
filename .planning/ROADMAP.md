@@ -90,7 +90,16 @@ Success criteria:
 - Final embodiment records are documented as optional launch-claim evidence.
 - Related-work status is rechecked before public launch copy.
 
-Status: Planned
+Status: Completed
+
+Proof:
+- `npm test`
+- `npm run validate:stage1`
+- `npm run validate:claims`
+- Public surfaces and pipeline summaries label current cases as
+  `simulator-valid / embodiment-untested`.
+- Related-work recheck recorded in
+  `docs/launch/related-work-check-2026-05-28.md`.
 
 Claim guard:
 - Physical-execution claims require final embodiment records. Simulator-valid

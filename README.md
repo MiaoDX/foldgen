@@ -7,9 +7,11 @@ AI origami design as the **second case study of the roboharness paradigm** — g
 
 ## Status
 
-**Stage 1 / M3 verified** — public testbed fixtures, deterministic `fold-core`,
-a five-target local pipeline, and a local web demo are implemented. No live
-provider adapter or final embodiment claim yet.
+**Stage 1 / M4 technical gate** — public testbed fixtures, deterministic
+`fold-core`, a five-target local pipeline, a local web demo, and claim-label
+guardrails are implemented. The current demo cases are
+**simulator-valid / embodiment-untested**: no live provider adapter and no final
+embodiment claim yet.
 
 ## Local Stage 1 workflow
 
@@ -18,6 +20,7 @@ npm test
 npm run validate:fixtures
 npm run m1:deterministic
 npm run m2:pipeline
+npm run validate:claims
 npm run demo
 npm run validate:stage1
 ```
@@ -30,14 +33,16 @@ npm run validate:stage1
 - `diagram-step.json`
 
 `npm run m2:pipeline` writes five curated case runs to `out/m2-pipeline/`. Each
-case includes selected output artifacts plus proposal and critic history.
+case includes selected output artifacts plus proposal and critic history. Each
+valid case is labeled `simulator-valid / embodiment-untested` until a final
+embodiment record is intentionally added and validated.
 
 `npm run demo` serves the local UI at `http://localhost:4173/demo/`. Run
 `npm run m2:pipeline` first when `out/m2-pipeline/` is missing or stale.
 
-`npm run validate:stage1` is the current technical gate. Final physical-executor
-evidence is checked separately with `npm run validate:embodiment` only when a
-launch claim needs it.
+`npm run validate:stage1` is the current technical gate and includes
+`npm run validate:claims`. Final physical-executor evidence is checked
+separately with `npm run validate:embodiment` only when a launch claim needs it.
 
 ## Why this exists (and why it's repositioned)
 

@@ -1,21 +1,22 @@
 # State
 
-Current focus: Phase 4 - M4 Technical Closeout And Claim Guard.
+Current focus: Stage 1 technical closeout complete.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
 - Roadmap: `.planning/ROADMAP.md`
-- Active phase plan: `.planning/phases/04-m4-technical-closeout-claim-guard/PLAN.md`
+- Completed phase plan: `.planning/phases/04-m4-technical-closeout-claim-guard/PLAN.md`
 
 Status:
 - GSD ingest/plan handoff is degraded inline, not a full spawned-subagent run.
 - Phase 1 implementation is complete, locally verified, and committed.
 - Phase 2 implementation is complete, locally verified, and committed.
 - Phase 3 implementation is complete, locally verified, and committed.
-- Phase 4 has been re-scoped so it is not blocked on external executor records.
+- Phase 4 implementation is complete and locally verified.
 
 Next action:
-- Continue Stage 1 technical iteration and closeout using `npm run validate:stage1`.
+- Continue optional post-M4 polish or launch preparation using
+  `npm run validate:stage1`.
 - Keep final embodiment validation optional until a launch claim requires
   physical-executor evidence.
 
@@ -40,6 +41,11 @@ Phase 3 verification:
 - `npm run m2:pipeline`
 - `npm run demo`
 - Headless Chrome screenshot smoke test for `/demo/?case=simple-bird`
+
+Phase 4 verification:
+- `npm test`
+- `npm run validate:stage1`
+- `npm run validate:claims`
 
 Known constraints:
 - Do not depend on private repos or paid model APIs.

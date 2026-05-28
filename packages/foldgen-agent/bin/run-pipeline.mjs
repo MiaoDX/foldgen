@@ -9,9 +9,11 @@ try {
     ok: summary.ok,
     outDir,
     case_count: summary.case_count,
+    claim_status: summary.claim_status,
     cases: summary.cases.map((pipelineCase) => ({
       case_id: pipelineCase.case_id,
       status: pipelineCase.status,
+      claim_status: pipelineCase.claim_status,
       selected_base_form: pipelineCase.selected_base_form,
       selected_candidate_id: pipelineCase.selected_candidate_id
     }))
