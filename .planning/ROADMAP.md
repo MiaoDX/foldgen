@@ -41,6 +41,7 @@ Success criteria:
 Status: Completed
 
 Proof:
+- Commit `9df7327` (`feat(demo): add local m3 pipeline viewer`)
 - `npm test`
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
@@ -87,6 +88,11 @@ Success criteria:
 - README/blog/demo labels distinguish simulator-valid from human-reproduced.
 - Related-work status is rechecked before public launch copy.
 
-Status: Pending
+Status: Blocked
+
+Blocker:
+- Requires five real human folding attempt records with pass/fail and notes.
+  Simulator-valid output, deterministic preview, and critic scores are not
+  human reproducibility evidence.
 
 Depends on: Phase 3

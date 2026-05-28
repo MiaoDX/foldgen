@@ -1,21 +1,22 @@
 # State
 
-Current focus: Phase 3 - M3 Web Demo.
+Current focus: Phase 4 - M4 Human Gate And Launch Materials.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
 - Roadmap: `.planning/ROADMAP.md`
-- Active phase plan: `.planning/phases/03-m3-web-demo/PLAN.md`
+- Active phase plan: `.planning/phases/04-m4-human-gate-and-launch-materials/PLAN.md`
 
 Status:
 - GSD ingest/plan handoff is degraded inline, not a full spawned-subagent run.
 - Phase 1 implementation is complete, locally verified, and committed.
 - Phase 2 implementation is complete, locally verified, and committed.
-- Phase 3 implementation is complete and locally verified.
+- Phase 3 implementation is complete, locally verified, and committed.
+- Phase 4 is blocked on real human folding attempt records.
 
 Next action:
-- Commit the verified Phase 3 slice, then continue to M4 human gate and
-  launch-material claim discipline from a clean committed boundary.
+- Collect five human attempt records with pass/fail and notes. Do not mark demo
+  cases human-reproducible from simulator, critic, or preview output alone.
 
 Phase 1 verification:
 - `npm test`

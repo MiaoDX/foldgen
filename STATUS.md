@@ -5,8 +5,8 @@ Current focus: Stage 1 MVP implementation via `intuitive-flow`.
 Active source of truth: `docs/plans/stage-1-mvp.md`, derived from
 `docs/PLAN.md`.
 
-Phase 3 status: M3 local web demo is implemented and locally verified against
-the five-case pipeline output.
+Phase 3 status: M3 local web demo is implemented, locally verified, and
+committed.
 
 Latest verification:
 - `npm test`
@@ -16,5 +16,8 @@ Latest verification:
 - `npm run demo`
 - Headless Chrome screenshot smoke test for `/demo/?case=simple-bird`
 
-Next action: commit the verified Phase 3 slice, then continue to M4 human gate
-and launch-material claim discipline from that clean boundary.
+M4 status: blocked on real human folding attempt records. Do not mark any demo
+case human-reproducible until a person records pass/fail and notes.
+
+Next action: collect five human attempt records using
+`docs/human-reproducibility/attempt-template.json`.

@@ -1,0 +1,14 @@
+{
+  "case_id": "simple-bird",
+  "artifact_summary": "out/m2-pipeline/simple-bird/summary.json",
+  "attempted_by": "human-label-or-initials",
+  "attempted_on": "2026-05-28",
+  "status": "pass-or-fail",
+  "time_minutes": null,
+  "notes": [
+    "What was clear?",
+    "Where did the folding instructions fail?",
+    "What should change before public claims?"
+  ],
+  "claim_allowed": false
+}
