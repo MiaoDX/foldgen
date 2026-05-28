@@ -10,4 +10,10 @@ export {
 export { createCreasePatternSvg } from "./svg.mjs";
 export { createPreviewModel } from "./preview.mjs";
 export { applyLocalFoldOperation, deterministicDemoOperation } from "./operations.mjs";
-export { createDiagramStep } from "./diagram.mjs";
+export {
+  createDiagramSequence,
+  createDiagramStep,
+  executorProfiles,
+  getExecutorProfile,
+  validateExecutorReadableStep
+} from "./diagram.mjs";

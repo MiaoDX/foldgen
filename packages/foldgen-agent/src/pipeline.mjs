@@ -3,11 +3,13 @@ import { join, relative } from "node:path";
 import {
   applyLocalFoldOperation,
   createCreasePatternSvg,
+  createDiagramSequence,
   createDiagramStep,
   createPreviewModel,
   loadFoldFile,
   serializeFold,
   stableStringify,
+  validateExecutorReadableStep,
   validateFold
 } from "../../fold-core/src/index.mjs";
 
@@ -45,6 +47,7 @@ export const targetProfiles = {
   "simple-boat.svg": {
     caseId: "simple-boat",
     baseForm: "kite-base.fold",
+    executorProfiles: ["human-hand", "two-finger-gripper"],
     targetFeatures: ["sail", "hull", "mast"],
     candidates: [
       candidate("boat-mast-centerline", "Add a mast centerline valley", "V", [5, 6], 0.83, "Creates a strong mast-like vertical reference in the kite base."),
@@ -82,11 +85,13 @@ export async function runCuratedPipeline(options = {}) {
     targets.map((target) => runTargetCase({ target, profile: targetProfiles[target.file], baseFormsDir, targetsDir, outDir }))
   );
 
+  const simulatorValid = cases.length >= 5 && cases.every((pipelineCase) => pipelineCase.status === "valid");
+  const executorReadable = cases.length >= 5 && cases.every((pipelineCase) => pipelineCase.executor_readable === true);
   const summary = {
     milestone: "M2",
-    ok: cases.length >= 5 && cases.every((pipelineCase) => pipelineCase.status === "valid"),
+    ok: simulatorValid && executorReadable,
     case_count: cases.length,
-    claim_status: buildClaimStatus({ simulatorValid: cases.length >= 5 && cases.every((pipelineCase) => pipelineCase.status === "valid") }),
+    claim_status: buildClaimStatus({ simulatorValid, executorReadable }),
     cases
   };
   await writeJson(join(outDir, "summary.json"), summary);
@@ -111,18 +116,29 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
   };
 
   let selectedValidation = { ok: false, errors: ["No valid candidate selected"], warnings: [] };
+  let diagramStepValidation = { ok: false, errors: ["No executor-readable step emitted"] };
+  let executorReadable = false;
   if (selected) {
     selectedValidation = selected.validation;
     artifactPaths.derived_fold = artifactPath(join(caseDir, "derived.fold"));
     artifactPaths.crease_svg = artifactPath(join(caseDir, "crease.svg"));
     artifactPaths.validation = artifactPath(join(caseDir, "validation.json"));
     artifactPaths.diagram_step = artifactPath(join(caseDir, "diagram-step.json"));
+    artifactPaths.diagram_sequence = artifactPath(join(caseDir, "diagram-sequence.json"));
     artifactPaths.preview = artifactPath(join(caseDir, "preview.json"));
+
+    const diagramStep = createDiagramStep(selected.operation, 1, {
+      supportedExecutorProfiles: profile.executorProfiles ?? ["human-hand"]
+    });
+    const diagramSequence = createDiagramSequence([diagramStep]);
+    diagramStepValidation = validateExecutorReadableStep(diagramStep);
+    executorReadable = selectedValidation.ok && diagramStepValidation.ok;
 
     await writeFile(join(caseDir, "derived.fold"), serializeFold(selected.derived), "utf8");
     await writeFile(join(caseDir, "crease.svg"), createCreasePatternSvg(selected.derived), "utf8");
     await writeJson(join(caseDir, "validation.json"), selected.validation);
-    await writeJson(join(caseDir, "diagram-step.json"), createDiagramStep(selected.operation, 1));
+    await writeJson(join(caseDir, "diagram-step.json"), diagramStep);
+    await writeJson(join(caseDir, "diagram-sequence.json"), diagramSequence);
     await writeJson(join(caseDir, "preview.json"), createPreviewModel(selected.derived));
   }
 
@@ -134,7 +150,11 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     },
     selected_base_form: profile.baseForm,
     status: selected ? "valid" : "failed",
-    claim_status: buildClaimStatus({ simulatorValid: selectedValidation.ok }),
+    claim_status: buildClaimStatus({ simulatorValid: selectedValidation.ok, executorReadable }),
+    executor_readable: executorReadable,
+    executor_profile: "human-hand",
+    executor_profiles: profile.executorProfiles ?? ["human-hand"],
+    diagram_step_validation: diagramStepValidation,
     selected_candidate_id: selected?.candidate_id ?? null,
     validation_status: selectedValidation.ok,
     candidate_count: records.length,
@@ -250,10 +270,13 @@ function invalidCandidate(id) {
   return candidate(id, "Reject out-of-range exploratory fold", "V", [0, 99], 0, "Records how invalid proposals are kept as pipeline data.");
 }
 
-function buildClaimStatus({ simulatorValid }) {
+function buildClaimStatus({ simulatorValid, executorReadable }) {
   return {
-    claim_label: simulatorValid ? "simulator-valid / embodiment-untested" : "simulator-invalid / embodiment-untested",
+    claim_label: simulatorValid && executorReadable
+      ? "simulator-valid / executor-readable / embodiment-untested"
+      : `${simulatorValid ? "simulator-valid" : "simulator-invalid"} / ${executorReadable ? "executor-readable" : "executor-unreadable"} / embodiment-untested`,
     simulator_valid: simulatorValid,
+    executor_readable: executorReadable,
     embodiment_validated: false,
     embodiment_status: "untested",
     final_record_path: null

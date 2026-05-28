@@ -1,14 +1,15 @@
 # STATUS
 
-Current focus: Stage 1 MVP technical continuation via `intuitive-flow`.
+Current focus: Stage 1 MVP technical closeout via `intuitive-flow`.
 
 Active source of truth: `docs/plans/stage-1-mvp.md`, derived from
 `docs/PLAN.md`.
 
-Stage 1 technical status: M0-M4 have a working coarse technical spine, but the
-executor-readable contract was sharpened after demo review. The current demo
-still renders one-sentence steps, so M1-M4 need a follow-up implementation pass
-before Stage 1 can honestly claim executor-readable output.
+Stage 1 technical status: M0-M4 plus the Phase 5 executor-readable contract
+upgrade are implemented. The current M1/M2 artifacts include executor profiles,
+structured action phases, checks, failure modes, and annotations; the demo
+renders the selected executor profile and action flow. Current valid cases use
+the label `simulator-valid / executor-readable / embodiment-untested`.
 
 Latest verification:
 - `npm test`
@@ -21,7 +22,7 @@ Latest verification:
 - `npm run validate:stage1`
 
 Current stop gate:
-- Current coarse gate: `npm run validate:stage1`
+- Current technical gate: `npm run validate:stage1`
 - Refined contract source: `docs/contracts/stage-1-output-contract.md`
 
 Final-stage claim gate:
@@ -30,6 +31,6 @@ Final-stage claim gate:
 - Do not claim a case is embodiment-validated until a final record exists under
   `docs/embodiment-validation/attempts/`.
 
-Next action: implement Phase 5 executor-readable contract upgrade. No external
-participation is required for this repo-local upgrade unless launch copy makes a
-final physical-executor claim.
+Next action: no repo-local Stage 1 implementation action remains unless launch
+copy needs final physical-executor evidence. No external participation is
+required for the repo-local Stage 1 technical gate.

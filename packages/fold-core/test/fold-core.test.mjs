@@ -12,9 +12,11 @@ import {
   createDiagramStep,
   createPreviewModel,
   deterministicDemoOperation,
+  executorProfiles,
   loadFoldFile,
   parseFold,
   serializeFold,
+  validateExecutorReadableStep,
   validateFold
 } from "../src/index.mjs";
 
@@ -85,12 +87,38 @@ test("preview model output is deterministic inspection data", async () => {
   assert.equal(preview.edges.length, derived.edges_vertices.length);
 });
 
+test("diagram step contains executor-readable action structure", () => {
+  const step = createDiagramStep(deterministicDemoOperation, 1);
+  const result = validateExecutorReadableStep(step);
+
+  assert.equal(result.ok, true, result.errors.join("\n"));
+  assert.equal(step.executor_profile, "human-hand");
+  assert.equal(step.executor_profile_definition.id, "human-hand");
+  assert.deepEqual(executorProfiles["cat-paw-profile"].unavailable_actions, ["precision pinch", "two-point alignment"]);
+  assert.deepEqual(step.fold.landmarks, {
+    start: "left midpoint",
+    end: "right midpoint",
+    line: "horizontal midpoint crease"
+  });
+  assert.deepEqual(step.actions.map((action) => action.phase), ["setup", "anchor", "fold", "align", "crease", "release"]);
+  assert.equal(step.checks.length >= 2, true);
+  assert.equal(step.failure_modes.length >= 1, true);
+  assert.equal(step.annotations.some((annotation) => annotation.type === "motion-arrow"), true);
+
+  const invalid = {
+    ...step,
+    actions: step.actions.filter((action) => action.phase !== "align")
+  };
+  assert.equal(validateExecutorReadableStep(invalid).ok, false);
+});
+
 test("deterministic case writes valid FOLD, SVG, validation, and diagram step", async () => {
   const outDir = await mkdtemp(join(tmpdir(), "foldgen-m1-"));
   try {
     const { stdout } = await execFileAsync("node", ["packages/fold-core/bin/run-deterministic-case.mjs", outDir]);
     const summary = JSON.parse(stdout);
     assert.equal(summary.ok, true);
+    assert.ok(summary.files.includes("preview.json"));
 
     const derived = parseFold(await readFile(join(outDir, "derived.fold"), "utf8"));
     assert.equal(validateFold(derived).ok, true);
@@ -101,6 +129,10 @@ test("deterministic case writes valid FOLD, SVG, validation, and diagram step", 
 
     const step = JSON.parse(await readFile(join(outDir, "diagram-step.json"), "utf8"));
     assert.deepEqual(step, createDiagramStep(deterministicDemoOperation, 1));
+    assert.equal(validateExecutorReadableStep(step).ok, true);
+
+    const preview = JSON.parse(await readFile(join(outDir, "preview.json"), "utf8"));
+    assert.deepEqual(preview, createPreviewModel(derived));
   } finally {
     await rm(outDir, { recursive: true, force: true });
   }

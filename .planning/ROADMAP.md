@@ -2,20 +2,20 @@
 
 ## Contract Refinement: 2026-05-28
 
-The first implementation pass completed the coarse M0-M4 technical spine, but
-the screenshot review exposed that "executor-readable diagram" was underspecified:
-the current demo can show one-sentence steps, not a followable executor action
-flow.
+The first implementation pass completed the coarse M0-M4 technical spine, and
+the screenshot review exposed that "executor-readable diagram" was
+underspecified: the demo could show one-sentence steps, not a followable
+executor action flow.
 
 Canonical refined contract: `docs/contracts/stage-1-output-contract.md`.
 
 Implication:
 - Existing commits remain useful technical proof for fixtures, FOLD/SVG,
   validation, pipeline, preview, demo wiring, and claim labels.
-- M1-M4 are not complete under the refined executor-readable contract until the
-  implementation emits and renders structured executor actions.
-- The next implementation slice should upgrade the already-built spine rather
-  than restart the milestones from scratch.
+- Phase 5 upgraded the already-built spine rather than restarting the
+  milestones from scratch.
+- M1-M4 now rely on the refined executor-readable gate for current Stage 1
+  labels.
 
 ## Phase 1: M0/M1 Public Testbed And Deterministic Core Spine
 
@@ -36,14 +36,15 @@ Success criteria:
   `docs/contracts/stage-1-output-contract.md`.
 - No command depends on `MiaoDX/microsites`, paid APIs, or manual asset copying.
 
-Status: Completed for the original coarse gate; executor-readable follow-up
-required under the refined contract.
+Status: Completed under the refined executor-readable contract after Phase 5.
 
 Proof:
 - Commit `5773f81` (`feat(fold-core): add deterministic m0 m1 spine`)
 - `npm test`
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
+- Phase 5 follow-up: deterministic output validates executor profile,
+  structured actions, checks, failure modes, and annotations.
 
 ## Phase 2: M2 Local Pipeline
 
@@ -60,8 +61,7 @@ Success criteria:
 - Invalid and partial results are visible and understandable.
 - No live provider adapter or private runtime asset is required.
 
-Status: Completed for the original coarse gate; executor-readable follow-up
-required under the refined contract.
+Status: Completed under the refined executor-readable contract after Phase 5.
 
 Proof:
 - Commit `0f68672` (`feat(foldgen-agent): add deterministic m2 pipeline`)
@@ -69,6 +69,8 @@ Proof:
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
 - `npm run m2:pipeline`
+- Phase 5 follow-up: five case summaries include `executor_readable: true`,
+  `diagram-sequence.json`, and the refined claim label.
 
 Depends on: Phase 1
 
@@ -87,8 +89,7 @@ Success criteria:
   covered.
 - Executor-readable action flow is visible for a selected case.
 
-Status: Completed for the original coarse gate; executor-readable follow-up
-required under the refined contract.
+Status: Completed under the refined executor-readable contract after Phase 5.
 
 Proof:
 - Commit `9df7327` (`feat(demo): add local m3 pipeline viewer`)
@@ -98,6 +99,8 @@ Proof:
 - `npm run m2:pipeline`
 - `npm run demo`
 - Headless Chrome screenshot smoke test for `/demo/?case=simple-bird`
+- Phase 5 follow-up: demo renders executor profile metadata plus setup, anchor,
+  fold, align, crease, release, checks, and failure modes.
 
 Depends on: Phase 2
 
@@ -116,15 +119,14 @@ Success criteria:
 - Final embodiment records are documented as optional launch-claim evidence.
 - Related-work status is rechecked before public launch copy.
 
-Status: Completed for the original coarse gate; claim-label follow-up required
-under the refined contract.
+Status: Completed under the refined executor-readable contract after Phase 5.
 
 Proof:
 - `npm test`
 - `npm run validate:stage1`
 - `npm run validate:claims`
 - Public surfaces and pipeline summaries label current cases as
-  `simulator-valid / embodiment-untested`.
+  `simulator-valid / executor-readable / embodiment-untested`.
 - Related-work recheck recorded in
   `docs/launch/related-work-check-2026-05-28.md`.
 
@@ -160,6 +162,16 @@ Success criteria:
   `simulator-valid / executor-readable / embodiment-untested` only after the
   executor-readable gate passes.
 
-Status: Planned
+Status: Completed
+
+Proof:
+- `npm test`
+- `npm run validate:fixtures`
+- `npm run m1:deterministic`
+- `npm run m2:pipeline`
+- `npm run validate:claims`
+- `npm run validate:stage1`
+- Local demo smoke test for `/demo/?case=simple-bird` showing executor profile
+  and action flow.
 
 Depends on: Phase 4 coarse technical spine

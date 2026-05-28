@@ -1,11 +1,11 @@
 # foldgen demo
 
 Local Stage 1 demo for rendering pipeline outputs. Current cases are labeled
-`simulator-valid / embodiment-untested`.
+`simulator-valid / executor-readable / embodiment-untested`.
 
-The refined Stage 1 contract requires a followable executor-readable action
-flow. The current demo still shows the coarse one-sentence step output and is
-scheduled for the Phase 5 executor-readable upgrade.
+The demo renders the executor profile and followable action flow from
+`diagram-sequence.json`; it does not treat simulator output as final embodiment
+evidence.
 
 Run from the repo root:
 

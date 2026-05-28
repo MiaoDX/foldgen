@@ -140,7 +140,7 @@ async function loadCase(pipelineCase) {
   renderDownloads(pipelineCase);
   renderTarget(artifacts.targetSvg);
   renderCrease(artifacts.creaseSvg);
-  renderStep(artifacts.diagramStep);
+  renderStep(artifacts.diagramSequence, artifacts.diagramStep);
   renderHistory(artifacts.proposalHistory, artifacts.criticHistory);
   renderPreview(artifacts.preview);
 
@@ -163,6 +163,7 @@ async function fetchCaseArtifacts(pipelineCase) {
     fetchTextMaybe(`/benchmarks/targets/${pipelineCase.target.file}`, "target"),
     fetchTextMaybe(artifactUrl(paths.crease_svg), "crease"),
     fetchJsonMaybe(artifactUrl(paths.validation), "validation"),
+    fetchJsonMaybe(artifactUrl(paths.diagram_sequence), "sequence"),
     fetchJsonMaybe(artifactUrl(paths.diagram_step), "step"),
     fetchJsonMaybe(artifactUrl(paths.proposal_history), "proposal"),
     fetchJsonMaybe(artifactUrl(paths.critic_history), "critic"),
@@ -175,6 +176,7 @@ async function fetchCaseArtifacts(pipelineCase) {
     targetSvg: valueFor(results, "target"),
     creaseSvg: valueFor(results, "crease"),
     validation: valueFor(results, "validation"),
+    diagramSequence: valueFor(results, "sequence"),
     diagramStep: valueFor(results, "step"),
     proposalHistory: valueFor(results, "proposal"),
     criticHistory: valueFor(results, "critic"),
@@ -189,6 +191,7 @@ function renderDownloads(pipelineCase) {
     ["SVG", paths.crease_svg],
     ["Preview", paths.preview],
     ["Validation", paths.validation],
+    ["Diagram", paths.diagram_sequence],
     ["Proposal", paths.proposal_history],
     ["Critic", paths.critic_history],
     ["Summary", paths.case_summary]
@@ -211,15 +214,65 @@ function renderCrease(svgText) {
   els.creasePattern.innerHTML = svgText ?? "";
 }
 
-function renderStep(step) {
+function renderStep(sequence, fallbackStep) {
   els.stepList.innerHTML = "";
-  if (!step) {
+  const steps = Array.isArray(sequence?.steps) ? sequence.steps : fallbackStep ? [fallbackStep] : [];
+  if (steps.length === 0) {
     return;
   }
 
-  const item = document.createElement("li");
-  item.innerHTML = `<strong>${escapeHtml(step.title)}</strong><br>${escapeHtml(step.instruction)}`;
-  els.stepList.append(item);
+  for (const step of steps) {
+    const item = document.createElement("li");
+    const profile = step.executor_profile_definition;
+    item.innerHTML = [
+      `<div class="step-summary"><strong>${escapeHtml(step.title)}</strong><span>${escapeHtml(step.executor_profile)}</span></div>`,
+      `<p class="step-prestate">${escapeHtml(step.pre_state)}</p>`,
+      renderProfile(profile),
+      renderActionFlow(step.actions),
+      renderChecks("Checks", step.checks),
+      renderChecks("Failure Modes", step.failure_modes)
+    ].join("");
+    els.stepList.append(item);
+  }
+}
+
+function renderProfile(profile) {
+  if (!profile) {
+    return "";
+  }
+  return [
+    `<dl class="executor-profile">`,
+    `<div><dt>Profile</dt><dd>${escapeHtml(profile.name)} (${escapeHtml(profile.id)})</dd></div>`,
+    `<div><dt>Primitives</dt><dd>${escapeHtml(profile.contact_primitives.join(", "))}</dd></div>`,
+    `<div><dt>Unavailable</dt><dd>${escapeHtml(profile.unavailable_actions.join(", ") || "none")}</dd></div>`,
+    `</dl>`
+  ].join("");
+}
+
+function renderActionFlow(actions) {
+  const items = (actions ?? []).map((action) => {
+    const details = [
+      action.direction ? `Direction: ${action.direction}` : null,
+      action.target ? `Target: ${action.target}` : null,
+      action.contacts?.length ? `Contacts: ${action.contacts.join(", ")}` : null
+    ].filter(Boolean);
+    return [
+      `<li data-phase="${escapeHtml(action.phase)}">`,
+      `<span>${escapeHtml(formatPhase(action.phase))}</span>`,
+      `<p>${escapeHtml(action.text)}</p>`,
+      details.length ? `<small>${escapeHtml(details.join(" | "))}</small>` : "",
+      `</li>`
+    ].join("");
+  }).join("");
+  return `<ol class="action-flow">${items}</ol>`;
+}
+
+function renderChecks(label, entries) {
+  if (!Array.isArray(entries) || entries.length === 0) {
+    return "";
+  }
+  const items = entries.map((entry) => `<li>${escapeHtml(entry)}</li>`).join("");
+  return `<section class="step-notes"><h4>${escapeHtml(label)}</h4><ul>${items}</ul></section>`;
 }
 
 function renderHistory(proposalHistory, criticHistory) {
@@ -333,7 +386,7 @@ function setUiState(kind, message) {
 }
 
 function setEmbodimentStatus(message) {
-  els.embodimentStatus.textContent = `Embodiment status: ${message}`;
+  els.embodimentStatus.textContent = `Claim status: ${message}`;
 }
 
 function formatClaimStatus(claimStatus) {
@@ -428,6 +481,13 @@ function colorForAssignment(assignment) {
     default:
       return "#9ca3af";
   }
+}
+
+function formatPhase(phase) {
+  return String(phase)
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function escapeHtml(value) {

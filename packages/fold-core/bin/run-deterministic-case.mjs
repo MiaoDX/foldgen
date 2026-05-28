@@ -5,6 +5,7 @@ import {
   applyLocalFoldOperation,
   createCreasePatternSvg,
   createDiagramStep,
+  createPreviewModel,
   deterministicDemoOperation,
   loadFoldFile,
   serializeFold,
@@ -19,13 +20,15 @@ const derived = applyLocalFoldOperation(source, deterministicDemoOperation);
 const validation = validateFold(derived);
 const svg = createCreasePatternSvg(derived);
 const diagramStep = createDiagramStep(deterministicDemoOperation, 1);
+const preview = createPreviewModel(derived);
 
 await writeFile(join(outDir, "derived.fold"), serializeFold(derived), "utf8");
 await writeFile(join(outDir, "crease.svg"), svg, "utf8");
 await writeFile(join(outDir, "validation.json"), `${JSON.stringify(validation, null, 2)}\n`, "utf8");
 await writeFile(join(outDir, "diagram-step.json"), `${JSON.stringify(diagramStep, null, 2)}\n`, "utf8");
+await writeFile(join(outDir, "preview.json"), `${JSON.stringify(preview, null, 2)}\n`, "utf8");
 
-console.log(JSON.stringify({ ok: validation.ok, outDir, files: ["derived.fold", "crease.svg", "validation.json", "diagram-step.json"] }, null, 2));
+console.log(JSON.stringify({ ok: validation.ok, outDir, files: ["derived.fold", "crease.svg", "validation.json", "diagram-step.json", "preview.json"] }, null, 2));
 if (!validation.ok) {
   process.exitCode = 1;
 }

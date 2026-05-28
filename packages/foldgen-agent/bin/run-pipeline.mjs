@@ -14,6 +14,8 @@ try {
       case_id: pipelineCase.case_id,
       status: pipelineCase.status,
       claim_status: pipelineCase.claim_status,
+      executor_readable: pipelineCase.executor_readable,
+      executor_profile: pipelineCase.executor_profile,
       selected_base_form: pipelineCase.selected_base_form,
       selected_candidate_id: pipelineCase.selected_candidate_id
     }))

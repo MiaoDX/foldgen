@@ -14,15 +14,12 @@ M1 output, five-case M2 pipeline output, and M4 claim labels.
 
 ## Case Label
 
-Current coarse case label: `simulator-valid / embodiment-untested`.
-
-Refined target case label after Phase 5:
+Current Stage 1 case label:
 `simulator-valid / executor-readable / embodiment-untested`.
 
-Use the refined target label for README, demo, blog draft, screenshots, and
-pipeline summaries only after the executor-readable gate passes. Until then,
-keep public surfaces on the coarse label and explicitly say the
-executor-readable action flow is pending.
+Use this label for README, demo, blog draft, screenshots, and pipeline summaries
+only while `npm run validate:stage1` passes. It is still not a physical-executor
+claim.
 
 ## Final Claim Gate
 

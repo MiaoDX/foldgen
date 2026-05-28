@@ -1,8 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
+import { validateExecutorReadableStep } from "../../fold-core/src/index.mjs";
+
 const DEFAULT_SUMMARY_PATH = "out/m2-pipeline/summary.json";
-const EXPECTED_CASE_LABEL = "simulator-valid / embodiment-untested";
+const EXPECTED_CASE_LABEL = "simulator-valid / executor-readable / embodiment-untested";
 const REQUIRED_PUBLIC_LABELS = [
   {
     path: "README.md",
@@ -22,6 +24,8 @@ const REQUIRED_PUBLIC_LABELS = [
   {
     path: "demo/app.js",
     includes: [
+      "executor_profile",
+      "renderActionFlow",
       "formatClaimStatus",
       "claim_status"
     ]
@@ -70,7 +74,7 @@ export async function validateStage1ClaimLabels(options = {}) {
     await validatePublicSurface(rootDir, publicLabel, errors);
   }
 
-  await validatePipelineSummary(join(rootDir, summaryPath), errors, warnings);
+  await validatePipelineSummary(rootDir, join(rootDir, summaryPath), errors, warnings);
 
   return {
     ok: errors.length === 0,
@@ -113,7 +117,7 @@ function normalizeText(text) {
   return text.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-async function validatePipelineSummary(path, errors, warnings) {
+async function validatePipelineSummary(rootDir, path, errors, warnings) {
   let summary;
   try {
     summary = JSON.parse(await readFile(path, "utf8"));
@@ -133,6 +137,7 @@ async function validatePipelineSummary(path, errors, warnings) {
       requireSimulatorValid: pipelineCase.status === "valid" && pipelineCase.validation_status === true,
       errors
     });
+    await validateExecutorEvidence(rootDir, pipelineCase, `${path}: ${pipelineCase.case_id ?? "<case>"}`, errors);
     if (pipelineCase.claim_status?.final_record_path) {
       warnings.push(`${path}: ${pipelineCase.case_id} links a final record; run npm run validate:embodiment before launch copy`);
     }
@@ -150,6 +155,9 @@ function validateClaimStatus(claimStatus, label, { requireSimulatorValid, errors
   if (requireSimulatorValid && claimStatus.simulator_valid !== true) {
     errors.push(`${label}: simulator_valid must be true for valid Stage 1 cases`);
   }
+  if (requireSimulatorValid && claimStatus.executor_readable !== true) {
+    errors.push(`${label}: executor_readable must be true for valid Stage 1 cases`);
+  }
   if (claimStatus.embodiment_validated !== false) {
     errors.push(`${label}: embodiment_validated must remain false until final records pass`);
   }
@@ -158,5 +166,53 @@ function validateClaimStatus(claimStatus, label, { requireSimulatorValid, errors
   }
   if (claimStatus.final_record_path !== null) {
     errors.push(`${label}: final_record_path must be null until final-stage records are intentionally added`);
+  }
+}
+
+async function validateExecutorEvidence(rootDir, pipelineCase, label, errors) {
+  const requireEvidence = pipelineCase.status === "valid" && pipelineCase.validation_status === true;
+  if (!requireEvidence) {
+    return;
+  }
+
+  if (pipelineCase.executor_readable !== true) {
+    errors.push(`${label}: executor_readable must be true`);
+  }
+  if (pipelineCase.executor_profile !== "human-hand") {
+    errors.push(`${label}: executor_profile must be "human-hand" for curated Stage 1 cases`);
+  }
+  if (!Array.isArray(pipelineCase.executor_profiles) || !pipelineCase.executor_profiles.includes("human-hand")) {
+    errors.push(`${label}: executor_profiles must include human-hand`);
+  }
+
+  const sequencePath = pipelineCase.artifact_paths?.diagram_sequence;
+  if (!sequencePath) {
+    errors.push(`${label}: missing diagram_sequence artifact path`);
+    return;
+  }
+
+  let sequence;
+  try {
+    sequence = JSON.parse(await readFile(join(rootDir, sequencePath), "utf8"));
+  } catch (error) {
+    errors.push(`${label}: missing or invalid diagram sequence (${error.message})`);
+    return;
+  }
+
+  if (sequence.type !== "foldgen.diagram_sequence.v1") {
+    errors.push(`${label}: diagram sequence type must be foldgen.diagram_sequence.v1`);
+  }
+  if (sequence.executor_profile !== "human-hand") {
+    errors.push(`${label}: diagram sequence executor_profile must be human-hand`);
+  }
+  if (!Array.isArray(sequence.steps) || sequence.steps.length === 0) {
+    errors.push(`${label}: diagram sequence must contain at least one step`);
+    return;
+  }
+  for (const [index, step] of sequence.steps.entries()) {
+    const result = validateExecutorReadableStep(step);
+    if (!result.ok) {
+      errors.push(`${label}: diagram sequence step ${index + 1} is not executor-readable: ${result.errors.join("; ")}`);
+    }
   }
 }

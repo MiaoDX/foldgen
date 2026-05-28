@@ -6,7 +6,7 @@ import { promisify } from "node:util";
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { parseFold, validateFold } from "../../fold-core/src/index.mjs";
+import { parseFold, validateExecutorReadableStep, validateFold } from "../../fold-core/src/index.mjs";
 import { runCuratedPipeline } from "../src/index.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -22,16 +22,20 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       assert.equal(pipelineCase.status, "valid");
       assert.equal(pipelineCase.validation_status, true);
       assert.deepEqual(pipelineCase.claim_status, {
-        claim_label: "simulator-valid / embodiment-untested",
+        claim_label: "simulator-valid / executor-readable / embodiment-untested",
         simulator_valid: true,
+        executor_readable: true,
         embodiment_validated: false,
         embodiment_status: "untested",
         final_record_path: null
       });
+      assert.equal(pipelineCase.executor_readable, true);
+      assert.equal(pipelineCase.executor_profile, "human-hand");
       assert.ok(pipelineCase.selected_base_form.endsWith("-base.fold"));
       assert.ok(pipelineCase.artifact_paths.derived_fold);
       assert.ok(pipelineCase.artifact_paths.crease_svg);
       assert.ok(pipelineCase.artifact_paths.preview);
+      assert.ok(pipelineCase.artifact_paths.diagram_sequence);
       assert.ok(pipelineCase.artifact_paths.proposal_history);
       assert.ok(pipelineCase.artifact_paths.critic_history);
       assert.ok(pipelineCase.rejected_candidate_count > 0);
@@ -52,6 +56,12 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       assert.equal(preview.type, "foldgen.preview.v1");
       assert.ok(preview.vertices.length > 0);
 
+      const sequence = JSON.parse(await readFile(join(caseDir, "diagram-sequence.json"), "utf8"));
+      assert.equal(sequence.type, "foldgen.diagram_sequence.v1");
+      assert.equal(sequence.executor_profile, "human-hand");
+      assert.equal(sequence.steps.length, 1);
+      assert.equal(validateExecutorReadableStep(sequence.steps[0]).ok, true);
+
       const caseSummary = JSON.parse(await readFile(join(caseDir, "summary.json"), "utf8"));
       assert.equal(caseSummary.selected_candidate_id, pipelineCase.selected_candidate_id);
     }
@@ -59,7 +69,9 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
     const writtenSummary = JSON.parse(await readFile(join(outDir, "summary.json"), "utf8"));
     assert.equal(writtenSummary.ok, true);
     assert.equal(writtenSummary.case_count, 5);
-    assert.equal(writtenSummary.claim_status.claim_label, "simulator-valid / embodiment-untested");
+    assert.equal(writtenSummary.claim_status.claim_label, "simulator-valid / executor-readable / embodiment-untested");
+    assert.equal(writtenSummary.claim_status.executor_readable, true);
+    assert.equal(writtenSummary.cases.some((pipelineCase) => pipelineCase.executor_profiles.includes("two-finger-gripper")), true);
   } finally {
     await rm(outDir, { recursive: true, force: true });
   }
@@ -74,7 +86,8 @@ test("M2 pipeline CLI writes a five-case summary", async () => {
     assert.equal(summary.case_count, 5);
     assert.equal(summary.cases.length, 5);
     assert.ok(summary.cases.every((pipelineCase) => pipelineCase.status === "valid"));
-    assert.ok(summary.cases.every((pipelineCase) => pipelineCase.claim_status.claim_label === "simulator-valid / embodiment-untested"));
+    assert.ok(summary.cases.every((pipelineCase) => pipelineCase.claim_status.claim_label === "simulator-valid / executor-readable / embodiment-untested"));
+    assert.ok(summary.cases.every((pipelineCase) => pipelineCase.executor_readable === true));
   } finally {
     await rm(outDir, { recursive: true, force: true });
   }

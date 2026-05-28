@@ -1,26 +1,26 @@
 # State
 
-Current focus: Phase 5 - Executor-readable Contract Upgrade.
+Current focus: Phase 5 - Executor-readable Contract Upgrade closeout.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
 - Roadmap: `.planning/ROADMAP.md`
 - Active contract: `docs/contracts/stage-1-output-contract.md`
-- Active phase plan: `.planning/phases/05-executor-readable-contract-upgrade/PLAN.md`
+- Completed phase plan: `.planning/phases/05-executor-readable-contract-upgrade/PLAN.md`
 
 Status:
 - GSD ingest/plan handoff is degraded inline, not a full spawned-subagent run.
-- Phase 1 implementation is complete for the original coarse gate; M1
-  executor-readable output needs follow-up.
-- Phase 2 implementation is complete for the original coarse gate; per-case
-  executor-readable sequences need follow-up.
-- Phase 3 implementation is complete for the original coarse gate; rendered
-  executor-readable action flow needs follow-up.
-- Phase 4 implementation is complete for the original coarse gate; claim labels
-  need executor-readable evidence before using the refined Stage 1 label.
+- Phase 1 M1 output now emits executor-readable diagram steps under the refined
+  contract.
+- Phase 2 M2 output now emits per-case executor-readable diagram sequences and
+  claim status.
+- Phase 3 M3 demo now renders the selected executor profile and action flow.
+- Phase 4 M4 claim labels now require executor-readable evidence before using
+  the refined Stage 1 label.
 
 Next action:
-- Implement the Phase 5 executor-readable contract upgrade.
+- No repo-local Stage 1 implementation action remains unless launch copy needs
+  final physical-executor evidence.
 - Keep final embodiment validation optional until a launch claim requires
   physical-executor evidence.
 

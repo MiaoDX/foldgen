@@ -23,13 +23,21 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.match(script, /fetchCaseArtifacts/);
     assert.match(script, /formatClaimStatus/);
     assert.match(script, /claim_status/);
+    assert.match(script, /executor_profile/);
+    assert.match(script, /renderActionFlow/);
 
     const summary = await fetchJson(`${baseUrl}/out/m2-pipeline/summary.json`);
     assert.equal(summary.ok, true);
     assert.equal(summary.case_count, 5);
-    assert.equal(summary.claim_status.claim_label, "simulator-valid / embodiment-untested");
+    assert.equal(summary.claim_status.claim_label, "simulator-valid / executor-readable / embodiment-untested");
+    assert.equal(summary.claim_status.executor_readable, true);
 
     const firstCase = summary.cases[0];
+    assert.equal(firstCase.executor_readable, true);
+    const sequence = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.diagram_sequence}`);
+    assert.equal(sequence.steps[0].executor_profile, "human-hand");
+    assert.ok(sequence.steps[0].actions.some((action) => action.phase === "align"));
+
     const preview = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.preview}`);
     assert.equal(preview.type, "foldgen.preview.v1");
 

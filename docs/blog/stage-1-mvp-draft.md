@@ -8,10 +8,10 @@ foldgen now has a repo-local Stage 1 path: public fixtures, deterministic
 `fold-core`, a five-target pipeline, local demo rendering, and claim-label
 validation.
 
-Current demo cases are `simulator-valid / embodiment-untested` under the coarse
-technical gate. The refined Stage 1 target is
-`simulator-valid / executor-readable / embodiment-untested`, which requires
-structured executor actions before this draft can become public copy.
+Current demo cases are
+`simulator-valid / executor-readable / embodiment-untested` under the repo-local
+technical gate. The label means the artifacts contain structured executor
+actions; it does not mean a physical executor attempt has passed.
 
 ## Evidence To Cite Before Publishing
 

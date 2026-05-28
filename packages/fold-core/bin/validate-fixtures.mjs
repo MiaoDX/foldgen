@@ -17,7 +17,7 @@ for (const file of foldFiles) {
     errors.push(`${file}: missing metadata`);
     continue;
   }
-  requireMetadataFields(meta, `${file} metadata`, ["name", "source", "usage", "license"], errors);
+  requireMetadataFields(meta, `${file} metadata`, ["name", "source", "usage", "license", "executor_readability_notes"], errors);
   if (String(meta.source ?? "").includes("MiaoDX/microsites")) {
     errors.push(`${file}: metadata source points at private MiaoDX/microsites`);
   }
@@ -43,7 +43,7 @@ if (targetMetadata.targets.length < 3) {
   errors.push("benchmarks/targets/metadata.json must define at least three targets");
 }
 for (const target of targetMetadata.targets) {
-  requireMetadataFields(target, `${target.file} metadata`, ["name", "source", "usage", "license"], errors);
+  requireMetadataFields(target, `${target.file} metadata`, ["name", "source", "usage", "license", "executor_readability_notes"], errors);
   if (String(target.source ?? "").includes("MiaoDX/microsites")) {
     errors.push(`${target.file}: metadata source points at private MiaoDX/microsites`);
   }

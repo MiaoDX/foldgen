@@ -1,18 +1,19 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, unlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { createDiagramSequence, createDiagramStep, deterministicDemoOperation } from "../../fold-core/src/index.mjs";
 import { validateStage1ClaimLabels } from "../src/index.mjs";
 
-test("claim label validator accepts Stage 1 untested labels", async () => {
+test("claim label validator accepts Stage 1 executor-readable labels", async () => {
   const rootDir = await mkdtemp(join(tmpdir(), "foldgen-claim-labels-ok-"));
   try {
     await writeFixtureTree(rootDir, validSummary());
     const result = await validateStage1ClaimLabels({ rootDir });
     assert.equal(result.ok, true, result.errors.join("\n"));
-    assert.equal(result.expected_case_label, "simulator-valid / embodiment-untested");
+    assert.equal(result.expected_case_label, "simulator-valid / executor-readable / embodiment-untested");
   } finally {
     await rm(rootDir, { recursive: true, force: true });
   }
@@ -27,6 +28,21 @@ test("claim label validator rejects missing pipeline claim labels", async () => 
     const result = await validateStage1ClaimLabels({ rootDir });
     assert.equal(result.ok, false);
     assert.match(result.errors.join("\n"), /missing claim_status/);
+  } finally {
+    await rm(rootDir, { recursive: true, force: true });
+  }
+});
+
+test("claim label validator rejects missing executor-readable evidence", async () => {
+  const rootDir = await mkdtemp(join(tmpdir(), "foldgen-claim-labels-executor-missing-"));
+  try {
+    const summary = validSummary();
+    summary.cases[0].artifact_paths.diagram_sequence = "out/m2-pipeline/simple-bird/missing.json";
+    await writeFixtureTree(rootDir, summary);
+    await unlink(join(rootDir, summary.cases[0].artifact_paths.diagram_sequence));
+    const result = await validateStage1ClaimLabels({ rootDir });
+    assert.equal(result.ok, false);
+    assert.match(result.errors.join("\n"), /missing or invalid diagram sequence/);
   } finally {
     await rm(rootDir, { recursive: true, force: true });
   }
@@ -53,33 +69,42 @@ async function writeFixtureTree(rootDir, summary, options = {}) {
   await mkdir(join(rootDir, "out/m2-pipeline"), { recursive: true });
 
   await writeFile(join(rootDir, "README.md"), [
-    "simulator-valid / embodiment-untested",
+    "simulator-valid / executor-readable / embodiment-untested",
     "npm run validate:stage1",
     "npm run validate:embodiment",
     options.readmeExtra ?? ""
   ].join("\n"), "utf8");
   await writeFile(join(rootDir, "demo/README.md"), [
-    "simulator-valid / embodiment-untested",
+    "simulator-valid / executor-readable / embodiment-untested",
     "does not call live model providers"
   ].join("\n"), "utf8");
   await writeFile(join(rootDir, "demo/app.js"), [
     "const claim_status = {};",
     "function formatClaimStatus(claimStatus) {",
     "  return claimStatus.claim_label;",
-    "}"
+    "}",
+    "function renderActionFlow(actions) { return actions.map((action) => action.text).join(); }",
+    "function renderStep(step) { return step.executor_profile + renderActionFlow(step.actions); }"
   ].join("\n"), "utf8");
   await writeFile(join(rootDir, "docs/launch/stage-1-launch-checklist.md"), [
     "Draft-only",
     "npm run validate:stage1",
     "npm run validate:embodiment",
-    "simulator-valid / embodiment-untested"
+    "simulator-valid / executor-readable / embodiment-untested"
   ].join("\n"), "utf8");
   await writeFile(join(rootDir, "docs/blog/stage-1-mvp-draft.md"), [
     "Draft-only",
     "Related-work status",
-    "simulator-valid / embodiment-untested"
+    "simulator-valid / executor-readable / embodiment-untested"
   ].join("\n"), "utf8");
   await writeFile(join(rootDir, "out/m2-pipeline/summary.json"), `${JSON.stringify(summary, null, 2)}\n`, "utf8");
+
+  const sequence = createDiagramSequence([createDiagramStep(deterministicDemoOperation, 1)]);
+  for (const pipelineCase of summary.cases) {
+    const path = pipelineCase.artifact_paths.diagram_sequence;
+    await mkdir(dirname(join(rootDir, path)), { recursive: true });
+    await writeFile(join(rootDir, path), `${JSON.stringify(sequence, null, 2)}\n`, "utf8");
+  }
 }
 
 function validSummary() {
@@ -87,6 +112,12 @@ function validSummary() {
     case_id: caseId,
     status: "valid",
     validation_status: true,
+    executor_readable: true,
+    executor_profile: "human-hand",
+    executor_profiles: ["human-hand"],
+    artifact_paths: {
+      diagram_sequence: `out/m2-pipeline/${caseId}/diagram-sequence.json`
+    },
     claim_status: validClaimStatus()
   }));
   return {
@@ -99,8 +130,9 @@ function validSummary() {
 
 function validClaimStatus() {
   return {
-    claim_label: "simulator-valid / embodiment-untested",
+    claim_label: "simulator-valid / executor-readable / embodiment-untested",
     simulator_valid: true,
+    executor_readable: true,
     embodiment_validated: false,
     embodiment_status: "untested",
     final_record_path: null
