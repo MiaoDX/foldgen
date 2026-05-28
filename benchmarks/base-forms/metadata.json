@@ -1,0 +1,52 @@
+{
+  "fixtures": [
+    {
+      "name": "bird base",
+      "file": "bird-base.fold",
+      "expected_valid": true,
+      "source": "hand-authored public-domain structural fixture",
+      "usage": "M0 valid base-form fixture",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "frog base",
+      "file": "frog-base.fold",
+      "expected_valid": true,
+      "source": "hand-authored public-domain structural fixture",
+      "usage": "M0 valid base-form fixture",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "waterbomb base",
+      "file": "waterbomb-base.fold",
+      "expected_valid": true,
+      "source": "hand-authored public-domain structural fixture",
+      "usage": "M0 valid base-form fixture",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "kite base",
+      "file": "kite-base.fold",
+      "expected_valid": true,
+      "source": "hand-authored public-domain structural fixture",
+      "usage": "M1 deterministic demo input",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "fish base",
+      "file": "fish-base.fold",
+      "expected_valid": true,
+      "source": "hand-authored public-domain structural fixture",
+      "usage": "M0 valid base-form fixture",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "malformed negative fixture",
+      "file": "malformed.fold",
+      "expected_valid": false,
+      "source": "hand-authored invalid FOLD fixture",
+      "usage": "negative validation test",
+      "license": "CC0-1.0"
+    }
+  ]
+}

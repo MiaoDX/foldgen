@@ -1,0 +1,15 @@
+{
+  "source_path": "docs/plans/stage-1-mvp.md",
+  "type": "PRD",
+  "confidence": "high",
+  "locked": false,
+  "precedence": null,
+  "summary": "Stage 1 MVP execution plan with accepted review decisions, milestone gates, and GSD handoff constraints.",
+  "cross_refs": [
+    "docs/PLAN.md",
+    "docs/CONTEXT.md",
+    "docs/AGENTS.md",
+    "README.md",
+    "packages/fold-core/README.md"
+  ]
+}

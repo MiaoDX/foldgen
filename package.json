@@ -1,0 +1,17 @@
+{
+  "name": "foldgen",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test packages/fold-core/test/*.test.mjs",
+    "validate:fixtures": "node packages/fold-core/bin/validate-fixtures.mjs",
+    "m1:deterministic": "node packages/fold-core/bin/run-deterministic-case.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

@@ -16,17 +16,30 @@ fold-core is **not** a new origami simulator. It is a thin layer over existing, 
 - **Origami Simulator** (Ghassaei/Demaine/Gershenfeld, MIT) and/or **Rabbit Ear** (Robby Kraft) — folding simulation
 - **puppeteer + three.js** — headless rendering to multi-angle PNG / depth / canny
 
-## Intended API
+## Implemented M0/M1 API
 
-```typescript
+```javascript
 // FOLD I/O
 parseFold(content: string): FoldFile
 serializeFold(fold: FoldFile): string
 validateFold(fold: FoldFile): ValidationResult
 
+// M1 deterministic output
+createCreasePatternSvg(fold: FoldFile): string
+applyLocalFoldOperation(fold: FoldFile, op?: LocalFoldOperation): FoldFile
+createDiagramStep(op: LocalFoldOperation, index?: number): DiagramStep
+```
+
+The current validation is structural: JSON parseability, vertex/edge/face shape,
+index bounds, and assignment checks. It does not claim full physical
+flat-foldability.
+
+## Intended Later API
+
+```typescript
 // Folding simulation (delegates to Origami Simulator or Rabbit Ear)
-foldToState(fold: FoldFile, ratio: number): FoldedState   // ratio 0..1
-sampleSteps(fold: FoldFile, steps: number): FoldedState[] // keyframes for step images
+foldToState(fold: FoldFile, ratio: number): FoldedState
+sampleSteps(fold: FoldFile, steps: number): FoldedState[]
 
 // Rendering (puppeteer + three.js headless)
 renderViews(state: FoldedState, opts: RenderOpts): {
@@ -44,4 +57,10 @@ renderViews(state: FoldedState, opts: RenderOpts): {
 
 ## Status
 
-**Skeleton only.** API above is the target. First real implementation is driven by the foldgen agent loop and the origami site's render pipeline (see each repo's `docs/PLAN.md`).
+M0/M1 deterministic spine exists. Run from the repo root:
+
+```bash
+npm test
+npm run validate:fixtures
+npm run m1:deterministic
+```

@@ -1,0 +1,25 @@
+{
+  "targets": [
+    {
+      "name": "simple bird",
+      "file": "simple-bird.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M0 public target fixture",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "simple fish",
+      "file": "simple-fish.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M0 public target fixture",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "simple flower",
+      "file": "simple-flower.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M0 public target fixture",
+      "license": "CC0-1.0"
+    }
+  ]
+}

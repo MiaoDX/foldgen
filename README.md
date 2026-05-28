@@ -7,7 +7,23 @@ AI origami design as the **second case study of the roboharness paradigm** — g
 
 ## Status
 
-**v0 bootstrap** — planning docs + skeleton only. No agent loop implemented yet.
+**Stage 1 / Phase 1 verified** — public testbed fixtures and a deterministic
+`fold-core` spine are implemented for M0/M1. No agent loop or web demo yet.
+
+## Local M0/M1 workflow
+
+```bash
+npm test
+npm run validate:fixtures
+npm run m1:deterministic
+```
+
+`npm run m1:deterministic` writes local artifacts to `out/m1-deterministic/`:
+
+- `derived.fold`
+- `crease.svg`
+- `validation.json`
+- `diagram-step.json`
 
 ## Why this exists (and why it's repositioned)
 
@@ -21,6 +37,7 @@ See `docs/WHY.md` for the full positioning and `docs/PLAN.md` for the build plan
 |---|---|
 | `docs/WHY.md` | Positioning, repositioning rationale, relation to roboharness, audience. |
 | `docs/PLAN.md` | v1 scope, research questions, tech stack, milestones, success criteria, cost. |
+| `docs/plans/stage-1-mvp.md` | Canonical Stage 1 execution plan and reviewed implementation gates. |
 | `docs/AGENTS.md` | Operating rules: what foldgen is NOT, the differentiator to protect, fold-core boundary. |
 
 ## Relation to other projects

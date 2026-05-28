@@ -1,0 +1,8 @@
+{
+  "file_spec": 1.2,
+  "file_creator": "foldgen",
+  "file_title": "malformed negative fixture",
+  "vertices_coords": [[0, 0], [1, 0], [1, 1]],
+  "edges_vertices": [[0, 99]],
+  "edges_assignment": ["V"]
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="simple flower target">
+  <circle cx="64" cy="64" r="12" fill="#fef3c7" stroke="#111827" stroke-width="4"/>
+  <path d="M64 18 C76 34 76 46 64 54 C52 46 52 34 64 18Z" fill="#fecdd3" stroke="#111827" stroke-width="4"/>
+  <path d="M64 110 C52 94 52 82 64 74 C76 82 76 94 64 110Z" fill="#fecdd3" stroke="#111827" stroke-width="4"/>
+  <path d="M18 64 C34 52 46 52 54 64 C46 76 34 76 18 64Z" fill="#fecdd3" stroke="#111827" stroke-width="4"/>
+  <path d="M110 64 C94 76 82 76 74 64 C82 52 94 52 110 64Z" fill="#fecdd3" stroke="#111827" stroke-width="4"/>
+</svg>

@@ -1,0 +1,3 @@
+docs:
+  - path: docs/plans/stage-1-mvp.md
+    type: PRD
