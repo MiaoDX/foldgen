@@ -103,9 +103,11 @@ export function selectProfileForImage(analysis, targets) {
     const matches = unique(analysis.feature_tokens.filter((token) => targetWords.some((word) => word.includes(token) || token.includes(word))));
     const targetStem = target.file.replace(/\.svg$/i, "");
     const profileStem = profile.caseId.replace("simple-", "");
-    const filenameMatch = analysis.tokens.some((token) => token.includes(targetStem) || token.includes(profileStem));
-    const hintMatch = target.profile_hint === profile.caseId ? 0.5 : 0;
-    const score = round(matches.length + hintMatch + (filenameMatch ? 2 : 0));
+    const exactFileMatch = analysis.file.endsWith(target.file);
+    const targetNameMatch = analysis.tokens.some((token) => token.includes(targetStem));
+    const profileNameMatch = analysis.tokens.some((token) => token.includes(profileStem));
+    const hintMatch = target.profile_hint === profile.caseId ? 0.25 : 0;
+    const score = round(matches.length + hintMatch + (exactFileMatch ? 4 : 0) + (targetNameMatch ? 2 : 0) + (profileNameMatch ? 1 : 0));
     return {
       case_id: profile.caseId,
       target_file: target.file,
@@ -114,7 +116,8 @@ export function selectProfileForImage(analysis, targets) {
       matches,
       reasons: [
         target.profile_hint ? `metadata profile_hint maps to ${target.profile_hint}` : null,
-        filenameMatch ? `reference filename/text includes ${targetStem} or ${profileStem}` : null,
+        exactFileMatch ? `reference path matches ${target.file}` : null,
+        targetNameMatch || profileNameMatch ? `reference filename/text includes ${targetStem} or ${profileStem}` : null,
         matches.length > 0 ? `matched feature tokens: ${matches.join(", ")}` : null
       ].filter(Boolean)
     };

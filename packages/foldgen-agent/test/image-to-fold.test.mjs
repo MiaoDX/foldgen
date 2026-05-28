@@ -92,6 +92,7 @@ test("image-to-fold CLI routes a reference image", async () => {
     assert.equal(summary.ok, true);
     assert.equal(summary.selected_case_id, "simple-bird");
     assert.equal(summary.selected_base_form, "bird-base.fold");
+    assert.equal(summary.selected_target_file, "simple-bird.svg");
     assert.equal(summary.search_status, "complete");
     assert.equal(summary.selected_operation_count, 2);
     assert.equal(summary.executor_readable, true);
