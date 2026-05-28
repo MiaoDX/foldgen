@@ -26,13 +26,15 @@ validateFold(fold: FoldFile): ValidationResult
 
 // M1 deterministic output
 createCreasePatternSvg(fold: FoldFile): string
+createPreviewModel(fold: FoldFile): PreviewModel
 applyLocalFoldOperation(fold: FoldFile, op?: LocalFoldOperation): FoldFile
 createDiagramStep(op: LocalFoldOperation, index?: number): DiagramStep
 ```
 
 The current validation is structural: JSON parseability, vertex/edge/face shape,
 index bounds, and assignment checks. It does not claim full physical
-flat-foldability.
+flat-foldability. The preview model is deterministic inspection data for the
+local demo, not a simulator proof.
 
 ## Intended Later API
 

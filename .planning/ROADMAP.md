@@ -62,7 +62,15 @@ Success criteria:
 - Empty, loading, invalid, partial, success, preview, and download states are
   covered.
 
-Status: Pending
+Status: Completed
+
+Proof:
+- `npm test`
+- `npm run validate:fixtures`
+- `npm run m1:deterministic`
+- `npm run m2:pipeline`
+- `npm run demo`
+- Headless Chrome screenshot smoke test for `/demo/?case=simple-bird`
 
 Depends on: Phase 2
 

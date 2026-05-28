@@ -20,7 +20,7 @@ target. Each case records:
 - validation status
 - proposal history
 - critic history
-- derived FOLD, crease SVG, validation JSON, and diagram-step JSON
+- derived FOLD, crease SVG, preview JSON, validation JSON, and diagram-step JSON
 
 The deterministic critic scores are inspection metadata only. They are not human
 reproducibility evidence.

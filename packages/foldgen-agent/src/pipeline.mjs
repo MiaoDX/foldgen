@@ -4,6 +4,7 @@ import {
   applyLocalFoldOperation,
   createCreasePatternSvg,
   createDiagramStep,
+  createPreviewModel,
   loadFoldFile,
   serializeFold,
   stableStringify,
@@ -115,11 +116,13 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     artifactPaths.crease_svg = artifactPath(join(caseDir, "crease.svg"));
     artifactPaths.validation = artifactPath(join(caseDir, "validation.json"));
     artifactPaths.diagram_step = artifactPath(join(caseDir, "diagram-step.json"));
+    artifactPaths.preview = artifactPath(join(caseDir, "preview.json"));
 
     await writeFile(join(caseDir, "derived.fold"), serializeFold(selected.derived), "utf8");
     await writeFile(join(caseDir, "crease.svg"), createCreasePatternSvg(selected.derived), "utf8");
     await writeJson(join(caseDir, "validation.json"), selected.validation);
     await writeJson(join(caseDir, "diagram-step.json"), createDiagramStep(selected.operation, 1));
+    await writeJson(join(caseDir, "preview.json"), createPreviewModel(selected.derived));
   }
 
   const caseSummary = {

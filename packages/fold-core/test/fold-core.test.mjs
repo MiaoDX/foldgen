@@ -10,6 +10,7 @@ import {
   applyLocalFoldOperation,
   createCreasePatternSvg,
   createDiagramStep,
+  createPreviewModel,
   deterministicDemoOperation,
   loadFoldFile,
   parseFold,
@@ -72,6 +73,16 @@ test("crease SVG output is deterministic", async () => {
   assert.equal(svg, createCreasePatternSvg(derived, { size: 128, padding: 8 }));
   assert.match(svg, /class="valley"/);
   assert.match(svg, /width="128"/);
+});
+
+test("preview model output is deterministic inspection data", async () => {
+  const fold = await loadFoldFile("benchmarks/base-forms/kite-base.fold");
+  const derived = applyLocalFoldOperation(fold, deterministicDemoOperation);
+  const preview = createPreviewModel(derived);
+  assert.deepEqual(preview, createPreviewModel(derived));
+  assert.equal(preview.type, "foldgen.preview.v1");
+  assert.equal(preview.vertices.length, derived.vertices_coords.length);
+  assert.equal(preview.edges.length, derived.edges_vertices.length);
 });
 
 test("deterministic case writes valid FOLD, SVG, validation, and diagram step", async () => {

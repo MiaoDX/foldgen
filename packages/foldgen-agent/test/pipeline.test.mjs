@@ -24,6 +24,7 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       assert.ok(pipelineCase.selected_base_form.endsWith("-base.fold"));
       assert.ok(pipelineCase.artifact_paths.derived_fold);
       assert.ok(pipelineCase.artifact_paths.crease_svg);
+      assert.ok(pipelineCase.artifact_paths.preview);
       assert.ok(pipelineCase.artifact_paths.proposal_history);
       assert.ok(pipelineCase.artifact_paths.critic_history);
       assert.ok(pipelineCase.rejected_candidate_count > 0);
@@ -39,6 +40,10 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
 
       const criticHistory = JSON.parse(await readFile(join(caseDir, "critic-history.json"), "utf8"));
       assert.ok(criticHistory.entries.some((entry) => entry.verdict === "rejected-invalid"));
+
+      const preview = JSON.parse(await readFile(join(caseDir, "preview.json"), "utf8"));
+      assert.equal(preview.type, "foldgen.preview.v1");
+      assert.ok(preview.vertices.length > 0);
 
       const caseSummary = JSON.parse(await readFile(join(caseDir, "summary.json"), "utf8"));
       assert.equal(caseSummary.selected_candidate_id, pipelineCase.selected_candidate_id);
