@@ -1,12 +1,14 @@
 # State
 
-Current focus: Phase 7 - Local Search Loop.
+Current focus: Phase 8 - Critic v0.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
 - Roadmap: `.planning/ROADMAP.md`
 - Active contract: `docs/contracts/stage-1-output-contract.md`
-- Completed phase plan: `.planning/phases/06-multistep-fold-operation-foundation/PLAN.md`
+- Completed phase plans:
+  - `.planning/phases/06-multistep-fold-operation-foundation/PLAN.md`
+  - `.planning/phases/07-local-search-loop/PLAN.md`
 
 Status:
 - Stage 1 technical gate is complete through Phase 5.
@@ -14,12 +16,12 @@ Status:
   Phase 7 local search, Phase 8 critic v0, Phase 9 image-to-fold, Phase 10
   expanded testbed, and Phase 11 preview/animation.
 - Phase 6 multi-step operation foundation is implemented and verified.
-- Phase 7 local search loop is the next implementation slice.
+- Phase 7 local search loop is implemented and verified.
+- Phase 8 critic v0 is the next implementation slice.
 
 Next action:
-- Create the Phase 7 plan, then implement a deterministic local
-  propose-render-validate-score-pick loop that builds multi-step sequences while
-  preserving human hand, robot gripper, cat paw, and dog paw diagram outputs.
+- Create the Phase 8 plan, then split deterministic scoring into an explicit
+  critic v0 module with reasoned score output.
 
 Current Stage 1 gate:
 - `npm run validate:stage1`
@@ -31,6 +33,10 @@ Current Phase 6 gate:
 
 Current Phase 7 gate:
 - `npm run m7:search`
+- `npm test`
+
+Current Phase 8 gate:
+- `npm run m8:critic`
 - `npm test`
 
 Phase 1 verification:

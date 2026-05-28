@@ -244,11 +244,19 @@ Success criteria:
 - Search runs locally without paid APIs or private assets.
 - Search preserves all four executor profiles in emitted diagram sequences.
 
-Status: Planned
+Status: Completed
 
 Gate:
 - `npm run m7:search`
 - `npm test`
+
+Proof:
+- `npm run m7:search`
+- `npm test`
+- `npm run validate:stage1`
+- `out/m7-search/summary.json` records five complete search cases with two
+  iterations each and executor-readable multi-step sequences for all four
+  executor profiles.
 
 Depends on: Phase 6
 

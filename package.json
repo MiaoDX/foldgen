@@ -12,6 +12,7 @@
     "m1:deterministic": "node packages/fold-core/bin/run-deterministic-case.mjs",
     "m6:multistep": "node packages/fold-core/bin/run-multistep-case.mjs",
     "m2:pipeline": "node packages/foldgen-agent/bin/run-pipeline.mjs",
+    "m7:search": "node packages/foldgen-agent/bin/run-search.mjs",
     "demo": "node demo/server.mjs"
   },
   "engines": {
