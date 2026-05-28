@@ -19,7 +19,7 @@ foldgen's edge over Learn2Fold/OrigamiBench is **human-teachable output**: a nor
 
 ## fold-core boundary
 
-`packages/fold-core` is **owned by the origami site** (MiaoDX/microsites). Here it is a consumed dependency (git submodule / workspace link). **Do not modify fold-core from this repo.** If foldgen needs a new fold-core capability, open an issue/PR against microsites, don't fork.
+`packages/fold-core` is **owned by this repo** (foldgen, public). The origami site (MiaoDX/microsites, private) consumes it. fold-core lives here on purpose: it's open infrastructure, and a public consumer can't depend on something hidden inside a private repo. Keep it minimal and deterministic (no AI calls) — agent-specific logic stays in `packages/foldgen-agent`, not in fold-core.
 
 ## Cost discipline
 

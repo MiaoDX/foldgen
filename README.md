@@ -26,4 +26,4 @@ See `docs/WHY.md` for the full positioning and `docs/PLAN.md` for the build plan
 ## Relation to other projects
 
 - **roboharness** — sibling. Same paradigm ("give the AI eyes to verify itself in a physical domain"), different physical domain (robotics vs origami).
-- **MiaoDX/microsites → sites/origami** — the stylized origami tutorial site. Shares `packages/fold-core` (owned there). origami's 20 traditional FOLD files are foldgen's natural testbed; foldgen's valid new designs can flow back as an "AI-designed" category on the site.
+- **MiaoDX/microsites → sites/origami** — the stylized origami tutorial site. Consumes `packages/fold-core` (owned **here** — it's public infra; a private repo shouldn't own a public project's dependency). origami's 20 traditional FOLD files are foldgen's natural testbed; foldgen's valid new designs can flow back as an "AI-designed" category on the site.
