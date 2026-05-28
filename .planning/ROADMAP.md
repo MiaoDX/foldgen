@@ -297,11 +297,19 @@ Success criteria:
 - The selected base form runs through local search and writes fold, preview,
   diagram, and claim artifacts.
 
-Status: Planned
+Status: Completed
 
 Gate:
 - `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
 - `npm test`
+
+Proof:
+- `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
+- `npm test`
+- `npm run validate:stage1`
+- `out/m9-image-to-fold/summary.json` records reference SVG analysis, profile
+  selection, base-form selection, local search output, and executor-readable
+  diagram artifacts.
 
 Depends on: Phase 8
 

@@ -1,6 +1,6 @@
 # State
 
-Current focus: Phase 9 - Image-to-fold Path.
+Current focus: Phase 10 - Expanded Public Testbed.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
@@ -10,6 +10,7 @@ Source of truth:
   - `.planning/phases/06-multistep-fold-operation-foundation/PLAN.md`
   - `.planning/phases/07-local-search-loop/PLAN.md`
   - `.planning/phases/08-critic-v0/PLAN.md`
+  - `.planning/phases/09-image-to-fold-path/PLAN.md`
 
 Status:
 - Stage 1 technical gate is complete through Phase 5.
@@ -19,12 +20,13 @@ Status:
 - Phase 6 multi-step operation foundation is implemented and verified.
 - Phase 7 local search loop is implemented and verified.
 - Phase 8 critic v0 is implemented and verified.
-- Phase 9 image-to-fold path is the next implementation slice.
+- Phase 9 image-to-fold path is implemented and verified.
+- Phase 10 expanded public testbed is the next implementation slice.
 
 Next action:
-- Create the Phase 9 plan, then route a local reference image/SVG through
-  feature analysis, base-form selection, local search, critic records, and
-  executor-readable diagram output.
+- Create the Phase 10 plan, then expand public target fixtures and metadata,
+  and add a local testbed command that exercises the image-to-fold path across
+  the expanded set.
 
 Current Stage 1 gate:
 - `npm run validate:stage1`
@@ -44,6 +46,11 @@ Current Phase 8 gate:
 
 Current Phase 9 gate:
 - `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
+- `npm test`
+
+Current Phase 10 gate:
+- `npm run m10:testbed`
+- `npm run validate:fixtures`
 - `npm test`
 
 Phase 1 verification:

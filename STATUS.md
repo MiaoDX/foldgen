@@ -1,7 +1,7 @@
 # STATUS
 
 Current focus: post-Stage-1 continuation via `intuitive-flow`, moving from
-completed Phase 8 critic v0 into Phase 9 image-to-fold.
+completed Phase 9 image-to-fold into Phase 10 expanded public testbed.
 
 Active source of truth: `docs/plans/stage-1-mvp.md`, derived from
 `docs/PLAN.md`.
@@ -27,6 +27,11 @@ Phase 8 status: implemented and verified. `npm run m8:critic` writes ranked
 critic histories with verdicts, score components, feature matches, invalid
 candidate rejections, and explanation reasons.
 
+Phase 9 status: implemented and verified. `npm run m9:image-to-fold --
+benchmarks/targets/simple-bird.svg` analyzes a local SVG reference, selects a
+profile/base form with reasons, runs local search, and writes fold/preview/
+diagram artifacts for all four executor profiles.
+
 Continuation order:
 1. Multi-step fold operation foundation.
 2. Local search loop.
@@ -39,6 +44,7 @@ Latest verification:
 - `npm run m6:multistep`
 - `npm run m7:search`
 - `npm run m8:critic`
+- `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
 - `npm test`
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
@@ -56,8 +62,11 @@ Current stop gate:
   `npm run validate:stage1`
 - Phase 8 gate passed: `npm run m8:critic`, `npm test`, and
   `npm run validate:stage1`
-- Active Phase 9 gate: `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
-  and `npm test`
+- Phase 9 gate passed:
+  `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`,
+  `npm test`, and `npm run validate:stage1`
+- Active Phase 10 gate: `npm run m10:testbed`,
+  `npm run validate:fixtures`, and `npm test`
 - Refined contract source: `docs/contracts/stage-1-output-contract.md`
 
 Final-stage claim gate:
@@ -66,5 +75,5 @@ Final-stage claim gate:
 - Do not claim a case is embodiment-validated until a final record exists under
   `docs/embodiment-validation/attempts/`.
 
-Next action: implement Phase 9 image-to-fold path. No external participation is
-required for the repo-local continuation gates.
+Next action: implement Phase 10 expanded public testbed. No external
+participation is required for the repo-local continuation gates.
