@@ -353,11 +353,19 @@ Success criteria:
   preview fallback.
 - Tests cover animation frame shape and demo artifact serving.
 
-Status: Planned
+Status: Completed
 
 Gate:
 - `npm run m11:preview`
 - `npm test`
 - `npm run validate:stage1`
+
+Proof:
+- `npm run m11:preview`
+- `npm test`
+- `npm run validate:stage1`
+- Pipeline/search/image-to-fold artifacts expose `preview_animation` paths and
+  `preview-animation.json` contains multi-frame operation-history animation
+  data.
 
 Depends on: Phase 10

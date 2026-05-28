@@ -36,6 +36,7 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       assert.ok(pipelineCase.artifact_paths.derived_fold);
       assert.ok(pipelineCase.artifact_paths.crease_svg);
       assert.ok(pipelineCase.artifact_paths.preview);
+      assert.ok(pipelineCase.artifact_paths.preview_animation);
       assert.ok(pipelineCase.artifact_paths.diagram_sequence);
       assert.ok(pipelineCase.artifact_paths.proposal_history);
       assert.ok(pipelineCase.artifact_paths.critic_history);
@@ -59,6 +60,10 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       const preview = JSON.parse(await readFile(join(caseDir, "preview.json"), "utf8"));
       assert.equal(preview.type, "foldgen.preview.v1");
       assert.ok(preview.vertices.length > 0);
+      const animation = JSON.parse(await readFile(join(caseDir, "preview-animation.json"), "utf8"));
+      assert.equal(animation.type, "foldgen.preview_animation.v1");
+      assert.equal(animation.operation_count, pipelineCase.selected_operation_count);
+      assert.equal(animation.frame_count, pipelineCase.selected_operation_count + 1);
 
       const sequence = JSON.parse(await readFile(join(caseDir, "diagram-sequence.json"), "utf8"));
       assert.equal(sequence.type, "foldgen.diagram_sequence.v1");

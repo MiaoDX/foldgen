@@ -12,6 +12,7 @@ import {
   createCreasePatternSvg,
   createDiagramSequence,
   createDiagramStep,
+  createPreviewAnimation,
   createPreviewModel,
   deterministicDemoOperation,
   deterministicDemoOperations,
@@ -106,6 +107,19 @@ test("preview model output is deterministic inspection data", async () => {
   assert.equal(preview.edges.length, derived.edges_vertices.length);
 });
 
+test("preview animation output follows operation history", async () => {
+  const fold = await loadFoldFile("benchmarks/base-forms/kite-base.fold");
+  const derived = applyLocalFoldOperations(fold, deterministicDemoOperations);
+  const animation = createPreviewAnimation(derived);
+
+  assert.equal(animation.type, "foldgen.preview_animation.v1");
+  assert.equal(animation.operation_count, 2);
+  assert.equal(animation.frame_count, 3);
+  assert.deepEqual(animation.frames.map((frame) => frame.active_operation_id), [null, "m1-add-centerline-valley", "m6-reinforce-main-diagonal"]);
+  assert.equal(animation.frames[0].preview.edges.some((edge) => edge.assignment === "U"), true);
+  assert.equal(animation.frames.at(-1).preview.edges.some((edge) => edge.assignment === "M"), true);
+});
+
 test("diagram step contains executor-readable action structure", () => {
   const step = createDiagramStep(deterministicDemoOperation, 1);
   const result = validateExecutorReadableStep(step);
@@ -183,6 +197,7 @@ test("multi-step case writes valid FOLD, preview, and profile sequences", async 
     assert.equal(summary.operation_count, 2);
     assert.equal(summary.history_count, 2);
     assert.equal(summary.step_count, 2);
+    assert.equal(summary.files.includes("preview-animation.json"), true);
 
     const derived = parseFold(await readFile(join(outDir, "derived.fold"), "utf8"));
     assert.equal(validateFold(derived).ok, true);
@@ -203,6 +218,26 @@ test("multi-step case writes valid FOLD, preview, and profile sequences", async 
 
     const preview = JSON.parse(await readFile(join(outDir, "preview.json"), "utf8"));
     assert.deepEqual(preview, createPreviewModel(derived));
+    const animation = JSON.parse(await readFile(join(outDir, "preview-animation.json"), "utf8"));
+    assert.deepEqual(animation, createPreviewAnimation(derived));
+  } finally {
+    await rm(outDir, { recursive: true, force: true });
+  }
+});
+
+test("preview animation command writes multi-frame artifact", async () => {
+  const outDir = await mkdtemp(join(tmpdir(), "foldgen-m11-"));
+  try {
+    const { stdout } = await execFileAsync("node", ["packages/fold-core/bin/run-preview-animation.mjs", outDir]);
+    const summary = JSON.parse(stdout);
+    assert.equal(summary.ok, true);
+    assert.equal(summary.frame_count, 3);
+    assert.equal(summary.operation_count, 2);
+
+    const animation = JSON.parse(await readFile(join(outDir, "preview-animation.json"), "utf8"));
+    assert.equal(animation.type, "foldgen.preview_animation.v1");
+    assert.equal(animation.frame_count, 3);
+    assert.equal(animation.frames.length, 3);
   } finally {
     await rm(outDir, { recursive: true, force: true });
   }

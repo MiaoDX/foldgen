@@ -5,6 +5,7 @@ import {
   createCreasePatternSvg,
   createDiagramSequence,
   createDiagramStep,
+  createPreviewAnimation,
   createPreviewModel,
   loadFoldFile,
   serializeFold,
@@ -77,6 +78,7 @@ export async function runLocalSearchCase(options = {}) {
     preview: artifactPath(join(caseDir, "preview.json")),
     validation: artifactPath(join(caseDir, "validation.json")),
     search_history: artifactPath(join(caseDir, "search-history.json")),
+    preview_animation: artifactPath(join(caseDir, "preview-animation.json")),
     diagram_sequence: artifactPath(join(caseDir, "diagram-sequence.json")),
     diagram_sequences: {},
     case_summary: artifactPath(join(caseDir, "summary.json"))
@@ -85,6 +87,7 @@ export async function runLocalSearchCase(options = {}) {
   await writeFile(join(caseDir, "derived.fold"), serializeFold(searchResult.derived), "utf8");
   await writeFile(join(caseDir, "crease.svg"), createCreasePatternSvg(searchResult.derived), "utf8");
   await writeJson(join(caseDir, "preview.json"), createPreviewModel(searchResult.derived));
+  await writeJson(join(caseDir, "preview-animation.json"), createPreviewAnimation(searchResult.derived));
   await writeJson(join(caseDir, "validation.json"), finalValidation);
   await writeJson(join(caseDir, "search-history.json"), searchResult.history);
   await writeJson(join(caseDir, "diagram-sequence.json"), profileSequences["human-hand"].sequence);

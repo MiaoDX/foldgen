@@ -1,6 +1,6 @@
 # State
 
-Current focus: Phase 11 - Preview And Animation Improvement.
+Current focus: Continuation roadmap complete through Phase 11.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
@@ -12,6 +12,7 @@ Source of truth:
   - `.planning/phases/08-critic-v0/PLAN.md`
   - `.planning/phases/09-image-to-fold-path/PLAN.md`
   - `.planning/phases/10-expanded-public-testbed/PLAN.md`
+  - `.planning/phases/11-preview-animation-improvement/PLAN.md`
 
 Status:
 - Stage 1 technical gate is complete through Phase 5.
@@ -23,12 +24,13 @@ Status:
 - Phase 8 critic v0 is implemented and verified.
 - Phase 9 image-to-fold path is implemented and verified.
 - Phase 10 expanded public testbed is implemented and verified.
-- Phase 11 preview and animation improvement is the next implementation slice.
+- Phase 11 preview and animation improvement is implemented and verified.
+- User-requested continuation items 1-6 are complete.
 
 Next action:
-- Create the Phase 11 plan, then add animation frames derived from operation
-  history and render them in the demo without dropping the static preview
-  fallback.
+- No implementation action remains for the requested 1-6 continuation list.
+- Keep final embodiment validation optional until a launch claim requires
+  physical-executor evidence.
 
 Current Stage 1 gate:
 - `npm run validate:stage1`
@@ -58,6 +60,15 @@ Current Phase 10 gate:
 Current Phase 11 gate:
 - `npm run m11:preview`
 - `npm test`
+- `npm run validate:stage1`
+
+Completion gate for 1-6 continuation:
+- `npm run m6:multistep`
+- `npm run m7:search`
+- `npm run m8:critic`
+- `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
+- `npm run m10:testbed`
+- `npm run m11:preview`
 - `npm run validate:stage1`
 
 Phase 1 verification:

@@ -3,6 +3,8 @@ const state = {
   currentCase: null,
   currentArtifacts: null,
   currentPreview: null,
+  currentAnimation: null,
+  animationTimer: null,
   uploadUrl: null
 };
 
@@ -138,6 +140,7 @@ async function loadCase(pipelineCase) {
   state.currentCase = pipelineCase;
   state.currentArtifacts = null;
   state.currentPreview = null;
+  state.currentAnimation = null;
   setUiState("loading", `Loading ${pipelineCase.target.name}.`);
   clearCaseView();
   els.caseTitle.textContent = pipelineCase.target.name;
@@ -150,7 +153,7 @@ async function loadCase(pipelineCase) {
   renderCrease(artifacts.creaseSvg);
   renderSelectedProfile();
   renderHistory(artifacts.proposalHistory, artifacts.criticHistory);
-  renderPreview(artifacts.preview);
+  renderPreview(artifacts.preview, artifacts.previewAnimation);
 
   if (artifacts.missing.length > 0) {
     setUiState("partial", `Missing ${artifacts.missing.join(", ")}.`);
@@ -178,7 +181,8 @@ async function fetchCaseArtifacts(pipelineCase) {
     fetchJsonMaybe(artifactUrl(paths.diagram_step), "step"),
     fetchJsonMaybe(artifactUrl(paths.proposal_history), "proposal"),
     fetchJsonMaybe(artifactUrl(paths.critic_history), "critic"),
-    fetchJsonMaybe(artifactUrl(paths.preview), "preview")
+    fetchJsonMaybe(artifactUrl(paths.preview), "preview"),
+    fetchJsonMaybe(artifactUrl(paths.preview_animation), "previewAnimation")
   ]);
   const missing = results.filter((result) => !result.ok).map((result) => result.label);
   const profileSequences = Object.fromEntries(
@@ -197,7 +201,8 @@ async function fetchCaseArtifacts(pipelineCase) {
     diagramStep: valueFor(results, "step"),
     proposalHistory: valueFor(results, "proposal"),
     criticHistory: valueFor(results, "critic"),
-    preview: valueFor(results, "preview")
+    preview: valueFor(results, "preview"),
+    previewAnimation: valueFor(results, "previewAnimation")
   };
 }
 
@@ -207,6 +212,7 @@ function renderDownloads(pipelineCase) {
     ["FOLD", paths.derived_fold],
     ["SVG", paths.crease_svg],
     ["Preview", paths.preview],
+    ["Animation", paths.preview_animation],
     ["Validation", paths.validation],
     ["Diagram", paths.diagram_sequence],
     ["Proposal", paths.proposal_history],
@@ -329,8 +335,27 @@ function renderHistory(proposalHistory, criticHistory) {
   }
 }
 
-function renderPreview(preview) {
+function renderPreview(preview, animation = state.currentAnimation) {
   state.currentPreview = preview ?? state.currentPreview;
+  state.currentAnimation = animation ?? state.currentAnimation;
+  if (state.animationTimer) {
+    clearInterval(state.animationTimer);
+    state.animationTimer = null;
+  }
+  const frames = Array.isArray(state.currentAnimation?.frames) ? state.currentAnimation.frames : [];
+  if (frames.length > 1) {
+    let frameIndex = 0;
+    drawPreviewFrame(frames[frameIndex].preview);
+    state.animationTimer = setInterval(() => {
+      frameIndex = (frameIndex + 1) % frames.length;
+      drawPreviewFrame(frames[frameIndex].preview);
+    }, 700);
+    return;
+  }
+  drawPreviewFrame(state.currentPreview);
+}
+
+function drawPreviewFrame(preview) {
   const canvas = els.previewCanvas;
   const context = canvas.getContext("2d");
   const rect = canvas.getBoundingClientRect();
@@ -344,14 +369,14 @@ function renderPreview(preview) {
   context.fillStyle = "#ffffff";
   context.fillRect(0, 0, width, height);
 
-  if (!state.currentPreview) {
+  if (!preview) {
     context.fillStyle = "#5f6570";
     context.fillText("No preview", 24, 32);
     return;
   }
 
-  const vertices = state.currentPreview.vertices;
-  const edges = state.currentPreview.edges;
+  const vertices = preview.vertices;
+  const edges = preview.edges;
   if (!vertices.length) {
     context.fillStyle = "#5f6570";
     context.fillText("No preview", 24, 32);
@@ -411,6 +436,11 @@ function clearCaseView() {
   els.profileSelect.disabled = true;
   state.currentArtifacts = null;
   state.currentPreview = null;
+  state.currentAnimation = null;
+  if (state.animationTimer) {
+    clearInterval(state.animationTimer);
+    state.animationTimer = null;
+  }
   setEmbodimentStatus("No case selected.");
   renderPreview(null);
 }

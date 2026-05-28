@@ -26,6 +26,8 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.match(script, /claim_status/);
     assert.match(script, /executor_profile/);
     assert.match(script, /renderActionFlow/);
+    assert.match(script, /previewAnimation/);
+    assert.match(script, /drawPreviewFrame/);
 
     const summary = await fetchJson(`${baseUrl}/out/m2-pipeline/summary.json`);
     assert.equal(summary.ok, true);
@@ -48,6 +50,9 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
 
     const preview = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.preview}`);
     assert.equal(preview.type, "foldgen.preview.v1");
+    const animation = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.preview_animation}`);
+    assert.equal(animation.type, "foldgen.preview_animation.v1");
+    assert.equal(animation.frame_count, firstCase.selected_operation_count + 1);
 
     const missing = await fetch(`${baseUrl}/demo/missing.js`);
     assert.equal(missing.status, 404);

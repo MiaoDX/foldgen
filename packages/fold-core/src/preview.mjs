@@ -35,6 +35,55 @@ export function createPreviewModel(fold) {
   };
 }
 
+export function createPreviewAnimation(fold, options = {}) {
+  const history = Array.isArray(fold.foldgen_history) ? fold.foldgen_history : [];
+  const frames = [
+    {
+      index: 0,
+      progress: 0,
+      label: "Base form",
+      active_operation_id: null,
+      preview: createPreviewModel(frameFold(fold, history, 0))
+    },
+    ...history.map((operation, index) => ({
+      index: index + 1,
+      progress: round((index + 1) / Math.max(history.length, 1)),
+      label: operation.name,
+      active_operation_id: operation.id,
+      operation,
+      preview: createPreviewModel(frameFold(fold, history, index + 1))
+    }))
+  ];
+  return {
+    type: "foldgen.preview_animation.v1",
+    title: options.title ?? `${fold.file_title ?? "fold preview"} animation`,
+    frame_count: frames.length,
+    operation_count: history.length,
+    frames
+  };
+}
+
+function frameFold(fold, history, completedCount) {
+  const completed = new Map(history.slice(0, completedCount).map((operation) => [edgeKey(operation.edge), operation.assignment]));
+  const historyEdges = new Set(history.map((operation) => edgeKey(operation.edge)));
+  const edgesAssignment = (fold.edges_vertices ?? []).map((edge, index) => {
+    const key = edgeKey(edge);
+    if (completed.has(key)) {
+      return completed.get(key);
+    }
+    return historyEdges.has(key) ? "U" : fold.edges_assignment?.[index] ?? "U";
+  });
+  return {
+    ...fold,
+    foldgen_history: history.slice(0, completedCount),
+    edges_assignment: edgesAssignment
+  };
+}
+
+function edgeKey(edge) {
+  return [...edge].sort((a, b) => a - b).join("-");
+}
+
 function liftForAssignment(assignment) {
   switch (assignment) {
     case "M":

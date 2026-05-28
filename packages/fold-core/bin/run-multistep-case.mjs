@@ -6,6 +6,7 @@ import {
   createCreasePatternSvg,
   createDiagramSequence,
   createDiagramStep,
+  createPreviewAnimation,
   createPreviewModel,
   deterministicDemoOperations,
   loadFoldFile,
@@ -36,6 +37,7 @@ const profileSequences = Object.fromEntries(executorProfiles.map((executorProfil
 const defaultSequence = profileSequences["human-hand"].sequence;
 const defaultStep = defaultSequence.steps[0];
 const preview = createPreviewModel(derived);
+const previewAnimation = createPreviewAnimation(derived);
 const files = [
   "derived.fold",
   "crease.svg",
@@ -43,6 +45,7 @@ const files = [
   "diagram-step.json",
   "diagram-sequence.json",
   "preview.json",
+  "preview-animation.json",
   "summary.json",
   ...executorProfiles.map((executorProfile) => `diagram-sequence-${executorProfile}.json`)
 ];
@@ -71,6 +74,7 @@ for (const [executorProfile, entry] of Object.entries(profileSequences)) {
   await writeJson(join(outDir, `diagram-sequence-${executorProfile}.json`), entry.sequence);
 }
 await writeJson(join(outDir, "preview.json"), preview);
+await writeJson(join(outDir, "preview-animation.json"), previewAnimation);
 await writeJson(join(outDir, "summary.json"), summary);
 
 console.log(JSON.stringify(summary, null, 2));

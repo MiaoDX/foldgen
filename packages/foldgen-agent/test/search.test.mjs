@@ -61,6 +61,9 @@ test("local search batch writes five valid cases with profile sequences", async 
       assert.ok(history.iterations.every((iteration) => iteration.proposals.some((proposal) => proposal.selected)));
       assert.ok(history.iterations.every((iteration) => iteration.proposals.every((proposal) => proposal.validation_status)));
       assert.ok(history.iterations.every((iteration) => iteration.proposals.every((proposal) => proposal.render_summary.edge_count > 0)));
+      const animation = JSON.parse(await readFile(join(caseDir, "preview-animation.json"), "utf8"));
+      assert.equal(animation.type, "foldgen.preview_animation.v1");
+      assert.equal(animation.operation_count, searchCase.selected_operation_count);
 
       const sequence = JSON.parse(await readFile(join(caseDir, "diagram-sequence.json"), "utf8"));
       assert.equal(sequence.step_count, 2);

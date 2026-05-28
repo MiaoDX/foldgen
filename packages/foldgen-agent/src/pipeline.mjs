@@ -5,6 +5,7 @@ import {
   createCreasePatternSvg,
   createDiagramSequence,
   createDiagramStep,
+  createPreviewAnimation,
   createPreviewModel,
   loadFoldFile,
   serializeFold,
@@ -144,6 +145,7 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     artifactPaths.diagram_sequence = artifactPath(join(caseDir, "diagram-sequence.json"));
     artifactPaths.diagram_sequences = {};
     artifactPaths.preview = artifactPath(join(caseDir, "preview.json"));
+    artifactPaths.preview_animation = artifactPath(join(caseDir, "preview-animation.json"));
 
     const profileSequences = Object.fromEntries(stage1ExecutorProfiles.map((executorProfile) => {
       const steps = selected.operations.map((operation, index) => createDiagramStep(operation, index + 1, {
@@ -179,6 +181,7 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
       await writeJson(join(caseDir, fileName), value.sequence);
     }
     await writeJson(join(caseDir, "preview.json"), createPreviewModel(selected.derived));
+    await writeJson(join(caseDir, "preview-animation.json"), createPreviewAnimation(selected.derived));
   }
 
   const caseSummary = {

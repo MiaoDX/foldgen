@@ -8,7 +8,7 @@ export {
 } from "./io.mjs";
 
 export { createCreasePatternSvg } from "./svg.mjs";
-export { createPreviewModel } from "./preview.mjs";
+export { createPreviewAnimation, createPreviewModel } from "./preview.mjs";
 export {
   applyLocalFoldOperation,
   applyLocalFoldOperations,

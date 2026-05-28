@@ -1,7 +1,7 @@
 # STATUS
 
-Current focus: post-Stage-1 continuation via `intuitive-flow`, moving from
-completed Phase 10 expanded public testbed into Phase 11 preview/animation.
+Current focus: post-Stage-1 continuation via `intuitive-flow` is complete
+through Phase 11.
 
 Active source of truth: `docs/plans/stage-1-mvp.md`, derived from
 `docs/PLAN.md`.
@@ -36,6 +36,11 @@ Phase 10 status: implemented and verified. The public target set now has ten
 SVG fixtures, including five creative/reference cases, and `npm run
 m10:testbed` runs image-to-fold across all ten.
 
+Phase 11 status: implemented and verified. `npm run m11:preview` writes
+multi-frame preview animation, pipeline/search/image-to-fold artifacts expose
+`preview_animation`, and the demo renders animation frames when available while
+keeping the static preview fallback.
+
 Continuation order:
 1. Multi-step fold operation foundation.
 2. Local search loop.
@@ -50,6 +55,7 @@ Latest verification:
 - `npm run m8:critic`
 - `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
 - `npm run m10:testbed`
+- `npm run m11:preview`
 - `npm test`
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
@@ -72,7 +78,7 @@ Current stop gate:
   `npm test`, and `npm run validate:stage1`
 - Phase 10 gate passed: `npm run m10:testbed`, `npm run validate:fixtures`,
   `npm test`, and `npm run validate:stage1`
-- Active Phase 11 gate: `npm run m11:preview`, `npm test`, and
+- Phase 11 gate passed: `npm run m11:preview`, `npm test`, and
   `npm run validate:stage1`
 - Refined contract source: `docs/contracts/stage-1-output-contract.md`
 
@@ -82,5 +88,6 @@ Final-stage claim gate:
 - Do not claim a case is embodiment-validated until a final record exists under
   `docs/embodiment-validation/attempts/`.
 
-Next action: implement Phase 11 preview and animation improvement. No external
-participation is required for the repo-local continuation gates.
+Next action: no repo-local implementation action remains for the requested
+1-6 continuation list. Final embodiment validation remains optional until a
+launch claim requires it.

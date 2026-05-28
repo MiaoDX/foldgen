@@ -69,6 +69,9 @@ test("image-to-fold writes search artifacts and executor profile sequences", asy
     assert.equal(validateFold(derived).ok, true);
     const searchHistory = JSON.parse(await readFile(join(caseDir, "search-history.json"), "utf8"));
     assert.equal(searchHistory.iterations.length, 2);
+    const animation = JSON.parse(await readFile(join(caseDir, "preview-animation.json"), "utf8"));
+    assert.equal(animation.type, "foldgen.preview_animation.v1");
+    assert.equal(animation.frame_count, 3);
     const dogSequence = JSON.parse(await readFile(join(caseDir, "diagram-sequence-dog-paw-profile.json"), "utf8"));
     assert.equal(dogSequence.executor_profile, "dog-paw-profile");
     assert.equal(dogSequence.steps.every((step) => validateExecutorReadableStep(step).ok), true);
