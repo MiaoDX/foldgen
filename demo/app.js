@@ -1,12 +1,14 @@
 const state = {
   summary: null,
   currentCase: null,
+  currentArtifacts: null,
   currentPreview: null,
   uploadUrl: null
 };
 
 const els = {
   targetSelect: document.querySelector("#target-select"),
+  profileSelect: document.querySelector("#profile-select"),
   textTarget: document.querySelector("#text-target"),
   textSubmit: document.querySelector("#text-submit"),
   imageUpload: document.querySelector("#image-upload"),
@@ -45,6 +47,9 @@ function init() {
       setUiState("empty", "No case selected.");
       clearCaseView();
     }
+  });
+  els.profileSelect.addEventListener("change", () => {
+    renderSelectedProfile();
   });
 
   els.textSubmit.addEventListener("click", loadTextTarget);
@@ -131,16 +136,19 @@ async function loadUploadedImage() {
 
 async function loadCase(pipelineCase) {
   state.currentCase = pipelineCase;
+  state.currentArtifacts = null;
   state.currentPreview = null;
   setUiState("loading", `Loading ${pipelineCase.target.name}.`);
   clearCaseView();
   els.caseTitle.textContent = pipelineCase.target.name;
 
   const artifacts = await fetchCaseArtifacts(pipelineCase);
+  state.currentArtifacts = artifacts;
+  populateProfileSelect(pipelineCase);
   renderDownloads(pipelineCase);
   renderTarget(artifacts.targetSvg);
   renderCrease(artifacts.creaseSvg);
-  renderStep(artifacts.diagramSequence, artifacts.diagramStep);
+  renderSelectedProfile();
   renderHistory(artifacts.proposalHistory, artifacts.criticHistory);
   renderPreview(artifacts.preview);
 
@@ -164,12 +172,20 @@ async function fetchCaseArtifacts(pipelineCase) {
     fetchTextMaybe(artifactUrl(paths.crease_svg), "crease"),
     fetchJsonMaybe(artifactUrl(paths.validation), "validation"),
     fetchJsonMaybe(artifactUrl(paths.diagram_sequence), "sequence"),
+    ...Object.entries(paths.diagram_sequences ?? {}).map(([profile, path]) => (
+      fetchJsonMaybe(artifactUrl(path), `sequence:${profile}`)
+    )),
     fetchJsonMaybe(artifactUrl(paths.diagram_step), "step"),
     fetchJsonMaybe(artifactUrl(paths.proposal_history), "proposal"),
     fetchJsonMaybe(artifactUrl(paths.critic_history), "critic"),
     fetchJsonMaybe(artifactUrl(paths.preview), "preview")
   ]);
   const missing = results.filter((result) => !result.ok).map((result) => result.label);
+  const profileSequences = Object.fromEntries(
+    results
+      .filter((result) => result.ok && result.label.startsWith("sequence:"))
+      .map((result) => [result.label.slice("sequence:".length), result.value])
+  );
 
   return {
     missing,
@@ -177,6 +193,7 @@ async function fetchCaseArtifacts(pipelineCase) {
     creaseSvg: valueFor(results, "crease"),
     validation: valueFor(results, "validation"),
     diagramSequence: valueFor(results, "sequence"),
+    profileSequences,
     diagramStep: valueFor(results, "step"),
     proposalHistory: valueFor(results, "proposal"),
     criticHistory: valueFor(results, "critic"),
@@ -204,6 +221,13 @@ function renderDownloads(pipelineCase) {
     link.textContent = label;
     return link;
   }));
+}
+
+function populateProfileSelect(pipelineCase) {
+  const profiles = pipelineCase.executor_profiles ?? ["human-hand"];
+  els.profileSelect.replaceChildren(...profiles.map((profile) => new Option(formatProfileLabel(profile), profile)));
+  els.profileSelect.disabled = profiles.length === 0;
+  els.profileSelect.value = pipelineCase.executor_profile ?? profiles[0] ?? "";
 }
 
 function renderTarget(svgText) {
@@ -234,6 +258,17 @@ function renderStep(sequence, fallbackStep) {
     ].join("");
     els.stepList.append(item);
   }
+}
+
+function renderSelectedProfile() {
+  const artifacts = state.currentArtifacts;
+  if (!artifacts) {
+    renderStep(null, null);
+    return;
+  }
+  const selectedProfile = els.profileSelect.value || state.currentCase?.executor_profile || "human-hand";
+  const sequence = artifacts.profileSequences?.[selectedProfile] ?? artifacts.diagramSequence;
+  renderStep(sequence, artifacts.diagramStep);
 }
 
 function renderProfile(profile) {
@@ -372,6 +407,9 @@ function clearCaseView() {
   els.stepList.innerHTML = "";
   els.proposalList.innerHTML = "";
   els.criticList.innerHTML = "";
+  els.profileSelect.replaceChildren(new Option("Select executor", ""));
+  els.profileSelect.disabled = true;
+  state.currentArtifacts = null;
   state.currentPreview = null;
   setEmbodimentStatus("No case selected.");
   renderPreview(null);
@@ -394,6 +432,16 @@ function formatClaimStatus(claimStatus) {
     return "Claim label unavailable.";
   }
   return claimStatus.claim_label;
+}
+
+function formatProfileLabel(profile) {
+  const labels = {
+    "human-hand": "Human hand",
+    "two-finger-gripper": "Robot gripper",
+    "cat-paw-profile": "Cat paw",
+    "dog-paw-profile": "Dog paw"
+  };
+  return labels[profile] ?? profile;
 }
 
 async function fetchJson(path) {

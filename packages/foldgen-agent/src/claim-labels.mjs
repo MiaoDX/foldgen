@@ -5,6 +5,7 @@ import { validateExecutorReadableStep } from "../../fold-core/src/index.mjs";
 
 const DEFAULT_SUMMARY_PATH = "out/m2-pipeline/summary.json";
 const EXPECTED_CASE_LABEL = "simulator-valid / executor-readable / embodiment-untested";
+const REQUIRED_EXECUTOR_PROFILES = ["human-hand", "two-finger-gripper", "cat-paw-profile", "dog-paw-profile"];
 const REQUIRED_PUBLIC_LABELS = [
   {
     path: "README.md",
@@ -184,6 +185,11 @@ async function validateExecutorEvidence(rootDir, pipelineCase, label, errors) {
   if (!Array.isArray(pipelineCase.executor_profiles) || !pipelineCase.executor_profiles.includes("human-hand")) {
     errors.push(`${label}: executor_profiles must include human-hand`);
   }
+  for (const executorProfile of REQUIRED_EXECUTOR_PROFILES) {
+    if (!pipelineCase.executor_profiles?.includes(executorProfile)) {
+      errors.push(`${label}: executor_profiles must include ${executorProfile}`);
+    }
+  }
 
   const sequencePath = pipelineCase.artifact_paths?.diagram_sequence;
   if (!sequencePath) {
@@ -213,6 +219,42 @@ async function validateExecutorEvidence(rootDir, pipelineCase, label, errors) {
     const result = validateExecutorReadableStep(step);
     if (!result.ok) {
       errors.push(`${label}: diagram sequence step ${index + 1} is not executor-readable: ${result.errors.join("; ")}`);
+    }
+  }
+
+  for (const executorProfile of REQUIRED_EXECUTOR_PROFILES) {
+    const profilePath = pipelineCase.artifact_paths?.diagram_sequences?.[executorProfile];
+    if (!profilePath) {
+      errors.push(`${label}: missing ${executorProfile} diagram sequence`);
+      continue;
+    }
+    await validateProfileSequence(rootDir, profilePath, executorProfile, label, errors);
+  }
+}
+
+async function validateProfileSequence(rootDir, path, executorProfile, label, errors) {
+  let sequence;
+  try {
+    sequence = JSON.parse(await readFile(join(rootDir, path), "utf8"));
+  } catch (error) {
+    errors.push(`${label}: missing or invalid ${executorProfile} diagram sequence (${error.message})`);
+    return;
+  }
+
+  if (sequence.type !== "foldgen.diagram_sequence.v1") {
+    errors.push(`${label}: ${executorProfile} diagram sequence type must be foldgen.diagram_sequence.v1`);
+  }
+  if (sequence.executor_profile !== executorProfile) {
+    errors.push(`${label}: ${executorProfile} diagram sequence executor_profile must be ${executorProfile}`);
+  }
+  if (!Array.isArray(sequence.steps) || sequence.steps.length === 0) {
+    errors.push(`${label}: ${executorProfile} diagram sequence must contain at least one step`);
+    return;
+  }
+  for (const [index, step] of sequence.steps.entries()) {
+    const result = validateExecutorReadableStep(step);
+    if (!result.ok) {
+      errors.push(`${label}: ${executorProfile} diagram sequence step ${index + 1} is not executor-readable: ${result.errors.join("; ")}`);
     }
   }
 }

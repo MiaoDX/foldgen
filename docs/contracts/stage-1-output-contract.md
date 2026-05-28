@@ -26,13 +26,15 @@ It must not be shortened to a physical-execution claim.
 
 ## Executor Profiles
 
-Every Stage 1 case must name at least one intended executor profile:
+Every Stage 1 curated case must emit an executor-readable sequence for all four
+Stage 1 executor profiles:
 
 | Profile | Purpose | Stage 1 Requirement |
 |---|---|---|
 | `human-hand` | Baseline manual execution. | Required for every curated demo case. |
-| `two-finger-gripper` | Robot-like pinch/grip executor. | Required for at least one demo case before public launch copy. |
-| `cat-paw-profile` | Non-human soft paw/limb executor thought experiment. | Required as a documented optional profile, not a physical claim. |
+| `two-finger-gripper` | Robot-like pinch/grip executor. | Required for every curated demo case. |
+| `cat-paw-profile` | Non-human soft paw/limb executor thought experiment. | Required for every curated demo case, not a physical claim. |
+| `dog-paw-profile` | Larger non-human paw/limb executor thought experiment. | Required for every curated demo case, not a physical claim. |
 
 Each profile must define:
 
@@ -149,19 +151,21 @@ Outputs:
 - five curated case directories
 - per-case selected base form, candidates, validation, proposal history, critic
   history, FOLD, SVG, preview, and executor-readable diagram sequence
+- per-case executor-readable sequences for `human-hand`,
+  `two-finger-gripper`, `cat-paw-profile`, and `dog-paw-profile`
 - per-case `claim_status` including `executor_readable: true`
 - failed/invalid proposals recorded as data
 
 Gate:
 - batch pipeline succeeds only when all five selected cases are simulator-valid
-  and have executor-readable sequences
+  and have executor-readable sequences for all four Stage 1 executor profiles
 
 ### M3 Web Demo
 
 Outputs:
 - target selector, curated text entry, upload capture, downloads, preview,
   crease pattern, proposal/critic history
-- executor profile selector or explicit profile label
+- executor profile selector for the four Stage 1 executor profiles
 - rendered action sequence for each step: setup, anchor/grip, fold, align,
   crease, release, checks, and failure modes
 

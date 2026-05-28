@@ -7,7 +7,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { parseFold, validateExecutorReadableStep, validateFold } from "../../fold-core/src/index.mjs";
-import { runCuratedPipeline } from "../src/index.mjs";
+import { runCuratedPipeline, stage1ExecutorProfiles } from "../src/index.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -31,6 +31,7 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       });
       assert.equal(pipelineCase.executor_readable, true);
       assert.equal(pipelineCase.executor_profile, "human-hand");
+      assert.deepEqual(pipelineCase.executor_profiles, stage1ExecutorProfiles);
       assert.ok(pipelineCase.selected_base_form.endsWith("-base.fold"));
       assert.ok(pipelineCase.artifact_paths.derived_fold);
       assert.ok(pipelineCase.artifact_paths.crease_svg);
@@ -61,6 +62,13 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       assert.equal(sequence.executor_profile, "human-hand");
       assert.equal(sequence.steps.length, 1);
       assert.equal(validateExecutorReadableStep(sequence.steps[0]).ok, true);
+      for (const executorProfile of stage1ExecutorProfiles) {
+        const profileSequence = JSON.parse(await readFile(join(caseDir, `diagram-sequence-${executorProfile}.json`), "utf8"));
+        assert.equal(profileSequence.executor_profile, executorProfile);
+        assert.equal(profileSequence.steps[0].executor_profile, executorProfile);
+        assert.equal(validateExecutorReadableStep(profileSequence.steps[0]).ok, true);
+        assert.equal(pipelineCase.artifact_paths.diagram_sequences[executorProfile].endsWith(`diagram-sequence-${executorProfile}.json`), true);
+      }
 
       const caseSummary = JSON.parse(await readFile(join(caseDir, "summary.json"), "utf8"));
       assert.equal(caseSummary.selected_candidate_id, pipelineCase.selected_candidate_id);
@@ -71,7 +79,9 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
     assert.equal(writtenSummary.case_count, 5);
     assert.equal(writtenSummary.claim_status.claim_label, "simulator-valid / executor-readable / embodiment-untested");
     assert.equal(writtenSummary.claim_status.executor_readable, true);
-    assert.equal(writtenSummary.cases.some((pipelineCase) => pipelineCase.executor_profiles.includes("two-finger-gripper")), true);
+    assert.ok(writtenSummary.cases.every((pipelineCase) => (
+      stage1ExecutorProfiles.every((executorProfile) => pipelineCase.executor_profiles.includes(executorProfile))
+    )));
   } finally {
     await rm(outDir, { recursive: true, force: true });
   }
@@ -88,6 +98,7 @@ test("M2 pipeline CLI writes a five-case summary", async () => {
     assert.ok(summary.cases.every((pipelineCase) => pipelineCase.status === "valid"));
     assert.ok(summary.cases.every((pipelineCase) => pipelineCase.claim_status.claim_label === "simulator-valid / executor-readable / embodiment-untested"));
     assert.ok(summary.cases.every((pipelineCase) => pipelineCase.executor_readable === true));
+    assert.ok(summary.cases.every((pipelineCase) => stage1ExecutorProfiles.every((executorProfile) => pipelineCase.executor_profiles.includes(executorProfile))));
   } finally {
     await rm(outDir, { recursive: true, force: true });
   }

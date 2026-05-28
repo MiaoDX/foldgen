@@ -13,6 +13,8 @@ import {
   validateFold
 } from "../../fold-core/src/index.mjs";
 
+export const stage1ExecutorProfiles = ["human-hand", "two-finger-gripper", "cat-paw-profile", "dog-paw-profile"];
+
 export const targetProfiles = {
   "simple-bird.svg": {
     caseId: "simple-bird",
@@ -47,7 +49,6 @@ export const targetProfiles = {
   "simple-boat.svg": {
     caseId: "simple-boat",
     baseForm: "kite-base.fold",
-    executorProfiles: ["human-hand", "two-finger-gripper"],
     targetFeatures: ["sail", "hull", "mast"],
     candidates: [
       candidate("boat-mast-centerline", "Add a mast centerline valley", "V", [5, 6], 0.83, "Creates a strong mast-like vertical reference in the kite base."),
@@ -117,6 +118,7 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
 
   let selectedValidation = { ok: false, errors: ["No valid candidate selected"], warnings: [] };
   let diagramStepValidation = { ok: false, errors: ["No executor-readable step emitted"] };
+  let diagramProfileValidation = {};
   let executorReadable = false;
   if (selected) {
     selectedValidation = selected.validation;
@@ -125,20 +127,35 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     artifactPaths.validation = artifactPath(join(caseDir, "validation.json"));
     artifactPaths.diagram_step = artifactPath(join(caseDir, "diagram-step.json"));
     artifactPaths.diagram_sequence = artifactPath(join(caseDir, "diagram-sequence.json"));
+    artifactPaths.diagram_sequences = {};
     artifactPaths.preview = artifactPath(join(caseDir, "preview.json"));
 
-    const diagramStep = createDiagramStep(selected.operation, 1, {
-      supportedExecutorProfiles: profile.executorProfiles ?? ["human-hand"]
-    });
-    const diagramSequence = createDiagramSequence([diagramStep]);
-    diagramStepValidation = validateExecutorReadableStep(diagramStep);
-    executorReadable = selectedValidation.ok && diagramStepValidation.ok;
+    const profileSequences = Object.fromEntries(stage1ExecutorProfiles.map((executorProfile) => {
+      const step = createDiagramStep(selected.operation, 1, {
+        executorProfile,
+        supportedExecutorProfiles: stage1ExecutorProfiles
+      });
+      const sequence = createDiagramSequence([step], { executorProfile });
+      return [executorProfile, { step, sequence, validation: validateExecutorReadableStep(step) }];
+    }));
+    const diagramStep = profileSequences["human-hand"].step;
+    const diagramSequence = profileSequences["human-hand"].sequence;
+    diagramStepValidation = profileSequences["human-hand"].validation;
+    diagramProfileValidation = Object.fromEntries(
+      Object.entries(profileSequences).map(([executorProfile, value]) => [executorProfile, value.validation])
+    );
+    executorReadable = selectedValidation.ok && Object.values(diagramProfileValidation).every((result) => result.ok);
 
     await writeFile(join(caseDir, "derived.fold"), serializeFold(selected.derived), "utf8");
     await writeFile(join(caseDir, "crease.svg"), createCreasePatternSvg(selected.derived), "utf8");
     await writeJson(join(caseDir, "validation.json"), selected.validation);
     await writeJson(join(caseDir, "diagram-step.json"), diagramStep);
     await writeJson(join(caseDir, "diagram-sequence.json"), diagramSequence);
+    for (const [executorProfile, value] of Object.entries(profileSequences)) {
+      const fileName = `diagram-sequence-${executorProfile}.json`;
+      artifactPaths.diagram_sequences[executorProfile] = artifactPath(join(caseDir, fileName));
+      await writeJson(join(caseDir, fileName), value.sequence);
+    }
     await writeJson(join(caseDir, "preview.json"), createPreviewModel(selected.derived));
   }
 
@@ -153,8 +170,9 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     claim_status: buildClaimStatus({ simulatorValid: selectedValidation.ok, executorReadable }),
     executor_readable: executorReadable,
     executor_profile: "human-hand",
-    executor_profiles: profile.executorProfiles ?? ["human-hand"],
+    executor_profiles: stage1ExecutorProfiles,
     diagram_step_validation: diagramStepValidation,
+    diagram_profile_validation: diagramProfileValidation,
     selected_candidate_id: selected?.candidate_id ?? null,
     validation_status: selectedValidation.ok,
     candidate_count: records.length,

@@ -5,7 +5,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { createDiagramSequence, createDiagramStep, deterministicDemoOperation } from "../../fold-core/src/index.mjs";
-import { validateStage1ClaimLabels } from "../src/index.mjs";
+import { stage1ExecutorProfiles, validateStage1ClaimLabels } from "../src/index.mjs";
 
 test("claim label validator accepts Stage 1 executor-readable labels", async () => {
   const rootDir = await mkdtemp(join(tmpdir(), "foldgen-claim-labels-ok-"));
@@ -104,6 +104,16 @@ async function writeFixtureTree(rootDir, summary, options = {}) {
     const path = pipelineCase.artifact_paths.diagram_sequence;
     await mkdir(dirname(join(rootDir, path)), { recursive: true });
     await writeFile(join(rootDir, path), `${JSON.stringify(sequence, null, 2)}\n`, "utf8");
+    for (const executorProfile of stage1ExecutorProfiles) {
+      const profilePath = pipelineCase.artifact_paths.diagram_sequences[executorProfile];
+      const profileSequence = createDiagramSequence([
+        createDiagramStep(deterministicDemoOperation, 1, {
+          executorProfile,
+          supportedExecutorProfiles: stage1ExecutorProfiles
+        })
+      ], { executorProfile });
+      await writeFile(join(rootDir, profilePath), `${JSON.stringify(profileSequence, null, 2)}\n`, "utf8");
+    }
   }
 }
 
@@ -114,9 +124,15 @@ function validSummary() {
     validation_status: true,
     executor_readable: true,
     executor_profile: "human-hand",
-    executor_profiles: ["human-hand"],
+    executor_profiles: stage1ExecutorProfiles,
     artifact_paths: {
-      diagram_sequence: `out/m2-pipeline/${caseId}/diagram-sequence.json`
+      diagram_sequence: `out/m2-pipeline/${caseId}/diagram-sequence.json`,
+      diagram_sequences: Object.fromEntries(
+        stage1ExecutorProfiles.map((executorProfile) => [
+          executorProfile,
+          `out/m2-pipeline/${caseId}/diagram-sequence-${executorProfile}.json`
+        ])
+      )
     },
     claim_status: validClaimStatus()
   }));

@@ -3,9 +3,9 @@
 Local Stage 1 demo for rendering pipeline outputs. Current cases are labeled
 `simulator-valid / executor-readable / embodiment-untested`.
 
-The demo renders the executor profile and followable action flow from
-`diagram-sequence.json`; it does not treat simulator output as final embodiment
-evidence.
+The demo renders a selector for `human-hand`, `two-finger-gripper`,
+`cat-paw-profile`, and `dog-paw-profile`, then shows the selected followable
+action flow. It does not treat simulator output as final embodiment evidence.
 
 Run from the repo root:
 

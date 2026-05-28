@@ -51,6 +51,23 @@ export const executorProfiles = Object.freeze({
       "Soft contact makes sharp creases unlikely without a tool or fixture.",
       "Dragging can tear thin paper or shift the whole sheet."
     ]
+  }),
+  "dog-paw-profile": freezeProfile({
+    id: "dog-paw-profile",
+    name: "Dog paw profile",
+    contact_primitives: ["press", "drag", "hold", "release", "paw-sweep"],
+    unavailable_actions: ["precision pinch", "two-point alignment", "fine fingertip crease"],
+    landmark_language: {
+      corners: "Use large corner zones that can be covered or braced by a paw.",
+      edges: "Use the nearest visible boundary as a broad alignment rail.",
+      midpoint: "Treat midpoint as a marked middle zone rather than a point target.",
+      center: "Use the central visible patch of the paper.",
+      crease_line: "Use a bold marked line or pre-raised crease that can be pressed with a paw pad."
+    },
+    risk_notes: [
+      "Large paw contact can hide the crease line and push the sheet off target.",
+      "Claw or nail contact can snag paper unless pressure stays broad and slow."
+    ]
   })
 });
 
@@ -178,36 +195,76 @@ export function validateExecutorReadableStep(step) {
 function buildActionFields(operation, landmarks, profileDefinition) {
   const foldKind = assignmentName(operation.assignment);
   const foldDirection = operation.direction ?? defaultDirection(operation.assignment);
+  const profileId = profileDefinition.id;
+  const anchorText = actionText(profileId, "anchor", landmarks, foldKind);
+  const foldText = actionText(profileId, "fold", landmarks, foldKind);
+  const alignText = actionText(profileId, "align", landmarks, foldKind);
+  const creaseText = actionText(profileId, "crease", landmarks, foldKind);
+  const releaseText = actionText(profileId, "release", landmarks, foldKind);
   return {
     anchor: {
       phase: "anchor",
-      text: `Anchor the stable panel on both sides of the ${landmarks.line}.`,
+      text: anchorText,
       contacts: [`stable panel near ${landmarks.start}`, `stable panel near ${landmarks.end}`],
       primitives: choosePrimitives(profileDefinition, ["hold", "press"])
     },
     fold: {
       phase: "fold",
-      text: `Move the free panel along the ${landmarks.line} as a ${foldKind} fold.`,
+      text: foldText,
       direction: foldDirection,
       primitives: choosePrimitives(profileDefinition, ["pinch", "drag", "paw-sweep"])
     },
     align: {
       phase: "align",
-      text: `Align ${landmarks.start} with ${landmarks.end} without letting the anchored panel slide.`,
+      text: alignText,
       target: operation.alignment_target ?? `${landmarks.start} and ${landmarks.end} overlap within visual tolerance`
     },
     crease: {
       phase: "crease",
-      text: `Press along the full ${landmarks.line} from ${landmarks.start} to ${landmarks.end}.`,
+      text: creaseText,
       contacts: [landmarks.start, "center", landmarks.end],
       primitives: choosePrimitives(profileDefinition, ["press"])
     },
     release: {
       phase: "release",
-      text: `Release the moving panel while keeping the new ${foldKind} crease visible.`,
+      text: releaseText,
       primitives: choosePrimitives(profileDefinition, ["release"])
     }
   };
+}
+
+function actionText(profileId, phase, landmarks, foldKind) {
+  const generic = {
+    anchor: `Anchor the stable panel on both sides of the ${landmarks.line}.`,
+    fold: `Move the free panel along the ${landmarks.line} as a ${foldKind} fold.`,
+    align: `Align ${landmarks.start} with ${landmarks.end} without letting the anchored panel slide.`,
+    crease: `Press along the full ${landmarks.line} from ${landmarks.start} to ${landmarks.end}.`,
+    release: `Release the moving panel while keeping the new ${foldKind} crease visible.`
+  };
+  const variants = {
+    "two-finger-gripper": {
+      anchor: `Hold the stable panel with one gripper contact on each side of the ${landmarks.line}.`,
+      fold: `Pinch the free panel and rotate it along the ${landmarks.line} as a ${foldKind} fold.`,
+      align: `Use detected endpoints to align ${landmarks.start} with ${landmarks.end} while the gripper keeps the base panel fixed.`,
+      crease: `Press the gripper pad along the ${landmarks.line} in short segments from ${landmarks.start} to ${landmarks.end}.`,
+      release: `Open the gripper slowly and keep the new ${foldKind} crease in view.`
+    },
+    "cat-paw-profile": {
+      anchor: `Press a broad paw pad on the stable panel below the ${landmarks.line}.`,
+      fold: `Sweep the free panel over the ${landmarks.line} with a slow paw drag to form a ${foldKind} fold.`,
+      align: `Use broad visual zones near ${landmarks.start} and ${landmarks.end}; do not require point-perfect alignment.`,
+      crease: `Press along the ${landmarks.line} with repeated gentle paw-pad presses from ${landmarks.start} to ${landmarks.end}.`,
+      release: `Lift the paw vertically so the new ${foldKind} crease is not dragged out of place.`
+    },
+    "dog-paw-profile": {
+      anchor: `Brace the stable panel with a broad paw contact beside the ${landmarks.line}.`,
+      fold: `Nudge the free panel over the ${landmarks.line} with a controlled paw sweep to form a ${foldKind} fold.`,
+      align: `Align the broad regions around ${landmarks.start} and ${landmarks.end}; keep the paw from covering both landmarks at once.`,
+      crease: `Press the ${landmarks.line} with slow paw-pad pressure, moving from ${landmarks.start} through the center to ${landmarks.end}.`,
+      release: `Ease pressure off the paw without dragging claws across the new ${foldKind} crease.`
+    }
+  };
+  return variants[profileId]?.[phase] ?? generic[phase];
 }
 
 function buildChecks(operation, landmarks) {

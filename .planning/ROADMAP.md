@@ -70,7 +70,8 @@ Proof:
 - `npm run m1:deterministic`
 - `npm run m2:pipeline`
 - Phase 5 follow-up: five case summaries include `executor_readable: true`,
-  `diagram-sequence.json`, and the refined claim label.
+  `diagram-sequence.json`, profile-specific sequences for human hand, robot
+  gripper, cat paw, and dog paw, and the refined claim label.
 
 Depends on: Phase 1
 
@@ -99,8 +100,9 @@ Proof:
 - `npm run m2:pipeline`
 - `npm run demo`
 - Headless Chrome screenshot smoke test for `/demo/?case=simple-bird`
-- Phase 5 follow-up: demo renders executor profile metadata plus setup, anchor,
-  fold, align, crease, release, checks, and failure modes.
+- Phase 5 follow-up: demo renders an executor profile selector plus setup,
+  anchor, fold, align, crease, release, checks, and failure modes for the
+  selected profile.
 
 Depends on: Phase 2
 
@@ -156,8 +158,8 @@ Success criteria:
 - M1 deterministic output includes executor profile, structured actions,
   checks, failure modes, and annotations.
 - M2 emits executor-readable sequences and claim status for all five curated
-  cases.
-- M3 renders the active executor profile and followable action flow.
+  cases across human hand, robot gripper, cat paw, and dog paw profiles.
+- M3 renders an executor profile selector and followable action flow.
 - M4 labels current cases as
   `simulator-valid / executor-readable / embodiment-untested` only after the
   executor-readable gate passes.

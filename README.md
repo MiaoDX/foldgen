@@ -17,7 +17,9 @@ adapter and no final embodiment claim yet.
 The executor-readable contract is defined in
 `docs/contracts/stage-1-output-contract.md`; generated diagram artifacts retain
 the structured executor profile, action phases, checks, failure modes, and
-annotations instead of only a one-sentence instruction.
+annotations instead of only a one-sentence instruction. Every curated case now
+emits action flows for `human-hand`, `two-finger-gripper`, `cat-paw-profile`,
+and `dog-paw-profile`.
 
 ## Local Stage 1 workflow
 
@@ -40,8 +42,9 @@ npm run validate:stage1
 - `preview.json`
 
 `npm run m2:pipeline` writes five curated case runs to `out/m2-pipeline/`. Each
-case includes selected output artifacts, `diagram-sequence.json`, proposal and
-critic history, and claim status. Each valid case is labeled
+case includes selected output artifacts, `diagram-sequence.json`, one
+profile-specific diagram sequence for each Stage 1 executor profile, proposal
+and critic history, and claim status. Each valid case is labeled
 `simulator-valid / executor-readable / embodiment-untested`.
 
 `npm run demo` serves the local UI at `http://localhost:4173/demo/`. Run

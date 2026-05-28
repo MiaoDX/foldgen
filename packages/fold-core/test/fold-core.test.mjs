@@ -95,6 +95,7 @@ test("diagram step contains executor-readable action structure", () => {
   assert.equal(step.executor_profile, "human-hand");
   assert.equal(step.executor_profile_definition.id, "human-hand");
   assert.deepEqual(executorProfiles["cat-paw-profile"].unavailable_actions, ["precision pinch", "two-point alignment"]);
+  assert.deepEqual(executorProfiles["dog-paw-profile"].unavailable_actions, ["precision pinch", "two-point alignment", "fine fingertip crease"]);
   assert.deepEqual(step.fold.landmarks, {
     start: "left midpoint",
     end: "right midpoint",

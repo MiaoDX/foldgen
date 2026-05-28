@@ -8,8 +8,9 @@ Active source of truth: `docs/plans/stage-1-mvp.md`, derived from
 Stage 1 technical status: M0-M4 plus the Phase 5 executor-readable contract
 upgrade are implemented. The current M1/M2 artifacts include executor profiles,
 structured action phases, checks, failure modes, and annotations; the demo
-renders the selected executor profile and action flow. Current valid cases use
-the label `simulator-valid / executor-readable / embodiment-untested`.
+renders a selector for human hand, robot gripper, cat paw, and dog paw action
+flows. Current valid cases use the label
+`simulator-valid / executor-readable / embodiment-untested`.
 
 Latest verification:
 - `npm test`

@@ -12,9 +12,10 @@ Status:
 - GSD ingest/plan handoff is degraded inline, not a full spawned-subagent run.
 - Phase 1 M1 output now emits executor-readable diagram steps under the refined
   contract.
-- Phase 2 M2 output now emits per-case executor-readable diagram sequences and
-  claim status.
-- Phase 3 M3 demo now renders the selected executor profile and action flow.
+- Phase 2 M2 output now emits per-case executor-readable diagram sequences for
+  human hand, robot gripper, cat paw, and dog paw, plus claim status.
+- Phase 3 M3 demo now renders an executor profile selector and selected action
+  flow.
 - Phase 4 M4 claim labels now require executor-readable evidence before using
   the refined Stage 1 label.
 
