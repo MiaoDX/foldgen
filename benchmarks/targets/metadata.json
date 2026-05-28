@@ -20,6 +20,20 @@
       "source": "hand-authored geometric SVG fixture",
       "usage": "M0 public target fixture",
       "license": "CC0-1.0"
+    },
+    {
+      "name": "simple boat",
+      "file": "simple-boat.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M2 curated pipeline target",
+      "license": "CC0-1.0"
+    },
+    {
+      "name": "simple star",
+      "file": "simple-star.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M2 curated pipeline target",
+      "license": "CC0-1.0"
     }
   ]
 }

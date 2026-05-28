@@ -17,27 +17,56 @@ Success criteria:
 - The deterministic one-fold case writes stable output artifacts.
 - No command depends on `MiaoDX/microsites`, paid APIs, or manual asset copying.
 
-Status: Planned
+Status: Completed
 
-## Phase 2: M2/M3 Pipeline And Demo Surface
+Proof:
+- Commit `5773f81` (`feat(fold-core): add deterministic m0 m1 spine`)
+- `npm test`
+- `npm run validate:fixtures`
+- `npm run m1:deterministic`
 
-Goal: five curated targets run through the local pipeline and the web demo
-renders those outputs with clear states and downloads.
+## Phase 2: M2 Local Pipeline
+
+Goal: five curated targets run through the local pipeline and record per-case
+outputs, validation status, proposal history, and critic history.
 
 Requirements:
 - FOLDGEN-M2-PIPELINE
-- FOLDGEN-M3-WEB-DEMO
 
 Success criteria:
 - Five target runs record validation, proposal, and critic history.
-- The demo connects to local pipeline outputs.
 - Invalid and partial results are visible and understandable.
+- No live provider adapter or private runtime asset is required.
 
-Status: Pending
+Status: Completed
+
+Proof:
+- `npm test`
+- `npm run validate:fixtures`
+- `npm run m1:deterministic`
+- `npm run m2:pipeline`
 
 Depends on: Phase 1
 
-## Phase 3: M4 Human Gate And Launch Materials
+## Phase 3: M3 Web Demo
+
+Goal: the web demo renders local pipeline outputs with clear states and
+downloadable artifacts.
+
+Requirements:
+- FOLDGEN-M3-WEB-DEMO
+
+Success criteria:
+- The demo connects to local pipeline outputs.
+- Upload and curated text target entry points are represented.
+- Empty, loading, invalid, partial, success, preview, and download states are
+  covered.
+
+Status: Pending
+
+Depends on: Phase 2
+
+## Phase 4: M4 Human Gate And Launch Materials
 
 Goal: public materials make only evidence-backed claims and at least five demo
 cases have human reproducibility records.
@@ -52,4 +81,4 @@ Success criteria:
 
 Status: Pending
 
-Depends on: Phase 2
+Depends on: Phase 3

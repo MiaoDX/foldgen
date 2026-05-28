@@ -7,15 +7,17 @@ AI origami design as the **second case study of the roboharness paradigm** — g
 
 ## Status
 
-**Stage 1 / Phase 1 verified** — public testbed fixtures and a deterministic
-`fold-core` spine are implemented for M0/M1. No agent loop or web demo yet.
+**Stage 1 / M2 verified** — public testbed fixtures, deterministic `fold-core`,
+and a five-target local pipeline are implemented. No web demo or live provider
+adapter yet.
 
-## Local M0/M1 workflow
+## Local Stage 1 workflow
 
 ```bash
 npm test
 npm run validate:fixtures
 npm run m1:deterministic
+npm run m2:pipeline
 ```
 
 `npm run m1:deterministic` writes local artifacts to `out/m1-deterministic/`:
@@ -24,6 +26,9 @@ npm run m1:deterministic
 - `crease.svg`
 - `validation.json`
 - `diagram-step.json`
+
+`npm run m2:pipeline` writes five curated case runs to `out/m2-pipeline/`. Each
+case includes selected output artifacts plus proposal and critic history.
 
 ## Why this exists (and why it's repositioned)
 
