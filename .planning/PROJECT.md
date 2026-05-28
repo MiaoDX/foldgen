@@ -15,6 +15,8 @@ produce verified, teachable origami outputs without private runtime assets.
 
 - Absolute: five demo cases are simulator-valid and expose FOLD, crease SVG,
   preview data, and executor-readable steps without requiring external people.
+  After the 2026-05-28 contract refinement, executor-readable means structured
+  executor profile plus action flow, not a one-sentence step.
 - Engineering: M0/M1 can be installed, tested, and run locally without
   `MiaoDX/microsites`, paid model APIs, or manual asset copying.
 - Launch: public README/blog claims distinguish simulator-valid, untested,

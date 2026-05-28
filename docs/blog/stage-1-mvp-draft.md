@@ -8,12 +8,16 @@ foldgen now has a repo-local Stage 1 path: public fixtures, deterministic
 `fold-core`, a five-target pipeline, local demo rendering, and claim-label
 validation.
 
-Current demo cases are `simulator-valid / embodiment-untested`.
+Current demo cases are `simulator-valid / embodiment-untested` under the coarse
+technical gate. The refined Stage 1 target is
+`simulator-valid / executor-readable / embodiment-untested`, which requires
+structured executor actions before this draft can become public copy.
 
 ## Evidence To Cite Before Publishing
 
 - `npm run validate:stage1`
 - `out/m2-pipeline/summary.json`
+- `docs/contracts/stage-1-output-contract.md`
 - `docs/launch/stage-1-launch-checklist.md`
 - Optional final records only after `npm run validate:embodiment` passes
 

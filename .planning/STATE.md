@@ -1,22 +1,26 @@
 # State
 
-Current focus: Stage 1 technical closeout complete.
+Current focus: Phase 5 - Executor-readable Contract Upgrade.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
 - Roadmap: `.planning/ROADMAP.md`
-- Completed phase plan: `.planning/phases/04-m4-technical-closeout-claim-guard/PLAN.md`
+- Active contract: `docs/contracts/stage-1-output-contract.md`
+- Active phase plan: `.planning/phases/05-executor-readable-contract-upgrade/PLAN.md`
 
 Status:
 - GSD ingest/plan handoff is degraded inline, not a full spawned-subagent run.
-- Phase 1 implementation is complete, locally verified, and committed.
-- Phase 2 implementation is complete, locally verified, and committed.
-- Phase 3 implementation is complete, locally verified, and committed.
-- Phase 4 implementation is complete and locally verified.
+- Phase 1 implementation is complete for the original coarse gate; M1
+  executor-readable output needs follow-up.
+- Phase 2 implementation is complete for the original coarse gate; per-case
+  executor-readable sequences need follow-up.
+- Phase 3 implementation is complete for the original coarse gate; rendered
+  executor-readable action flow needs follow-up.
+- Phase 4 implementation is complete for the original coarse gate; claim labels
+  need executor-readable evidence before using the refined Stage 1 label.
 
 Next action:
-- Continue optional post-M4 polish or launch preparation using
-  `npm run validate:stage1`.
+- Implement the Phase 5 executor-readable contract upgrade.
 - Keep final embodiment validation optional until a launch claim requires
   physical-executor evidence.
 

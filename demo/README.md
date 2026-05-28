@@ -3,6 +3,10 @@
 Local Stage 1 demo for rendering pipeline outputs. Current cases are labeled
 `simulator-valid / embodiment-untested`.
 
+The refined Stage 1 contract requires a followable executor-readable action
+flow. The current demo still shows the coarse one-sentence step output and is
+scheduled for the Phase 5 executor-readable upgrade.
+
 Run from the repo root:
 
 ```bash

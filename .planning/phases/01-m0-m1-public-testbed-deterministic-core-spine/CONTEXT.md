@@ -7,7 +7,7 @@ Deliver the first executable foldgen spine:
 - public fixtures and metadata
 - deterministic `fold-core` parse/serialize/validate/SVG behavior
 - one deterministic local fold operation
-- one minimal diagram step
+- one executor-readable diagram step
 - repo-local install/test/run commands
 
 ## In Scope
@@ -41,7 +41,8 @@ Covered requirements:
 - Valid fixtures pass validation.
 - Malformed fixture fails validation.
 - Crease SVG output is deterministic.
-- One-fold deterministic case writes output FOLD, SVG, validation result, and
-  diagram step.
+- One-fold deterministic case writes output FOLD, SVG, preview data, validation
+  result, and a diagram step satisfying
+  `docs/contracts/stage-1-output-contract.md`.
 - Commands do not require `MiaoDX/microsites`, paid APIs, Docker, GPU, or manual
   asset copying.

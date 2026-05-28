@@ -26,5 +26,7 @@ repeat the check before publishing external launch material.
 
 Stage 1 can keep its current positioning for local technical closeout:
 foldgen is an executor-readable output layer with cases labeled
-`simulator-valid / embodiment-untested`, not a benchmark reproduction or a
-claim of final physical execution.
+`simulator-valid / executor-readable / embodiment-untested` once the refined
+executor-readable contract is implemented. Until then, the current coarse demo
+label remains `simulator-valid / embodiment-untested`; neither label is a
+benchmark reproduction or a claim of final physical execution.

@@ -13,6 +13,11 @@ guardrails are implemented. The current demo cases are
 **simulator-valid / embodiment-untested**: no live provider adapter and no final
 embodiment claim yet.
 
+The executor-readable contract has since been sharpened in
+`docs/contracts/stage-1-output-contract.md`. The current UI still shows
+one-sentence steps; the next implementation pass upgrades those outputs to
+`simulator-valid / executor-readable / embodiment-untested`.
+
 ## Local Stage 1 workflow
 
 ```bash
@@ -34,8 +39,9 @@ npm run validate:stage1
 
 `npm run m2:pipeline` writes five curated case runs to `out/m2-pipeline/`. Each
 case includes selected output artifacts plus proposal and critic history. Each
-valid case is labeled `simulator-valid / embodiment-untested` until a final
-embodiment record is intentionally added and validated.
+valid case is currently labeled `simulator-valid / embodiment-untested`. That is
+the coarse gate. The refined gate will require structured executor-readable
+steps before using `simulator-valid / executor-readable / embodiment-untested`.
 
 `npm run demo` serves the local UI at `http://localhost:4173/demo/`. Run
 `npm run m2:pipeline` first when `out/m2-pipeline/` is missing or stale.

@@ -1,10 +1,27 @@
 # Roadmap
 
+## Contract Refinement: 2026-05-28
+
+The first implementation pass completed the coarse M0-M4 technical spine, but
+the screenshot review exposed that "executor-readable diagram" was underspecified:
+the current demo can show one-sentence steps, not a followable executor action
+flow.
+
+Canonical refined contract: `docs/contracts/stage-1-output-contract.md`.
+
+Implication:
+- Existing commits remain useful technical proof for fixtures, FOLD/SVG,
+  validation, pipeline, preview, demo wiring, and claim labels.
+- M1-M4 are not complete under the refined executor-readable contract until the
+  implementation emits and renders structured executor actions.
+- The next implementation slice should upgrade the already-built spine rather
+  than restart the milestones from scratch.
+
 ## Phase 1: M0/M1 Public Testbed And Deterministic Core Spine
 
 Goal: a contributor can install, validate fixtures, and run one deterministic
 fold case locally, producing parseable FOLD, deterministic SVG, validation
-result, and one minimal diagram step.
+result, preview data, and one executor-readable diagram step.
 
 Requirements:
 - FOLDGEN-M0-PUBLIC-TESTBED
@@ -15,9 +32,12 @@ Success criteria:
 - Fixture validation passes for valid fixtures and fails for the malformed
   fixture.
 - The deterministic one-fold case writes stable output artifacts.
+- The deterministic one-fold case writes an executor-readable diagram step under
+  `docs/contracts/stage-1-output-contract.md`.
 - No command depends on `MiaoDX/microsites`, paid APIs, or manual asset copying.
 
-Status: Completed
+Status: Completed for the original coarse gate; executor-readable follow-up
+required under the refined contract.
 
 Proof:
 - Commit `5773f81` (`feat(fold-core): add deterministic m0 m1 spine`)
@@ -28,17 +48,20 @@ Proof:
 ## Phase 2: M2 Local Pipeline
 
 Goal: five curated targets run through the local pipeline and record per-case
-outputs, validation status, proposal history, and critic history.
+outputs, validation status, proposal history, critic history, claim status, and
+executor-readable diagram sequence.
 
 Requirements:
 - FOLDGEN-M2-PIPELINE
 
 Success criteria:
 - Five target runs record validation, proposal, and critic history.
+- Five target runs record executor-readable diagram sequences and claim status.
 - Invalid and partial results are visible and understandable.
 - No live provider adapter or private runtime asset is required.
 
-Status: Completed
+Status: Completed for the original coarse gate; executor-readable follow-up
+required under the refined contract.
 
 Proof:
 - Commit `0f68672` (`feat(foldgen-agent): add deterministic m2 pipeline`)
@@ -51,8 +74,8 @@ Depends on: Phase 1
 
 ## Phase 3: M3 Web Demo
 
-Goal: the web demo renders local pipeline outputs with clear states and
-downloadable artifacts.
+Goal: the web demo renders local pipeline outputs with clear states,
+downloadable artifacts, executor profile, and followable action flow.
 
 Requirements:
 - FOLDGEN-M3-WEB-DEMO
@@ -62,8 +85,10 @@ Success criteria:
 - Upload and curated text target entry points are represented.
 - Empty, loading, invalid, partial, success, preview, and download states are
   covered.
+- Executor-readable action flow is visible for a selected case.
 
-Status: Completed
+Status: Completed for the original coarse gate; executor-readable follow-up
+required under the refined contract.
 
 Proof:
 - Commit `9df7327` (`feat(demo): add local m3 pipeline viewer`)
@@ -86,11 +111,13 @@ Requirements:
 
 Success criteria:
 - `npm run validate:stage1` passes as the current technical gate.
-- README/blog/demo labels distinguish simulator-valid from embodiment-validated.
+- README/blog/demo labels distinguish simulator-valid, executor-readable, and
+  embodiment-validated.
 - Final embodiment records are documented as optional launch-claim evidence.
 - Related-work status is rechecked before public launch copy.
 
-Status: Completed
+Status: Completed for the original coarse gate; claim-label follow-up required
+under the refined contract.
 
 Proof:
 - `npm test`
@@ -111,3 +138,28 @@ Gate:
   technical work.
 
 Depends on: Phase 3
+
+## Phase 5: Executor-readable Contract Upgrade
+
+Goal: upgrade the existing Stage 1 spine so all M1-M4 outputs satisfy
+`docs/contracts/stage-1-output-contract.md`.
+
+Requirements:
+- FOLDGEN-M1-DETERMINISTIC-CORE
+- FOLDGEN-M2-PIPELINE
+- FOLDGEN-M3-WEB-DEMO
+- FOLDGEN-M4-CLAIM-GUARD
+
+Success criteria:
+- M1 deterministic output includes executor profile, structured actions,
+  checks, failure modes, and annotations.
+- M2 emits executor-readable sequences and claim status for all five curated
+  cases.
+- M3 renders the active executor profile and followable action flow.
+- M4 labels current cases as
+  `simulator-valid / executor-readable / embodiment-untested` only after the
+  executor-readable gate passes.
+
+Status: Planned
+
+Depends on: Phase 4 coarse technical spine

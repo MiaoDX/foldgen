@@ -43,6 +43,11 @@ milestones one by one via `intuitive-flow`.
 - Live model provider adapters come after deterministic fixtures, validation,
   crease SVG, and diagram contracts work.
 - 3D preview is useful inspection output, but it is not a flat-foldability proof.
+- Executor-readable output is a structured contract, not a one-sentence diagram
+  caption. Stage 1 steps must name an executor profile and include setup,
+  anchor/grip, fold direction, alignment target, crease/press, release, checks,
+  failure modes, and annotations. See
+  `docs/contracts/stage-1-output-contract.md`.
 - Any public physical-execution claim requires a final embodiment-validation
   record with executor morphology, pass/fail, and notes.
 
@@ -71,33 +76,68 @@ milestones one by one via `intuitive-flow`.
 
 One public base-form fixture plus one public target fixture. The pipeline applies
 one deterministic local fold operation, writes a valid derived FOLD file, writes
-a deterministic crease pattern SVG, runs fold validation, and emits a minimal
-fold sequence with one executor-readable step.
+a deterministic crease pattern SVG, runs fold validation, writes preview data,
+and emits one executor-readable step following
+`docs/contracts/stage-1-output-contract.md`.
 
 ## Fuller Demo
 
 Five base-form fixtures and at least five test targets run through an end-to-end
 pipeline. A web demo accepts a target image upload or curated text target and
-returns a FOLD file, crease pattern SVG, 3D preview/animation, and step-by-step
-diagram. Final embodiment-validation records are explicitly out of the default
-Stage 1 loop.
+returns a FOLD file, crease pattern SVG, 3D preview/animation, executor profile,
+and a step-by-step action flow. Final embodiment-validation records are
+explicitly out of the default Stage 1 loop.
+
+## Stage 1 Output Contract
+
+Canonical detailed contract: `docs/contracts/stage-1-output-contract.md`.
+
+Stage 1 case outputs must use this default label:
+
+```text
+simulator-valid / executor-readable / embodiment-untested
+```
+
+The previous label `simulator-valid / embodiment-untested` is too weak because
+it does not prove that the case contains a followable executor-readable flow.
+
+Minimum executor-readable step fields:
+
+- executor profile
+- pre-state
+- fold landmarks
+- anchor/grip action
+- fold direction
+- alignment target
+- crease/press action
+- release action
+- success checks
+- failure modes
+- visual annotations
+
+A single natural-language sentence such as "Add a mast centerline valley" is
+not sufficient evidence.
 
 ## Acceptance Criteria
 
 - M0: The repo contains five public base-form FOLD fixtures and at least three
   public target fixtures with metadata. Runtime tests do not read private repos.
+  Metadata includes source/prompt, license/usage note, intended test role, and
+  executor-readability notes.
 - M1: `fold-core` parses, serializes, validates, and writes crease-pattern SVG
   for the fixture FOLD files. A deterministic/mock proposal applies one local
   fold operation and produces parseable FOLD, deterministic SVG, validation
-  result, and a minimal diagram step.
+  result, preview data, and an executor-readable diagram step.
 - M2: The agent pipeline runs on five curated test targets and records per-case
-  outputs, validation status, and critic/proposal history.
+  outputs, validation status, critic/proposal history, claim status, and
+  executor-readable diagram sequence.
 - M3: The web demo supports image upload and curated text target entry, then
-  displays fold sequence, crease pattern, and 3D preview output from the local
-  pipeline.
+  displays fold sequence, crease pattern, 3D preview output, executor profile,
+  and followable action flow from the local pipeline.
 - M4: Stage 1 closeout labels README, demo, and pipeline outputs as
-  simulator-valid / embodiment-untested unless final records exist. Blog and
-  launch materials remain draft-only until the final claim gate is run.
+  simulator-valid / executor-readable / embodiment-untested unless final records
+  exist. Blog and launch materials remain draft-only until the final claim gate
+  is run.
 
 ## Verification
 
@@ -106,7 +146,9 @@ Stage 1 loop.
   fixtures.
 - Snapshot or golden-file tests must cover deterministic crease SVG output.
 - Pipeline tests must cover the deterministic one-fold M1 case.
-- Demo tests must cover upload/curated-target output wiring once M3 exists.
+- Diagram tests must fail if executor-readable fields are missing.
+- Demo tests must cover upload/curated-target output wiring and visible
+  executor-readable action flow once M3 exists.
 - Final embodiment-validation records must be committed for every demo case
   publicly claimed as physically executable.
 
@@ -114,11 +156,14 @@ Stage 1 loop.
 
 1. M0 Public Testbed: fixtures, target assets, metadata, and validation tests.
 2. M1 Deterministic Core: fold-core package, one-fold mock proposal, output
-   contracts, crease SVG generation, and minimal diagram step.
+   contracts, crease SVG generation, preview data, executor profiles, and
+   executor-readable diagram step.
 3. M2 Pipeline: base-form selection, deterministic/Codex-assisted proposal
-   loop, candidate validation, critic record, and batch run on five targets.
+   loop, candidate validation, critic record, claim status, executor-readable
+   sequence, and batch run on five targets.
 4. M3 Web Demo: upload/curated text entry, result rendering, downloadable FOLD
-   and SVG, preview/animation surface, and local pipeline integration.
+   and SVG, preview/animation surface, executor profile display, action-flow
+   rendering, and local pipeline integration.
 5. M4 Technical Closeout And Claim Guard: README/demo labels, blog draft,
    demo case summaries, launch checklist, and final embodiment gate docs.
 
@@ -130,6 +175,8 @@ Stage 1 loop.
   subset in early milestones.
 - 3D preview can lag behind validation as long as M1 validity is proven through
   parseable FOLD, deterministic SVG, and validation checks.
+- The first implementation pass produced only one-sentence diagram steps; those
+  are now treated as insufficient under the refined executor-readable contract.
 - Final embodiment validation is offline/external and must stay outside the
   default Stage 1 stop gate. Automated tests only confirm record shape when that
   final gate is explicitly invoked.
@@ -177,7 +224,7 @@ handoff verdict below as `SAFE_WITH_CONSTRAINTS`, not `SUCCESS`.
 
 | Risk | Accepted Decision | Gate |
 |---|---|---|
-| Scope creep from smallest demo into a full web/agent/launch product. | Ship the smallest proof first: one public base-form fixture, one public target fixture, one deterministic local fold, valid FOLD, deterministic SVG, validation result, and one minimal step. | M1 cannot expand until this path runs locally. |
+| Scope creep from smallest demo into a full web/agent/launch product. | Ship the smallest proof first: one public base-form fixture, one public target fixture, one deterministic local fold, valid FOLD, deterministic SVG, validation result, preview data, and one executor-readable step. | M1 cannot expand until this path runs locally. |
 | Invalid credibility claims. | No demo case may be called physically executable until a final embodiment attempt is recorded with pass/fail and notes. | M4 launch docs must distinguish simulator-valid from embodiment-validated. |
 | Private asset leakage. | Tests must prove runtime commands do not read `MiaoDX/microsites` or any private path. | M0 fixture tests include private-path guard coverage. |
 | Unbounded simulator work. | Use existing FOLD/Rabbit Ear/Origami Simulator/Tachi-style tools through `fold-core`; do not implement new folding physics. | M1 implementation must stay glue-sized and deterministic. |
@@ -221,10 +268,10 @@ M2/M3/M4
 | Milestone | Required Proof |
 |---|---|
 | M0 | Five public base-form fixtures and at least three target fixtures have metadata; valid fixtures pass validation; one malformed FOLD fixture fails validation; runtime checks prove no private repo path is read. |
-| M1 | Parse/serialize round-trip, validation result, deterministic crease SVG golden test, deterministic one-fold output, and minimal diagram-step output are covered by repo-local tests. |
-| M2 | Five curated targets produce per-case outputs, validation status, proposal history, and critic history. Failures are recorded as data, not hidden. |
-| M3 | Demo tests cover upload/curated-target wiring to local pipeline outputs, empty/error/loading states, downloadable FOLD/SVG, and preview rendering. |
-| M4 | Stage 1 labels and docs avoid physical-execution claims by default. Final embodiment records are optional until launch claims need them, and automated tests verify record shape only when that gate is invoked. |
+| M1 | Parse/serialize round-trip, validation result, deterministic crease SVG golden test, deterministic one-fold output, preview data, and executor-readable diagram-step output are covered by repo-local tests. |
+| M2 | Five curated targets produce per-case outputs, validation status, proposal history, critic history, claim status, and executor-readable sequences. Failures are recorded as data, not hidden. |
+| M3 | Demo tests cover upload/curated-target wiring to local pipeline outputs, empty/error/loading states, downloadable FOLD/SVG, preview rendering, executor profile, and action-flow rendering. |
+| M4 | Stage 1 labels and docs avoid physical-execution claims by default and only use executor-readable labels when structured executor-readable evidence exists. Final embodiment records are optional until launch claims need them, and automated tests verify record shape only when that gate is invoked. |
 
 ### DX And UI Decisions Accepted
 

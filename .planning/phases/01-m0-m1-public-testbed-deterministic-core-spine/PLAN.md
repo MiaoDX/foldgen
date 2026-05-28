@@ -4,7 +4,7 @@
 
 Create the first runnable foldgen proof path: public fixtures plus a
 deterministic core that validates FOLD, writes a stable crease SVG, and runs one
-local fold case with a minimal human-readable step.
+local fold case with an executor-readable step.
 
 ## Tasks
 
@@ -17,10 +17,14 @@ local fold case with a minimal human-readable step.
 6. Implement deterministic `fold-core` parse, serialize, validate, crease SVG,
    and local fold-operation helpers.
 7. Add one deterministic case runner that produces output FOLD, SVG, validation
-   JSON, and one diagram-step JSON file.
-8. Add tests for fixture metadata, valid/malformed validation,
+   JSON, preview JSON, and one diagram-step JSON file.
+8. Ensure the diagram step follows
+   `docs/contracts/stage-1-output-contract.md`: executor profile, pre-state,
+   landmarks, anchor/grip, fold direction, alignment target, crease/press,
+   release, checks, failure modes, and annotations.
+9. Add tests for fixture metadata, valid/malformed validation,
    parse/serialize round-trip, deterministic SVG, and deterministic case output.
-9. Update README with install, validate, test, and deterministic-case commands.
+10. Update README with install, validate, test, and deterministic-case commands.
 
 ## Constraints
 
@@ -35,6 +39,7 @@ local fold case with a minimal human-readable step.
 - `packages/fold-core` implementation and tests.
 - public fixture and target files with metadata.
 - deterministic M1 output command and generated artifact location.
+- executor profile and executor-readable diagram-step artifact.
 - README local workflow.
 
 ## Verification
@@ -48,6 +53,11 @@ Latest passing checks:
 - `npm test`
 - `npm run validate:fixtures`
 - `npm run m1:deterministic`
+
+Refined-contract gap:
+- The original implementation wrote a minimal one-sentence diagram step. It must
+  be upgraded before M1 is considered complete under the refined Stage 1 output
+  contract.
 
 ## Provenance
 

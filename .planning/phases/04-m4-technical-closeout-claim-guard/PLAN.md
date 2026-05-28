@@ -3,7 +3,9 @@
 ## Goal
 
 Close Stage 1 with evidence-backed labels while keeping physical-executor
-validation as a final-stage claim gate.
+validation as a final-stage claim gate. Under the refined contract, M4 also
+guards the difference between `simulator-valid`, `executor-readable`, and
+`embodiment-validated`.
 
 ## Tasks
 
@@ -13,6 +15,8 @@ validation as a final-stage claim gate.
 3. [x] Label simulator-valid but untested cases as not embodiment-validated.
 4. [x] Recheck related-work status before public launch copy.
 5. [x] Keep `npm run validate:embodiment` documented as final-stage only.
+6. [ ] Upgrade claim labels to require executor-readable evidence before using
+   `simulator-valid / executor-readable / embodiment-untested`.
 
 ## Claim Gate
 
@@ -26,6 +30,8 @@ M4 verification should include:
 
 - `npm run validate:stage1`
 - no public embodiment-validated claim without a passing final record
+- no public executor-readable claim without structured executor-readable step
+  artifacts
 - `npm run validate:embodiment` only when final records are intentionally added
 - current related-work check before launch copy
 
@@ -38,3 +44,7 @@ M4 verification should include:
   checklist, blog draft, and generated M2 pipeline summary.
 - Related-work check recorded at
   `docs/launch/related-work-check-2026-05-28.md`.
+
+Refined-contract gap:
+- The original M4 gate only enforced `simulator-valid / embodiment-untested`.
+  It must be upgraded to include executor-readable evidence.
