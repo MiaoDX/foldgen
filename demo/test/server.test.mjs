@@ -17,11 +17,11 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.match(html, /id="image-upload"/);
     assert.match(html, /id="preview-canvas"/);
     assert.match(html, /id="downloads"/);
-    assert.match(html, /id="human-status"/);
+    assert.match(html, /id="embodiment-status"/);
 
     const script = await fetchText(`${baseUrl}/demo/app.js`);
     assert.match(script, /fetchCaseArtifacts/);
-    assert.match(script, /Simulator-valid; human reproduction untested/);
+    assert.match(script, /Simulator-valid; physical executor untested/);
 
     const summary = await fetchJson(`${baseUrl}/out/m2-pipeline/summary.json`);
     assert.equal(summary.ok, true);

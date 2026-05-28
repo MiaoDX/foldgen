@@ -4,7 +4,7 @@ Operating rules for Codex CLI / local Claude Code / sub-agents working in this r
 
 ## Operating mode
 
-Human PM authors `docs/WHY.md` / `docs/PLAN.md` and makes the strategic calls (input modality, LLM choice, workshop targets). You implement the agent loop, critic, diagram generator, and demo. Plan first on non-trivial tasks, then implement.
+The project owner authors `docs/WHY.md` / `docs/PLAN.md` and makes the strategic calls (input modality, LLM choice, workshop targets). You implement the agent loop, critic, diagram generator, and demo. Plan first on non-trivial tasks, then implement.
 
 ## What foldgen is NOT (read before designing anything)
 
@@ -15,9 +15,9 @@ Human PM authors `docs/WHY.md` / `docs/PLAN.md` and makes the strategic calls (i
 
 ## The differentiator (protect it)
 
-foldgen's edge over Learn2Fold/OrigamiBench is **human-teachable output**: a normal person can fold along with what foldgen produces. Every design decision should serve "can a human reproduce this", not "does it match ground-truth geometry". The success metric is a human reproducibility test, not a similarity score.
+foldgen's edge over Learn2Fold/OrigamiBench is **executor-teachable output**: the generated artifact should be explainable as a sequence that a specified executor morphology could eventually perform. Every design decision should serve "can an executor follow this", not "does it match ground-truth geometry". Stage 1 uses repo-local technical validation; physical executor evidence is deferred to the final embodiment-validation stage.
 
-When a demo case is described as human reproducible, require at least one documented human fold attempt from the generated steps. Record pass/fail and failure notes. Simulator success or a strong vision score is not enough for that claim.
+When a demo case is described as embodiment validated, require a documented physical execution attempt from the generated steps. Record executor morphology, pass/fail, and failure notes. Simulator success or a strong vision score is not enough for that claim.
 
 ## fold-core boundary
 
@@ -40,7 +40,7 @@ If a web demo needs live model calls for end users, add a provider adapter expli
 ## Validation before PR
 
 - Any agent-produced FOLD that's published as a "result" MUST be confirmed flat-foldable via fold-core before being shown as a success.
-- Demo cases claimed as "a human can fold this" MUST have been reproduced at least once (by a person or documented as untested).
+- Demo cases claimed as physically executable MUST have a final embodiment-validation record, or be documented as untested.
 - Keep related-work citations (the 4 papers) accurate and current — re-check arXiv status before any public post.
 
 ## Branch namespace

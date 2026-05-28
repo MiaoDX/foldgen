@@ -13,7 +13,7 @@ const els = {
   uploadPreview: document.querySelector("#upload-preview"),
   statePill: document.querySelector("#state-pill"),
   stateMessage: document.querySelector("#state-message"),
-  humanStatus: document.querySelector("#human-status"),
+  embodimentStatus: document.querySelector("#embodiment-status"),
   stateBanner: document.querySelector("#state-banner"),
   caseTitle: document.querySelector("#case-title"),
   downloads: document.querySelector("#downloads"),
@@ -154,7 +154,7 @@ async function loadCase(pipelineCase) {
   }
 
   setUiState("success", `${pipelineCase.target.name} loaded.`);
-  setHumanStatus("Simulator-valid; human reproduction untested.");
+  setEmbodimentStatus("Simulator-valid; physical executor untested.");
 }
 
 async function fetchCaseArtifacts(pipelineCase) {
@@ -320,7 +320,7 @@ function clearCaseView() {
   els.proposalList.innerHTML = "";
   els.criticList.innerHTML = "";
   state.currentPreview = null;
-  setHumanStatus("No case selected.");
+  setEmbodimentStatus("No case selected.");
   renderPreview(null);
 }
 
@@ -332,8 +332,8 @@ function setUiState(kind, message) {
   els.stateBanner.textContent = message;
 }
 
-function setHumanStatus(message) {
-  els.humanStatus.textContent = `Human status: ${message}`;
+function setEmbodimentStatus(message) {
+  els.embodimentStatus.textContent = `Embodiment status: ${message}`;
 }
 
 async function fetchJson(path) {

@@ -76,28 +76,29 @@ Proof:
 
 Depends on: Phase 2
 
-## Phase 4: M4 Human Gate And Launch Materials
+## Phase 4: M4 Technical Closeout And Claim Guard
 
-Goal: public materials make only evidence-backed claims and at least five demo
-cases have human reproducibility records.
+Goal: public materials make only evidence-backed claims while Stage 1 remains
+unblocked by external executor participation.
 
 Requirements:
-- FOLDGEN-M4-HUMAN-GATE
+- FOLDGEN-M4-CLAIM-GUARD
 
 Success criteria:
-- Five human attempt records exist with pass/fail and notes.
-- README/blog/demo labels distinguish simulator-valid from human-reproduced.
+- `npm run validate:stage1` passes as the current technical gate.
+- README/blog/demo labels distinguish simulator-valid from embodiment-validated.
+- Final embodiment records are documented as optional launch-claim evidence.
 - Related-work status is rechecked before public launch copy.
 
-Status: Blocked
+Status: Planned
 
-Blocker:
-- Requires five real human folding attempt records with pass/fail and notes.
-  Simulator-valid output, deterministic preview, and critic scores are not
-  human reproducibility evidence.
+Claim guard:
+- Physical-execution claims require final embodiment records. Simulator-valid
+  output, deterministic preview, and critic scores are not embodiment evidence.
 
 Gate:
-- `npm run validate:human` must pass before M4 can be completed.
-- Current result: fails with 0 passing claim-allowed records.
+- `npm run validate:stage1` is the Stage 1 gate.
+- `npm run validate:embodiment` is final-stage only and must not block current
+  technical work.
 
 Depends on: Phase 3

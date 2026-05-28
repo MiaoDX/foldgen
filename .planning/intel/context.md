@@ -10,5 +10,5 @@ Relevant language:
 - fold-core
 - valid output
 - teaching diagram
-- human reproducible
+- embodiment validated
 - provider adapter

@@ -213,7 +213,7 @@ input[type="file"] {
   color: var(--muted);
 }
 
-.human-status {
+.embodiment-status {
   border-top: 1px solid var(--line);
   padding-top: 8px;
   color: var(--amber);

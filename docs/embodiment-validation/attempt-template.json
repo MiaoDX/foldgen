@@ -1,0 +1,15 @@
+{
+  "case_id": "simple-bird",
+  "artifact_summary": "out/m2-pipeline/simple-bird/summary.json",
+  "executor_type": "human-hand|robot-gripper|animal-paw|tool-rig|other",
+  "executor_label": "executor-label-or-rig-id",
+  "attempted_on": "2026-05-28",
+  "status": "pass-or-fail",
+  "time_minutes": null,
+  "notes": [
+    "What executor morphology was used?",
+    "Where did the folding instructions or mechanics fail?",
+    "What should change before physical-execution claims?"
+  ],
+  "claim_allowed": false
+}

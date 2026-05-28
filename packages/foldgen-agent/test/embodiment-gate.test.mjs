@@ -4,12 +4,12 @@ import { join } from "node:path";
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { validateHumanGate } from "../src/index.mjs";
+import { validateEmbodimentGate } from "../src/index.mjs";
 
-test("human gate blocks when records are missing", async () => {
-  const outDir = await mkdtemp(join(tmpdir(), "foldgen-human-empty-"));
+test("embodiment gate blocks when records are missing", async () => {
+  const outDir = await mkdtemp(join(tmpdir(), "foldgen-embodiment-empty-"));
   try {
-    const result = await validateHumanGate({ recordsDir: join(outDir, "attempts") });
+    const result = await validateEmbodimentGate({ recordsDir: join(outDir, "attempts") });
     assert.equal(result.ok, false);
     assert.equal(result.status, "blocked");
     assert.equal(result.record_count, 0);
@@ -19,17 +19,22 @@ test("human gate blocks when records are missing", async () => {
   }
 });
 
-test("human gate passes with five passing claim-allowed records", async () => {
-  const outDir = await mkdtemp(join(tmpdir(), "foldgen-human-pass-"));
+test("embodiment gate passes with five passing claim-allowed records", async () => {
+  const outDir = await mkdtemp(join(tmpdir(), "foldgen-embodiment-pass-"));
   const recordsDir = join(outDir, "attempts");
   try {
     await mkdir(recordsDir, { recursive: true });
     const caseIds = ["simple-bird", "simple-fish", "simple-flower", "simple-boat", "simple-star"];
     for (const [index, caseId] of caseIds.entries()) {
-      await writeRecord(recordsDir, `${caseId}.json`, validRecord({ case_id: caseId, attempted_by: `tester-${index + 1}` }));
+      const executorType = index === 0 ? "human-hand" : "robot-gripper";
+      await writeRecord(recordsDir, `${caseId}.json`, validRecord({
+        case_id: caseId,
+        executor_type: executorType,
+        executor_label: `${executorType}-${index + 1}`
+      }));
     }
 
-    const result = await validateHumanGate({ recordsDir });
+    const result = await validateEmbodimentGate({ recordsDir });
     assert.equal(result.ok, true);
     assert.equal(result.passing_claim_allowed_record_count, 5);
     assert.deepEqual(result.cases_with_passing_records, caseIds);
@@ -38,14 +43,14 @@ test("human gate passes with five passing claim-allowed records", async () => {
   }
 });
 
-test("human gate rejects failed attempts marked claim allowed", async () => {
-  const outDir = await mkdtemp(join(tmpdir(), "foldgen-human-invalid-"));
+test("embodiment gate rejects failed attempts marked claim allowed", async () => {
+  const outDir = await mkdtemp(join(tmpdir(), "foldgen-embodiment-invalid-"));
   const recordsDir = join(outDir, "attempts");
   try {
     await mkdir(recordsDir, { recursive: true });
     await writeRecord(recordsDir, "bad.json", validRecord({ status: "fail", claim_allowed: true }));
 
-    const result = await validateHumanGate({ recordsDir });
+    const result = await validateEmbodimentGate({ recordsDir });
     assert.equal(result.ok, false);
     assert.match(result.errors.join("\n"), /claim_allowed can only be true/);
   } finally {
@@ -57,7 +62,8 @@ function validRecord(overrides = {}) {
   return {
     case_id: "simple-bird",
     artifact_summary: "out/m2-pipeline/simple-bird/summary.json",
-    attempted_by: "tester",
+    executor_type: "robot-gripper",
+    executor_label: "lab-gripper-a",
     attempted_on: "2026-05-28",
     status: "pass",
     time_minutes: 12,

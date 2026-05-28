@@ -1,11 +1,12 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const DEFAULT_RECORDS_DIR = "docs/human-reproducibility/attempts";
+const DEFAULT_RECORDS_DIR = "docs/embodiment-validation/attempts";
 const REQUIRED_PASSING_RECORDS = 5;
 const VALID_STATUSES = new Set(["pass", "fail"]);
+const VALID_EXECUTOR_TYPES = new Set(["human-hand", "robot-gripper", "animal-paw", "tool-rig", "other"]);
 
-export async function validateHumanGate(options = {}) {
+export async function validateEmbodimentGate(options = {}) {
   const recordsDir = options.recordsDir ?? DEFAULT_RECORDS_DIR;
   const requiredPasses = options.requiredPasses ?? REQUIRED_PASSING_RECORDS;
   const expectedCaseIds = options.expectedCaseIds ?? ["simple-bird", "simple-fish", "simple-flower", "simple-boat", "simple-star"];
@@ -19,7 +20,7 @@ export async function validateHumanGate(options = {}) {
 
   const passingRecords = records.filter((record) => record.status === "pass" && record.claim_allowed === true);
   if (passingRecords.length < requiredPasses) {
-    errors.push(`M4 requires ${requiredPasses} passing claim-allowed human records; found ${passingRecords.length}`);
+    errors.push(`final embodiment validation requires ${requiredPasses} passing claim-allowed records; found ${passingRecords.length}`);
   }
 
   const passingCaseIds = new Set(passingRecords.map((record) => record.case_id));
@@ -37,6 +38,8 @@ export async function validateHumanGate(options = {}) {
     records: records.map((record) => ({
       file: record.__file,
       case_id: record.case_id,
+      executor_type: record.executor_type,
+      executor_label: record.executor_label,
       status: record.status,
       claim_allowed: record.claim_allowed
     }))
@@ -71,9 +74,12 @@ function validateRecord(record, { expectedCaseIds, errors, warnings }) {
   const label = record.__file ?? "<record>";
   requireString(record.case_id, `${label}: case_id`, errors);
   requireString(record.artifact_summary, `${label}: artifact_summary`, errors);
-  requireString(record.attempted_by, `${label}: attempted_by`, errors);
+  requireString(record.executor_label, `${label}: executor_label`, errors);
   requireIsoDate(record.attempted_on, `${label}: attempted_on`, errors);
 
+  if (!VALID_EXECUTOR_TYPES.has(record.executor_type)) {
+    errors.push(`${label}: executor_type must be one of ${Array.from(VALID_EXECUTOR_TYPES).join(", ")}`);
+  }
   if (!VALID_STATUSES.has(record.status)) {
     errors.push(`${label}: status must be "pass" or "fail"`);
   }
@@ -90,7 +96,7 @@ function validateRecord(record, { expectedCaseIds, errors, warnings }) {
     warnings.push(`${label}: case_id ${record.case_id} is not in the current M2 curated case set`);
   }
   if (record.claim_allowed === true && record.status !== "pass") {
-    errors.push(`${label}: claim_allowed can only be true for passing human attempts`);
+    errors.push(`${label}: claim_allowed can only be true for passing embodiment attempts`);
   }
 }
 

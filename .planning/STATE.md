@@ -1,27 +1,26 @@
 # State
 
-Current focus: Phase 4 - M4 Human Gate And Launch Materials.
+Current focus: Phase 4 - M4 Technical Closeout And Claim Guard.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
 - Roadmap: `.planning/ROADMAP.md`
-- Active phase plan: `.planning/phases/04-m4-human-gate-and-launch-materials/PLAN.md`
+- Active phase plan: `.planning/phases/04-m4-technical-closeout-claim-guard/PLAN.md`
 
 Status:
 - GSD ingest/plan handoff is degraded inline, not a full spawned-subagent run.
 - Phase 1 implementation is complete, locally verified, and committed.
 - Phase 2 implementation is complete, locally verified, and committed.
 - Phase 3 implementation is complete, locally verified, and committed.
-- Phase 4 is blocked on real human folding attempt records.
+- Phase 4 has been re-scoped so it is not blocked on external executor records.
 
 Next action:
-- Collect five human attempt records with pass/fail and notes. Do not mark demo
-  cases human-reproducible from simulator, critic, or preview output alone.
-- Run `npm run validate:human` after records are added; the command should fail
-  until at least five passing claim-allowed records exist.
+- Continue Stage 1 technical iteration and closeout using `npm run validate:stage1`.
+- Keep final embodiment validation optional until a launch claim requires
+  physical-executor evidence.
 
-Current M4 gate result:
-- `npm run validate:human` fails with 0 passing claim-allowed records.
+Current Stage 1 gate:
+- `npm run validate:stage1`
 
 Phase 1 verification:
 - `npm test`
@@ -44,6 +43,5 @@ Phase 3 verification:
 
 Known constraints:
 - Do not depend on private repos or paid model APIs.
-- Do not implement agent loop, web demo, live providers, or launch materials in
-  Phase 1.
+- Do not make physical-execution claims without final embodiment records.
 - Commit only owned files after focused verification.

@@ -22,14 +22,14 @@ target. Each case records:
 - critic history
 - derived FOLD, crease SVG, preview JSON, validation JSON, and diagram-step JSON
 
-The deterministic critic scores are inspection metadata only. They are not human
-reproducibility evidence.
+The deterministic critic scores are inspection metadata only. They are not final
+embodiment-validation evidence.
 
-M4 human-gate records are validated with:
+Final embodiment-validation records are validated with:
 
 ```bash
-npm run validate:human
+npm run validate:embodiment
 ```
 
-That command fails until five passing human attempts are recorded with
-`claim_allowed: true`.
+That command is final-stage only and fails until five passing physical-executor
+attempts are recorded with `claim_allowed: true`.

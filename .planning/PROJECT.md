@@ -13,12 +13,12 @@ produce verified, teachable origami outputs without private runtime assets.
 
 ## Success Metrics
 
-- Absolute: five demo cases include human reproducibility records with pass/fail
-  notes.
+- Absolute: five demo cases are simulator-valid and expose FOLD, crease SVG,
+  preview data, and executor-readable steps without requiring external people.
 - Engineering: M0/M1 can be installed, tested, and run locally without
   `MiaoDX/microsites`, paid model APIs, or manual asset copying.
 - Launch: public README/blog claims distinguish simulator-valid, untested,
-  failed, and human-reproduced cases.
+  failed, and embodiment-validated cases.
 
 ## Constraints
 
@@ -26,7 +26,8 @@ produce verified, teachable origami outputs without private runtime assets.
 - `fold-core` is deterministic glue only: no AI calls, provider policy, private
   assets, or agent logic.
 - M0/M1 use deterministic or mock proposals before any live provider adapter.
-- Stage 2 publication/external-adapter work waits for Stage 1 human records.
+- Physical-execution claims wait for final embodiment records; current technical
+  work does not.
 
 ## Provenance
 

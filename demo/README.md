@@ -12,4 +12,4 @@ npm run demo
 Open `http://localhost:4173/demo/`.
 
 The demo reads `out/m2-pipeline/summary.json` and case artifacts. It does not
-call live model providers or claim human reproducibility.
+call live model providers or claim final embodiment validation.

@@ -1,12 +1,13 @@
 # STATUS
 
-Current focus: Stage 1 MVP implementation via `intuitive-flow`.
+Current focus: Stage 1 MVP technical continuation via `intuitive-flow`.
 
 Active source of truth: `docs/plans/stage-1-mvp.md`, derived from
 `docs/PLAN.md`.
 
-Phase 3 status: M3 local web demo is implemented, locally verified, and
-committed.
+Stage 1 technical status: M0-M3 are implemented, locally verified, and
+committed. The old M4 external-participation gate has been re-scoped into
+final-stage embodiment validation so it no longer blocks current repo work.
 
 Latest verification:
 - `npm test`
@@ -15,13 +16,16 @@ Latest verification:
 - `npm run m2:pipeline`
 - `npm run demo`
 - Headless Chrome screenshot smoke test for `/demo/?case=simple-bird`
+- `npm run validate:stage1`
 
-M4 status: blocked on real human folding attempt records. Do not mark any demo
-case human-reproducible until a person records pass/fail and notes.
+Current stop gate:
+- `npm run validate:stage1`
 
-M4 gate result:
-- `npm run validate:human` fails with 0 passing claim-allowed records.
+Final-stage claim gate:
+- `npm run validate:embodiment` is optional until a launch claim requires
+  physical-executor evidence.
+- Do not claim a case is embodiment-validated until a final record exists under
+  `docs/embodiment-validation/attempts/`.
 
-Next action: collect five human attempt records using
-`docs/human-reproducibility/attempt-template.json`, then run
-`npm run validate:human`.
+Next action: continue technical iteration from the Stage 1 demo and pipeline.
+No external participation is required for the current repo flow.

@@ -1,15 +1,15 @@
 # foldgen
 
-AI origami design as the **second case study of the roboharness paradigm** — give an AI agent a FOLD-based folding simulator as a "self-verify in a physical domain" testbed. But unlike the recent wave of origami benchmarks, foldgen's output target is **human-teachable diagrams**, not benchmark scores.
+AI origami design as the **second case study of the roboharness paradigm** — give an AI agent a FOLD-based folding simulator as a "self-verify in a physical domain" testbed. But unlike the recent wave of origami benchmarks, foldgen's output target is **executor-teachable diagrams**, not benchmark scores.
 
 > **Input:** natural language ("like a crouching cat") or a single reference image
-> **Output:** a printable crease pattern + a human-readable step-by-step diagram + a 3D folding preview
+> **Output:** a printable crease pattern + an executor-readable step-by-step diagram + a 3D folding preview
 
 ## Status
 
 **Stage 1 / M3 verified** — public testbed fixtures, deterministic `fold-core`,
 a five-target local pipeline, and a local web demo are implemented. No live
-provider adapter or human reproducibility claim yet.
+provider adapter or final embodiment claim yet.
 
 ## Local Stage 1 workflow
 
@@ -19,7 +19,7 @@ npm run validate:fixtures
 npm run m1:deterministic
 npm run m2:pipeline
 npm run demo
-npm run validate:human
+npm run validate:stage1
 ```
 
 `npm run m1:deterministic` writes local artifacts to `out/m1-deterministic/`:
@@ -35,12 +35,13 @@ case includes selected output artifacts plus proposal and critic history.
 `npm run demo` serves the local UI at `http://localhost:4173/demo/`. Run
 `npm run m2:pipeline` first when `out/m2-pipeline/` is missing or stale.
 
-`npm run validate:human` is the M4 gate. It is expected to fail until five
-passing human attempt records exist under `docs/human-reproducibility/attempts/`.
+`npm run validate:stage1` is the current technical gate. Final physical-executor
+evidence is checked separately with `npm run validate:embodiment` only when a
+launch claim needs it.
 
 ## Why this exists (and why it's repositioned)
 
-Between 2025-11 and 2026-03, four works (OrigamiSpace, GamiBench, Learn2Fold, OrigamiBench) crowded the "evaluate MLLM origami reasoning" and "LLM-propose / sim-verify" space. foldgen deliberately does **not** compete on benchmarks or geometry similarity. Its edge is **human reproducibility** — can a normal person fold along with what it outputs.
+Between 2025-11 and 2026-03, four works (OrigamiSpace, GamiBench, Learn2Fold, OrigamiBench) crowded the "evaluate MLLM origami reasoning" and "LLM-propose / sim-verify" space. foldgen deliberately does **not** compete on benchmarks or geometry similarity. Its edge is **embodiment-aware teachability** — can a specified executor morphology eventually follow what it outputs.
 
 See `docs/WHY.md` for the full positioning and `docs/PLAN.md` for the build plan.
 

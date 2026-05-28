@@ -2,7 +2,7 @@
 
 ## 一句话
 
-foldgen 是 roboharness 范式的第二个 case study：给 AI agent 一个 FOLD-based 折纸仿真环境作为"物理 domain 自我验证"的试验场，但**输出目标是面向人类的可教学折纸 diagram**，不是 benchmark 分数。
+foldgen 是 roboharness 范式的第二个 case study：给 AI agent 一个 FOLD-based 折纸仿真环境作为"物理 domain 自我验证"的试验场，但**输出目标是面向 executor 的可教学折纸 diagram**，不是 benchmark 分数。
 
 ## 为什么必须重新定位
 
@@ -22,12 +22,12 @@ foldgen 是 roboharness 范式的第二个 case study：给 AI agent 一个 FOLD
 foldgen 不做 benchmark，做**生成式 demo + 可教学输出**：
 
 > **输入**：自然语言（"像一只蹲着的猫"）或单张参考图
-> **输出**：(1) 可打印的 crease pattern；(2) 人类可读的 step-by-step diagram（不是机器 token）；(3) 浏览器 3D 预览折叠动画
+> **输出**：(1) 可打印的 crease pattern；(2) executor-readable step-by-step diagram（不是机器 token）；(3) 浏览器 3D 预览折叠动画
 
 **与已有工作的差异**：
 
 - Learn2Fold / OrigamiBench 评的是"能否准确复现 ground truth 几何"
-- foldgen 评的是"普通人能否照着 foldgen 输出折出来"——**人因评测**
+- foldgen 评的是"给定 executor morphology 能否最终照着 foldgen 输出执行"——**embodiment-aware teachability**。人手只是最终 executor 的一种形态；机器手、工具夹具或其他形态可以进入最终验证。
 - 把折纸研究从"几何 / 推理"问题挪到"AI for Creative Tooling / HCI"问题
 - 直接跟 origami 站（MiaoDX/microsites 的 sites/origami）形成端到端闭环：foldgen 生成 → 风格化 → 上线为"AI 设计"分类
 

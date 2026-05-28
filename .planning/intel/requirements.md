@@ -7,5 +7,5 @@ Source: `docs/plans/stage-1-mvp.md`
   one-fold output spine.
 - FOLDGEN-M2-PIPELINE: five curated target runs with validation and histories.
 - FOLDGEN-M3-WEB-DEMO: upload/curated target demo connected to local outputs.
-- FOLDGEN-M4-HUMAN-GATE: human reproducibility records and launch claim
+- FOLDGEN-M4-CLAIM-GUARD: Stage 1 closeout and final embodiment claim
   discipline.

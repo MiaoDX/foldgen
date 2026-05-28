@@ -2,8 +2,8 @@
 
 Source: `docs/plans/stage-1-mvp.md`
 
-- Stage 1 is active; Stage 2 is deferred until human reproducibility records
-  exist.
+- Stage 1 is active; current work is gated by repo-local technical proof, not
+  external executor participation.
 - M0/M1 must run without paid LLM providers or private repos.
 - `fold-core` remains deterministic and excludes AI/provider policy.
 - Runtime fixtures and target assets must live in this repo.

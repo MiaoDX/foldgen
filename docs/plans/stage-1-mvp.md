@@ -5,7 +5,7 @@
 Implement the Stage 1 foldgen MVP from `docs/PLAN.md`: a public, deterministic
 origami generation testbed that can take a reference target, run a constrained
 base-form/local-deformation pipeline, and produce a parseable FOLD artifact,
-crease pattern SVG, preview data, and human-readable folding steps.
+crease pattern SVG, preview data, and executor-readable folding steps.
 
 Stage 1 proves that foldgen can generate verifiable, teachable origami outputs
 from a small public testbed. It must not become a general origami generator,
@@ -21,7 +21,7 @@ milestones one by one via `intuitive-flow`.
 - `docs/PLAN.md` - strategic project plan, Stage 1 contract, v1 scope, M0-M4
   implementation milestones, success criteria, and non-goals.
 - `docs/CONTEXT.md` - durable vocabulary for foldgen, fold-core, public
-  testbed, valid output, imagegen target images, and human reproducibility.
+  testbed, valid output, imagegen target images, and embodiment validation.
 - `docs/AGENTS.md` - repo operating rules, fold-core boundary, cost discipline,
   validation requirements, and public-fixture constraint.
 - `README.md` - current repo status and product positioning.
@@ -30,8 +30,8 @@ milestones one by one via `intuitive-flow`.
 
 ## Decisions Already Made
 
-- Stage 1 is the active implementation stage; Stage 2 is deferred until the
-  human reproducibility gate passes.
+- Stage 1 is the active implementation stage; it is gated by repo-local
+  technical proof, not external executor participation.
 - Runtime fixtures must live in this public repo and must not depend on
   `MiaoDX/microsites`.
 - Reference images are the primary input; text input initially maps to curated
@@ -43,14 +43,14 @@ milestones one by one via `intuitive-flow`.
 - Live model provider adapters come after deterministic fixtures, validation,
   crease SVG, and diagram contracts work.
 - 3D preview is useful inspection output, but it is not a flat-foldability proof.
-- Any public "human reproducible" claim requires a recorded human folding
-  attempt with pass/fail and notes.
+- Any public physical-execution claim requires a final embodiment-validation
+  record with executor morphology, pass/fail, and notes.
 
 ## Idea Shaping Decisions
 
 | # | Question | Classification | Decision | Rationale | Revisit if |
 |---|----------|----------------|----------|-----------|------------|
-| 1 | What does Stage 1 optimize for? | User-owned | Human-teachable verified outputs, not benchmark scores. | `docs/PLAN.md`, `docs/CONTEXT.md`, and `docs/AGENTS.md` all define human reproducibility as the differentiator. | A future plan explicitly repositions foldgen. |
+| 1 | What does Stage 1 optimize for? | User-owned | Executor-teachable verified outputs, not benchmark scores. | The current plan defines repo-local technical proof as Stage 1's gate and moves physical-executor evidence to the final claim stage. | A future plan explicitly repositions foldgen. |
 | 2 | Can Stage 1 wait for Learn2Fold / OrigamiBench code? | User-owned | No. Treat them as related work and possible future adapters. | The Stage 1 contract says they are not blockers. | Their released code makes foldgen's current path obsolete and the user approves a repositioning. |
 | 3 | Can private origami-site assets be runtime dependencies? | User-owned | No. Assets may inspire hand migration only when licensing is suitable. | The public testbed must run from this repo. | The public repo receives licensed copies with metadata. |
 | 4 | Should M1 use live paid LLM calls? | Mechanical | No. Use deterministic or mock proposals first. | M1's acceptance criteria are parseability, crease SVG, and validation, not model quality. | Deterministic gates pass and a provider adapter is explicitly planned. |
@@ -63,24 +63,24 @@ milestones one by one via `intuitive-flow`.
 - Blank-paper arbitrary origami generation or TreeMaker-style design.
 - Reproducing Learn2Fold, OrigamiBench, OrigamiSpace, or GamiBench as a
   benchmark project.
-- Public claims that a demo is human reproducible before a human folding attempt
-  is recorded.
-- Stage 2 publication, workshop, or external-adapter work before Stage 1's human
-  reproducibility gate passes.
+- Public claims that a demo is physically executable before final
+  embodiment-validation evidence is recorded.
+- Making Stage 1 depend on external people, hardware, or executor records.
 
 ## Smallest Demo
 
 One public base-form fixture plus one public target fixture. The pipeline applies
 one deterministic local fold operation, writes a valid derived FOLD file, writes
 a deterministic crease pattern SVG, runs fold validation, and emits a minimal
-fold sequence with one human-readable step.
+fold sequence with one executor-readable step.
 
 ## Fuller Demo
 
 Five base-form fixtures and at least five test targets run through an end-to-end
 pipeline. A web demo accepts a target image upload or curated text target and
 returns a FOLD file, crease pattern SVG, 3D preview/animation, and step-by-step
-diagram. At least five demo cases include human reproducibility records.
+diagram. Final embodiment-validation records are explicitly out of the default
+Stage 1 loop.
 
 ## Acceptance Criteria
 
@@ -95,8 +95,9 @@ diagram. At least five demo cases include human reproducibility records.
 - M3: The web demo supports image upload and curated text target entry, then
   displays fold sequence, crease pattern, and 3D preview output from the local
   pipeline.
-- M4: At least five demo cases have human reproducibility records with pass/fail
-  and notes. README and blog materials describe only verified claims.
+- M4: Stage 1 closeout labels README, demo, and pipeline outputs as
+  simulator-valid / embodiment-untested unless final records exist. Blog and
+  launch materials remain draft-only until the final claim gate is run.
 
 ## Verification
 
@@ -106,8 +107,8 @@ diagram. At least five demo cases include human reproducibility records.
 - Snapshot or golden-file tests must cover deterministic crease SVG output.
 - Pipeline tests must cover the deterministic one-fold M1 case.
 - Demo tests must cover upload/curated-target output wiring once M3 exists.
-- Human reproducibility records must be committed for every demo case publicly
-  claimed as foldable by a person.
+- Final embodiment-validation records must be committed for every demo case
+  publicly claimed as physically executable.
 
 ## Vertical Slices
 
@@ -118,8 +119,8 @@ diagram. At least five demo cases include human reproducibility records.
    loop, candidate validation, critic record, and batch run on five targets.
 4. M3 Web Demo: upload/curated text entry, result rendering, downloadable FOLD
    and SVG, preview/animation surface, and local pipeline integration.
-5. M4 Human Gate And Launch Docs: reproducibility records, README, blog draft,
-   demo case summaries, and launch checklist.
+5. M4 Technical Closeout And Claim Guard: README/demo labels, blog draft,
+   demo case summaries, launch checklist, and final embodiment gate docs.
 
 ## Risks And Assumptions
 
@@ -129,8 +130,9 @@ diagram. At least five demo cases include human reproducibility records.
   subset in early milestones.
 - 3D preview can lag behind validation as long as M1 validity is proven through
   parseable FOLD, deterministic SVG, and validation checks.
-- Human reproducibility is an offline/manual gate; automated tests can only
-  confirm records exist and are shaped correctly.
+- Final embodiment validation is offline/external and must stay outside the
+  default Stage 1 stop gate. Automated tests only confirm record shape when that
+  final gate is explicitly invoked.
 - External research code status may change; check it before public posting or
   external positioning updates.
 
@@ -169,14 +171,14 @@ handoff verdict below as `SAFE_WITH_CONSTRAINTS`, not `SUCCESS`.
 | S2 | Implement M0/M1 as the engineering spine before any live provider, benchmark, or publication work. | Mechanical | Parseable FOLD, deterministic SVG, validation, and one deterministic local fold are the first proof points. |
 | S3 | Keep `fold-core` deterministic and free of AI calls, provider policy, private assets, and agent logic. | Mechanical | `docs/AGENTS.md`, `docs/CONTEXT.md`, and `packages/fold-core/README.md` all define this boundary. |
 | S4 | Keep public fixtures and runtime assets inside this repo. | Mechanical | Runtime dependency on `MiaoDX/microsites` would break the public testbed contract. |
-| S5 | Defer Stage 2, workshop/posting claims, external research adapters, and live provider polish until deterministic gates and human records exist. | Mechanical | Stage 1 proves teachable verified output, not generality or publication positioning. |
+| S5 | Defer physical-execution claims until final embodiment records exist, but continue technical work after deterministic gates pass. | Mechanical | Stage 1 proves teachable verified output without waiting on external people or hardware. |
 
 ### Risk Decisions Accepted
 
 | Risk | Accepted Decision | Gate |
 |---|---|---|
 | Scope creep from smallest demo into a full web/agent/launch product. | Ship the smallest proof first: one public base-form fixture, one public target fixture, one deterministic local fold, valid FOLD, deterministic SVG, validation result, and one minimal step. | M1 cannot expand until this path runs locally. |
-| Invalid credibility claims. | No demo case may be called human reproducible until a human folding attempt is recorded with pass/fail and notes. | M4 launch docs must distinguish simulator-valid from human-reproduced. |
+| Invalid credibility claims. | No demo case may be called physically executable until a final embodiment attempt is recorded with pass/fail and notes. | M4 launch docs must distinguish simulator-valid from embodiment-validated. |
 | Private asset leakage. | Tests must prove runtime commands do not read `MiaoDX/microsites` or any private path. | M0 fixture tests include private-path guard coverage. |
 | Unbounded simulator work. | Use existing FOLD/Rabbit Ear/Origami Simulator/Tachi-style tools through `fold-core`; do not implement new folding physics. | M1 implementation must stay glue-sized and deterministic. |
 | Research landscape drift. | Re-check Learn2Fold and OrigamiBench code/demo status before public positioning, not before M0/M1 implementation. | Required before M4 blog/release copy. |
@@ -201,7 +203,7 @@ M1 deterministic core
     |
     v
 M2/M3/M4
-  agent batch loop -> web demo -> human reproducibility records
+  agent batch loop -> web demo -> technical closeout and claim guard
 ```
 
 - Define the repo-local executable path before feature work: install command,
@@ -211,8 +213,8 @@ M2/M3/M4
   milestones do not invent incompatible conventions.
 - Keep M3 web demo integration behind the local pipeline contract. The demo must
   render existing local outputs before it introduces uploaded-target complexity.
-- Treat 3D preview as inspection output. It cannot replace validation or human
-  reproducibility evidence.
+- Treat 3D preview as inspection output. It cannot replace validation or final
+  embodiment evidence.
 
 ### Test Decisions Accepted
 
@@ -222,7 +224,7 @@ M2/M3/M4
 | M1 | Parse/serialize round-trip, validation result, deterministic crease SVG golden test, deterministic one-fold output, and minimal diagram-step output are covered by repo-local tests. |
 | M2 | Five curated targets produce per-case outputs, validation status, proposal history, and critic history. Failures are recorded as data, not hidden. |
 | M3 | Demo tests cover upload/curated-target wiring to local pipeline outputs, empty/error/loading states, downloadable FOLD/SVG, and preview rendering. |
-| M4 | Human reproducibility records are committed for every publicly claimed case, with pass/fail and notes. Automated tests only verify record shape and claim discipline. |
+| M4 | Stage 1 labels and docs avoid physical-execution claims by default. Final embodiment records are optional until launch claims need them, and automated tests verify record shape only when that gate is invoked. |
 
 ### DX And UI Decisions Accepted
 
@@ -246,7 +248,7 @@ M2/M3/M4
 - Runtime dependency on private origami-site assets or private repos.
 - Live paid provider adapter work before deterministic fixture, validation,
   SVG, and diagram contracts pass.
-- Public claims of human reproducibility before M4 records exist.
+- Public claims of physical executability before final embodiment records exist.
 - Reproducing Learn2Fold, OrigamiBench, OrigamiSpace, or GamiBench as a
   benchmark project.
 
@@ -258,13 +260,13 @@ M2/M3/M4
 | Fixture files are copied without license/source metadata. | Public repo cannot safely ship the testbed. | M0 fixture metadata must include source or generation prompt, license/usage note, and intended test role. |
 | Validation accepts malformed FOLD. | Downstream SVG/demo output can look valid while geometry is broken. | Include a committed malformed fixture and failing validation test. |
 | Agent loop starts before deterministic core contracts exist. | Debugging mixes model behavior with missing infrastructure. | M2 cannot begin until M1 deterministic output and tests pass. |
-| Demo presents simulator/critic success as human success. | Public positioning overclaims the differentiator. | M4 docs must label each case as untested, failed, or human-reproduced. |
+| Demo presents simulator/critic success as physical-execution success. | Public positioning overclaims the differentiator. | M4 docs must label each case as simulator-valid, untested, failed, or embodiment-validated. |
 
 ### Decision Audit Trail
 
 | # | Phase | Decision | Classification | Principle | Rationale | Rejected |
 |---|-------|----------|----------------|-----------|-----------|----------|
-| 1 | CEO | Keep Stage 1 focused on human-teachable verified output. | Mechanical | Completeness | Matches every repo strategy doc and protects the differentiator. | Benchmark reproduction and general generator scope. |
+| 1 | CEO | Keep Stage 1 focused on executor-teachable verified output. | Mechanical | Completeness | Matches the corrected repo strategy and protects the differentiator without blocking on external participation. | Benchmark reproduction and general generator scope. |
 | 2 | CEO | Defer publication/external-adapter work until Stage 1 proof gates pass. | Mechanical | Pragmatic | Prevents launch work from preceding evidence. | Stage 2 planning during MVP implementation. |
 | 3 | Eng | Build M0/M1 deterministic spine first. | Mechanical | Explicit over clever | Skeleton repo needs executable proof before higher-level agent/demo work. | Starting with M2 agent loop or M3 web demo. |
 | 4 | Eng | Keep `fold-core` deterministic and minimal. | Mechanical | DRY | Existing tools should handle simulation/validation; repo glue owns contracts. | Reimplementing folding physics or putting AI policy in `fold-core`. |

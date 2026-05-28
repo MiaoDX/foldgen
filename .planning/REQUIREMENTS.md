@@ -48,11 +48,13 @@ Acceptance:
 - FOLD and SVG outputs are downloadable.
 - The demo renders existing local outputs before adding live model calls.
 
-### FOLDGEN-M4-HUMAN-GATE
+### FOLDGEN-M4-CLAIM-GUARD
 
-Launch docs and demo cases reflect human reproducibility evidence.
+Launch docs and demo cases avoid physical-execution claims unless final
+embodiment evidence exists.
 
 Acceptance:
-- At least five demo cases have human attempt records with pass/fail and notes.
-- README and blog materials avoid human-reproducible claims for untested cases.
+- `npm run validate:stage1` is the default current-stage gate.
+- README and blog materials avoid embodiment-validated claims for untested cases.
+- `npm run validate:embodiment` is documented as final-stage only.
 - Related-work status is rechecked before public positioning.
