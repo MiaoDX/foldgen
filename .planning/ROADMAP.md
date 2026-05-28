@@ -271,11 +271,18 @@ Success criteria:
   deterministically.
 - Tests cover score ordering and reason output.
 
-Status: Planned
+Status: Completed
 
 Gate:
 - `npm run m8:critic`
 - `npm test`
+
+Proof:
+- `npm run m8:critic`
+- `npm test`
+- `npm run validate:stage1`
+- `out/m8-critic/summary.json` records five ranked critic cases, selected valid
+  candidates, invalid rejections, score components, and reasons.
 
 Depends on: Phase 7
 

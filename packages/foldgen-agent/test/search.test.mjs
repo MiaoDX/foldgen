@@ -29,6 +29,8 @@ test("local search sequence records iterations and selected operations", async (
     assert.ok(iteration.proposals.length > 0);
     assert.equal(iteration.proposals.filter((proposal) => proposal.selected).length, 1);
     assert.ok(iteration.proposals.every((proposal) => proposal.render_summary.type === "foldgen.preview.v1"));
+    assert.ok(iteration.proposals.every((proposal) => proposal.critic_result.evaluator === "deterministic-critic-v0"));
+    assert.ok(iteration.proposals.every((proposal) => Array.isArray(proposal.critic_result.reasons)));
     assert.ok(iteration.proposals.every((proposal) => typeof proposal.score === "number"));
   }
 });

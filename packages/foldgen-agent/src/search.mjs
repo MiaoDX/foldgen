@@ -12,6 +12,7 @@ import {
   validateExecutorReadableStep,
   validateFold
 } from "../../fold-core/src/index.mjs";
+import { evaluateCandidate, summarizePreview } from "./critic.mjs";
 import { stage1ExecutorProfiles, targetProfiles } from "./pipeline.mjs";
 
 export async function runLocalSearchBatch(options = {}) {
@@ -218,17 +219,22 @@ function evaluateProposal({ currentFold, operation, profile, targetFeatures, ite
   const validation = validateFold(derived);
   const preview = createPreviewModel(derived);
   const renderSummary = summarizePreview(preview);
-  const featureMatches = matchedFeatures(operation, targetFeatures);
-  const score = validation.ok
-    ? round(priorScore + 1 + featureMatches.length * 0.25 + renderSummary.non_boundary_edge_count * 0.01 - rank * 0.001)
-    : 0;
+  const criticResult = evaluateCandidate({
+    operation,
+    validation,
+    renderSummary,
+    targetFeatures,
+    priorScore,
+    rank
+  });
   return {
     candidate_id: `${profile.caseId}-iter${iteration}-${operation.id}`,
     operation: cloneJson(operation),
     validation,
     render_summary: renderSummary,
-    feature_matches: featureMatches,
-    score,
+    critic_result: criticResult,
+    feature_matches: criticResult.feature_matches,
+    score: criticResult.score,
     selected: false,
     derived
   };
@@ -241,6 +247,7 @@ function toHistoryRecord(record) {
     validation_status: record.validation.ok ? "valid" : "invalid",
     validation_errors: record.validation.errors,
     render_summary: record.render_summary,
+    critic_result: record.critic_result,
     feature_matches: record.feature_matches,
     score: record.score,
     selected: record.selected
@@ -255,27 +262,6 @@ function selectBestSearchCandidate(records) {
     selected.selected = true;
   }
   return selected;
-}
-
-function summarizePreview(preview) {
-  const assignments = Object.fromEntries(["B", "M", "V", "F", "U"].map((assignment) => [assignment, 0]));
-  for (const edge of preview.edges) {
-    assignments[edge.assignment] = (assignments[edge.assignment] ?? 0) + 1;
-  }
-  return {
-    type: preview.type,
-    vertex_count: preview.vertices.length,
-    edge_count: preview.edges.length,
-    non_boundary_edge_count: preview.edges.filter((edge) => edge.assignment !== "B").length,
-    assignments
-  };
-}
-
-function matchedFeatures(operation, targetFeatures) {
-  const haystack = `${operation.id} ${operation.name} ${operation.rationale ?? ""}`.toLowerCase();
-  return targetFeatures.filter((feature) => (
-    feature.toLowerCase().split(/\W+/).filter(Boolean).some((token) => haystack.includes(token))
-  ));
 }
 
 async function loadTargetMetadata(targetsDir, targetFile) {
@@ -321,10 +307,6 @@ function artifactPath(path) {
 
 function toPosix(path) {
   return path.split("\\").join("/");
-}
-
-function round(value) {
-  return Number(value.toFixed(4));
 }
 
 function cloneJson(value) {

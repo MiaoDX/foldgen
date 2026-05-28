@@ -1,6 +1,6 @@
 # State
 
-Current focus: Phase 8 - Critic v0.
+Current focus: Phase 9 - Image-to-fold Path.
 
 Source of truth:
 - Canonical PRD: `docs/plans/stage-1-mvp.md`
@@ -9,6 +9,7 @@ Source of truth:
 - Completed phase plans:
   - `.planning/phases/06-multistep-fold-operation-foundation/PLAN.md`
   - `.planning/phases/07-local-search-loop/PLAN.md`
+  - `.planning/phases/08-critic-v0/PLAN.md`
 
 Status:
 - Stage 1 technical gate is complete through Phase 5.
@@ -17,11 +18,13 @@ Status:
   expanded testbed, and Phase 11 preview/animation.
 - Phase 6 multi-step operation foundation is implemented and verified.
 - Phase 7 local search loop is implemented and verified.
-- Phase 8 critic v0 is the next implementation slice.
+- Phase 8 critic v0 is implemented and verified.
+- Phase 9 image-to-fold path is the next implementation slice.
 
 Next action:
-- Create the Phase 8 plan, then split deterministic scoring into an explicit
-  critic v0 module with reasoned score output.
+- Create the Phase 9 plan, then route a local reference image/SVG through
+  feature analysis, base-form selection, local search, critic records, and
+  executor-readable diagram output.
 
 Current Stage 1 gate:
 - `npm run validate:stage1`
@@ -37,6 +40,10 @@ Current Phase 7 gate:
 
 Current Phase 8 gate:
 - `npm run m8:critic`
+- `npm test`
+
+Current Phase 9 gate:
+- `npm run m9:image-to-fold -- benchmarks/targets/simple-bird.svg`
 - `npm test`
 
 Phase 1 verification:
