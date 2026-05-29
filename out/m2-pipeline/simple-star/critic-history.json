@@ -1,0 +1,40 @@
+{
+  "case_id": "simple-star",
+  "entries": [
+    {
+      "candidate_id": "star-point-cross-sequence",
+      "notes": [
+        "Combines a symmetric point split with a cross-diagonal point cue."
+      ],
+      "score": 0.84,
+      "selected": true,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "star-point-centerline",
+      "notes": [
+        "Adds a symmetric point split to the frog base."
+      ],
+      "score": 0.78,
+      "selected": false,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "star-outside-paper",
+      "notes": [
+        "edges_vertices[10] references an out-of-range vertex"
+      ],
+      "score": 0,
+      "selected": false,
+      "validation_ok": false,
+      "verdict": "rejected-invalid"
+    }
+  ],
+  "evaluator": "deterministic-validation-and-profile-score-v0",
+  "target": {
+    "file": "simple-star.svg",
+    "name": "simple star"
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "artifact_paths": {
+    "case_summary": "out/m2-pipeline/simple-flower/summary.json",
+    "crease_svg": "out/m2-pipeline/simple-flower/crease.svg",
+    "critic_history": "out/m2-pipeline/simple-flower/critic-history.json",
+    "derived_fold": "out/m2-pipeline/simple-flower/derived.fold",
+    "diagram_sequence": "out/m2-pipeline/simple-flower/diagram-sequence.json",
+    "diagram_sequences": {
+      "cat-paw-profile": "out/m2-pipeline/simple-flower/diagram-sequence-cat-paw-profile.json",
+      "dog-paw-profile": "out/m2-pipeline/simple-flower/diagram-sequence-dog-paw-profile.json",
+      "human-hand": "out/m2-pipeline/simple-flower/diagram-sequence-human-hand.json",
+      "two-finger-gripper": "out/m2-pipeline/simple-flower/diagram-sequence-two-finger-gripper.json"
+    },
+    "diagram_step": "out/m2-pipeline/simple-flower/diagram-step.json",
+    "preview": "out/m2-pipeline/simple-flower/preview.json",
+    "preview_animation": "out/m2-pipeline/simple-flower/preview-animation.json",
+    "proposal_history": "out/m2-pipeline/simple-flower/proposal-history.json",
+    "validation": "out/m2-pipeline/simple-flower/validation.json"
+  },
+  "candidate_count": 3,
+  "candidate_operations": [
+    {
+      "candidate_id": "flower-petal-cross-sequence",
+      "operation_count": 2,
+      "operation_ids": [
+        "flower-petal-centerline",
+        "flower-cross-diagonal"
+      ],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "flower-petal-centerline",
+      "operation_count": 1,
+      "operation_ids": [
+        "flower-petal-centerline"
+      ],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "flower-outside-paper",
+      "operation_count": 1,
+      "operation_ids": [
+        "flower-outside-paper"
+      ],
+      "validation_status": "invalid"
+    }
+  ],
+  "case_id": "simple-flower",
+  "claim_status": {
+    "claim_label": "simulator-valid / executor-readable / embodiment-untested",
+    "embodiment_status": "untested",
+    "embodiment_validated": false,
+    "executor_readable": true,
+    "final_record_path": null,
+    "simulator_valid": true
+  },
+  "diagram_profile_validation": {
+    "cat-paw-profile": {
+      "ok": true,
+      "steps": [
+        {
+          "errors": [],
+          "ok": true,
+          "status": "complete"
+        },
+        {
+          "errors": [],
+          "ok": true,
+          "status": "complete"
+        }
+      ]
+    },
+    "dog-paw-profile": {
+      "ok": true,
+      "steps": [
+        {
+          "errors": [],
+          "ok": true,
+          "status": "complete"
+        },
+        {
+          "errors": [],
+          "ok": true,
+          "status": "complete"
+        }
+      ]
+    },
+    "human-hand": {
+      "ok": true,
+      "steps": [
+        {
+          "errors": [],
+          "ok": true,
+          "status": "complete"
+        },
+        {
+          "errors": [],
+          "ok": true,
+          "status": "complete"
+        }
+      ]
+    },
+    "two-finger-gripper": {
+      "ok": true,
+      "steps": [
+        {
+          "errors": [],
+          "ok": true,
+          "status": "complete"
+        },
+        {
+          "errors": [],
+          "ok": true,
+          "status": "complete"
+        }
+      ]
+    }
+  },
+  "diagram_step_validation": {
+    "errors": [],
+    "ok": true,
+    "status": "complete"
+  },
+  "executor_profile": "human-hand",
+  "executor_profiles": [
+    "human-hand",
+    "two-finger-gripper",
+    "cat-paw-profile",
+    "dog-paw-profile"
+  ],
+  "executor_readable": true,
+  "rejected_candidate_count": 1,
+  "selected_base_form": "waterbomb-base.fold",
+  "selected_candidate_id": "flower-petal-cross-sequence",
+  "selected_operation_count": 2,
+  "status": "valid",
+  "target": {
+    "file": "simple-flower.svg",
+    "name": "simple flower"
+  },
+  "validation_status": true
+}

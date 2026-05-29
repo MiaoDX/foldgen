@@ -1,0 +1,383 @@
+{
+  "executor_profile": "cat-paw-profile",
+  "executor_profiles": [
+    "cat-paw-profile",
+    "human-hand",
+    "two-finger-gripper",
+    "dog-paw-profile"
+  ],
+  "step_count": 2,
+  "steps": [
+    {
+      "actions": [
+        {
+          "contacts": [
+            "paper boundary",
+            "horizontal midpoint crease"
+          ],
+          "phase": "setup",
+          "text": "Paper lies flat with the target face up and the reference square visible."
+        },
+        {
+          "contacts": [
+            "stable panel near left midpoint",
+            "stable panel near right midpoint"
+          ],
+          "phase": "anchor",
+          "primitives": [
+            "hold",
+            "press"
+          ],
+          "text": "Press a broad paw pad on the stable panel below the horizontal midpoint crease."
+        },
+        {
+          "direction": "free panel moves toward the executor over the marked crease",
+          "phase": "fold",
+          "primitives": [
+            "drag",
+            "paw-sweep"
+          ],
+          "text": "Sweep the free panel over the horizontal midpoint crease with a slow paw drag to form a valley fold."
+        },
+        {
+          "phase": "align",
+          "target": "left midpoint and right midpoint overlap within visual tolerance",
+          "text": "Use broad visual zones near left midpoint and right midpoint; do not require point-perfect alignment."
+        },
+        {
+          "contacts": [
+            "left midpoint",
+            "center",
+            "right midpoint"
+          ],
+          "phase": "crease",
+          "primitives": [
+            "press"
+          ],
+          "text": "Press along the horizontal midpoint crease with repeated gentle paw-pad presses from left midpoint to right midpoint."
+        },
+        {
+          "phase": "release",
+          "primitives": [
+            "release"
+          ],
+          "text": "Lift the paw vertically so the new valley crease is not dragged out of place."
+        }
+      ],
+      "alignment_target": {
+        "phase": "align",
+        "target": "left midpoint and right midpoint overlap within visual tolerance",
+        "text": "Use broad visual zones near left midpoint and right midpoint; do not require point-perfect alignment."
+      },
+      "anchor_grip": {
+        "contacts": [
+          "stable panel near left midpoint",
+          "stable panel near right midpoint"
+        ],
+        "phase": "anchor",
+        "primitives": [
+          "hold",
+          "press"
+        ],
+        "text": "Press a broad paw pad on the stable panel below the horizontal midpoint crease."
+      },
+      "annotations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "label": "horizontal midpoint crease",
+          "type": "fold-line"
+        },
+        {
+          "direction": "free panel moves toward the executor over the marked crease",
+          "from": "free panel",
+          "to": "alignment target",
+          "type": "motion-arrow"
+        },
+        {
+          "labels": [
+            "left midpoint",
+            "right midpoint"
+          ],
+          "type": "landmark"
+        }
+      ],
+      "checks": [
+        "The new valley crease is visible on the horizontal midpoint crease.",
+        "No boundary edge has moved outside the source square."
+      ],
+      "crease_press": {
+        "contacts": [
+          "left midpoint",
+          "center",
+          "right midpoint"
+        ],
+        "phase": "crease",
+        "primitives": [
+          "press"
+        ],
+        "text": "Press along the horizontal midpoint crease with repeated gentle paw-pad presses from left midpoint to right midpoint."
+      },
+      "executor_profile": "cat-paw-profile",
+      "executor_profile_definition": {
+        "contact_primitives": [
+          "press",
+          "drag",
+          "hold",
+          "release",
+          "paw-sweep"
+        ],
+        "id": "cat-paw-profile",
+        "landmark_language": {
+          "center": "Use the central visible patch of the paper.",
+          "corners": "Use large visible corner regions rather than exact points.",
+          "crease_line": "Use a marked line or raised crease that can be pressed along.",
+          "edges": "Use the nearest visible boundary as a coarse alignment cue.",
+          "midpoint": "Treat midpoint as a broad middle region, not a precise point."
+        },
+        "name": "Cat paw profile",
+        "risk_notes": [
+          "Soft contact makes sharp creases unlikely without a tool or fixture.",
+          "Dragging can tear thin paper or shift the whole sheet."
+        ],
+        "unavailable_actions": [
+          "precision pinch",
+          "two-point alignment"
+        ]
+      },
+      "failure_modes": [
+        "If the paper slides, re-anchor near left midpoint and repeat the fold slowly.",
+        "Cat paw profile: Soft contact makes sharp creases unlikely without a tool or fixture."
+      ],
+      "fold": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "landmarks": {
+          "end": "right midpoint",
+          "line": "horizontal midpoint crease",
+          "start": "left midpoint"
+        }
+      },
+      "fold_direction": {
+        "direction": "free panel moves toward the executor over the marked crease",
+        "phase": "fold",
+        "primitives": [
+          "drag",
+          "paw-sweep"
+        ],
+        "text": "Sweep the free panel over the horizontal midpoint crease with a slow paw drag to form a valley fold."
+      },
+      "instruction": "Add a petal centerline valley.",
+      "operation_id": "flower-petal-centerline",
+      "pre_state": "Paper lies flat with the target face up and the reference square visible.",
+      "release": {
+        "phase": "release",
+        "primitives": [
+          "release"
+        ],
+        "text": "Lift the paw vertically so the new valley crease is not dragged out of place."
+      },
+      "step": 1,
+      "supported_executor_profiles": [
+        "human-hand",
+        "cat-paw-profile",
+        "two-finger-gripper",
+        "dog-paw-profile"
+      ],
+      "title": "Add a petal centerline valley",
+      "type": "foldgen.diagram_step.v1"
+    },
+    {
+      "actions": [
+        {
+          "contacts": [
+            "paper boundary",
+            "cross diagonal crease"
+          ],
+          "phase": "setup",
+          "text": "Paper lies flat with the target face up and the reference square visible."
+        },
+        {
+          "contacts": [
+            "stable panel near top-right corner",
+            "stable panel near bottom-left corner"
+          ],
+          "phase": "anchor",
+          "primitives": [
+            "hold",
+            "press"
+          ],
+          "text": "Press a broad paw pad on the stable panel below the cross diagonal crease."
+        },
+        {
+          "direction": "free panel moves away from the executor over the marked crease",
+          "phase": "fold",
+          "primitives": [
+            "drag",
+            "paw-sweep"
+          ],
+          "text": "Sweep the free panel over the cross diagonal crease with a slow paw drag to form a mountain fold."
+        },
+        {
+          "phase": "align",
+          "target": "top-right corner and bottom-left corner overlap within visual tolerance",
+          "text": "Use broad visual zones near top-right corner and bottom-left corner; do not require point-perfect alignment."
+        },
+        {
+          "contacts": [
+            "top-right corner",
+            "center",
+            "bottom-left corner"
+          ],
+          "phase": "crease",
+          "primitives": [
+            "press"
+          ],
+          "text": "Press along the cross diagonal crease with repeated gentle paw-pad presses from top-right corner to bottom-left corner."
+        },
+        {
+          "phase": "release",
+          "primitives": [
+            "release"
+          ],
+          "text": "Lift the paw vertically so the new mountain crease is not dragged out of place."
+        }
+      ],
+      "alignment_target": {
+        "phase": "align",
+        "target": "top-right corner and bottom-left corner overlap within visual tolerance",
+        "text": "Use broad visual zones near top-right corner and bottom-left corner; do not require point-perfect alignment."
+      },
+      "anchor_grip": {
+        "contacts": [
+          "stable panel near top-right corner",
+          "stable panel near bottom-left corner"
+        ],
+        "phase": "anchor",
+        "primitives": [
+          "hold",
+          "press"
+        ],
+        "text": "Press a broad paw pad on the stable panel below the cross diagonal crease."
+      },
+      "annotations": [
+        {
+          "assignment": "M",
+          "edge": [
+            1,
+            3
+          ],
+          "label": "cross diagonal crease",
+          "type": "fold-line"
+        },
+        {
+          "direction": "free panel moves away from the executor over the marked crease",
+          "from": "free panel",
+          "to": "alignment target",
+          "type": "motion-arrow"
+        },
+        {
+          "labels": [
+            "top-right corner",
+            "bottom-left corner"
+          ],
+          "type": "landmark"
+        }
+      ],
+      "checks": [
+        "The new mountain crease is visible on the cross diagonal crease.",
+        "No boundary edge has moved outside the source square."
+      ],
+      "crease_press": {
+        "contacts": [
+          "top-right corner",
+          "center",
+          "bottom-left corner"
+        ],
+        "phase": "crease",
+        "primitives": [
+          "press"
+        ],
+        "text": "Press along the cross diagonal crease with repeated gentle paw-pad presses from top-right corner to bottom-left corner."
+      },
+      "executor_profile": "cat-paw-profile",
+      "executor_profile_definition": {
+        "contact_primitives": [
+          "press",
+          "drag",
+          "hold",
+          "release",
+          "paw-sweep"
+        ],
+        "id": "cat-paw-profile",
+        "landmark_language": {
+          "center": "Use the central visible patch of the paper.",
+          "corners": "Use large visible corner regions rather than exact points.",
+          "crease_line": "Use a marked line or raised crease that can be pressed along.",
+          "edges": "Use the nearest visible boundary as a coarse alignment cue.",
+          "midpoint": "Treat midpoint as a broad middle region, not a precise point."
+        },
+        "name": "Cat paw profile",
+        "risk_notes": [
+          "Soft contact makes sharp creases unlikely without a tool or fixture.",
+          "Dragging can tear thin paper or shift the whole sheet."
+        ],
+        "unavailable_actions": [
+          "precision pinch",
+          "two-point alignment"
+        ]
+      },
+      "failure_modes": [
+        "If the paper slides, re-anchor near top-right corner and repeat the fold slowly.",
+        "Cat paw profile: Soft contact makes sharp creases unlikely without a tool or fixture."
+      ],
+      "fold": {
+        "assignment": "M",
+        "edge": [
+          1,
+          3
+        ],
+        "landmarks": {
+          "end": "bottom-left corner",
+          "line": "cross diagonal crease",
+          "start": "top-right corner"
+        }
+      },
+      "fold_direction": {
+        "direction": "free panel moves away from the executor over the marked crease",
+        "phase": "fold",
+        "primitives": [
+          "drag",
+          "paw-sweep"
+        ],
+        "text": "Sweep the free panel over the cross diagonal crease with a slow paw drag to form a mountain fold."
+      },
+      "instruction": "Reinforce flower diagonal.",
+      "operation_id": "flower-cross-diagonal",
+      "pre_state": "Paper lies flat with the target face up and the reference square visible.",
+      "release": {
+        "phase": "release",
+        "primitives": [
+          "release"
+        ],
+        "text": "Lift the paw vertically so the new mountain crease is not dragged out of place."
+      },
+      "step": 2,
+      "supported_executor_profiles": [
+        "human-hand",
+        "cat-paw-profile",
+        "two-finger-gripper",
+        "dog-paw-profile"
+      ],
+      "title": "Reinforce flower diagonal",
+      "type": "foldgen.diagram_step.v1"
+    }
+  ],
+  "type": "foldgen.diagram_sequence.v1"
+}

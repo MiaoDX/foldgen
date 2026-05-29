@@ -1,0 +1,125 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "star-point-cross-sequence",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "id": "star-point-centerline",
+        "instruction": "Add a point centerline valley.",
+        "name": "Add a point centerline valley",
+        "rationale": "Adds a symmetric point split to the frog base."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "id": "star-point-centerline",
+          "instruction": "Add a point centerline valley.",
+          "name": "Add a point centerline valley",
+          "rationale": "Adds a symmetric point split to the frog base."
+        },
+        {
+          "assignment": "M",
+          "edge": [
+            1,
+            3
+          ],
+          "id": "star-cross-diagonal",
+          "instruction": "Reinforce star diagonal.",
+          "name": "Reinforce star diagonal",
+          "rationale": "Adds a crossing fold useful for a point-like silhouette."
+        }
+      ],
+      "rank": 1,
+      "rationale": "Combines a symmetric point split with a cross-diagonal point cue.",
+      "selected": true,
+      "validation_errors": [],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "star-point-centerline",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "id": "star-point-centerline",
+        "instruction": "Add a point centerline valley.",
+        "name": "Add a point centerline valley",
+        "rationale": "Adds a symmetric point split to the frog base."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "id": "star-point-centerline",
+          "instruction": "Add a point centerline valley.",
+          "name": "Add a point centerline valley",
+          "rationale": "Adds a symmetric point split to the frog base."
+        }
+      ],
+      "rank": 2,
+      "rationale": "Adds a symmetric point split to the frog base.",
+      "selected": false,
+      "validation_errors": [],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "star-outside-paper",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          0,
+          99
+        ],
+        "id": "star-outside-paper",
+        "instruction": "Reject out-of-range exploratory fold.",
+        "name": "Reject out-of-range exploratory fold",
+        "rationale": "Records how invalid proposals are kept as pipeline data."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            0,
+            99
+          ],
+          "id": "star-outside-paper",
+          "instruction": "Reject out-of-range exploratory fold.",
+          "name": "Reject out-of-range exploratory fold",
+          "rationale": "Records how invalid proposals are kept as pipeline data."
+        }
+      ],
+      "rank": 3,
+      "rationale": "Records how invalid proposals are kept as pipeline data.",
+      "selected": false,
+      "validation_errors": [
+        "edges_vertices[10] references an out-of-range vertex"
+      ],
+      "validation_status": "invalid"
+    }
+  ],
+  "case_id": "simple-star",
+  "selected_base_form": "frog-base.fold",
+  "strategy": "deterministic-curated-profile-v0",
+  "target": {
+    "file": "simple-star.svg",
+    "name": "simple star"
+  },
+  "target_features": [
+    "points",
+    "radial folds",
+    "center"
+  ]
+}

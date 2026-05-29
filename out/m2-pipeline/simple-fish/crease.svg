@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="fish base structural fixture - Add a tail centerline valley - Bias the body diagonal">
+  <style>
+    .boundary { stroke: #111827; stroke-width: 3; stroke-linecap: round; fill: none; }
+    .mountain { stroke: #dc2626; stroke-width: 2; stroke-linecap: round; fill: none; }
+    .valley { stroke: #2563eb; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 8 6; fill: none; }
+    .flat { stroke: #6b7280; stroke-width: 1.5; stroke-linecap: round; fill: none; }
+    .unknown { stroke: #9ca3af; stroke-width: 1.5; stroke-linecap: round; stroke-dasharray: 2 5; fill: none; }
+  </style>
+  <line x1="32" y1="480" x2="480" y2="480" class="boundary" />
+  <line x1="480" y1="480" x2="480" y2="32" class="boundary" />
+  <line x1="480" y1="32" x2="32" y2="32" class="boundary" />
+  <line x1="32" y1="32" x2="32" y2="480" class="boundary" />
+  <line x1="32" y1="480" x2="256" y2="256" class="mountain" />
+  <line x1="480" y1="480" x2="256" y2="256" class="valley" />
+  <line x1="480" y1="32" x2="256" y2="256" class="mountain" />
+  <line x1="32" y1="32" x2="256" y2="256" class="valley" />
+  <line x1="480" y1="480" x2="32" y2="32" class="flat" />
+  <line x1="32" y1="256" x2="480" y2="256" class="valley" />
+  <line x1="32" y1="480" x2="480" y2="32" class="mountain" />
+</svg>

@@ -1,0 +1,182 @@
+{
+  "actions": [
+    {
+      "contacts": [
+        "paper boundary",
+        "horizontal midpoint crease"
+      ],
+      "phase": "setup",
+      "text": "Paper lies flat with the target face up and the reference square visible."
+    },
+    {
+      "contacts": [
+        "stable panel near left midpoint",
+        "stable panel near right midpoint"
+      ],
+      "phase": "anchor",
+      "primitives": [
+        "hold",
+        "press"
+      ],
+      "text": "Anchor the stable panel on both sides of the horizontal midpoint crease."
+    },
+    {
+      "direction": "free panel moves toward the executor over the marked crease",
+      "phase": "fold",
+      "primitives": [
+        "pinch",
+        "drag"
+      ],
+      "text": "Move the free panel along the horizontal midpoint crease as a valley fold."
+    },
+    {
+      "phase": "align",
+      "target": "left midpoint and right midpoint overlap within visual tolerance",
+      "text": "Align left midpoint with right midpoint without letting the anchored panel slide."
+    },
+    {
+      "contacts": [
+        "left midpoint",
+        "center",
+        "right midpoint"
+      ],
+      "phase": "crease",
+      "primitives": [
+        "press"
+      ],
+      "text": "Press along the full horizontal midpoint crease from left midpoint to right midpoint."
+    },
+    {
+      "phase": "release",
+      "primitives": [
+        "release"
+      ],
+      "text": "Release the moving panel while keeping the new valley crease visible."
+    }
+  ],
+  "alignment_target": {
+    "phase": "align",
+    "target": "left midpoint and right midpoint overlap within visual tolerance",
+    "text": "Align left midpoint with right midpoint without letting the anchored panel slide."
+  },
+  "anchor_grip": {
+    "contacts": [
+      "stable panel near left midpoint",
+      "stable panel near right midpoint"
+    ],
+    "phase": "anchor",
+    "primitives": [
+      "hold",
+      "press"
+    ],
+    "text": "Anchor the stable panel on both sides of the horizontal midpoint crease."
+  },
+  "annotations": [
+    {
+      "assignment": "V",
+      "edge": [
+        5,
+        6
+      ],
+      "label": "horizontal midpoint crease",
+      "type": "fold-line"
+    },
+    {
+      "direction": "free panel moves toward the executor over the marked crease",
+      "from": "free panel",
+      "to": "alignment target",
+      "type": "motion-arrow"
+    },
+    {
+      "labels": [
+        "left midpoint",
+        "right midpoint"
+      ],
+      "type": "landmark"
+    }
+  ],
+  "checks": [
+    "The new valley crease is visible on the horizontal midpoint crease.",
+    "No boundary edge has moved outside the source square."
+  ],
+  "crease_press": {
+    "contacts": [
+      "left midpoint",
+      "center",
+      "right midpoint"
+    ],
+    "phase": "crease",
+    "primitives": [
+      "press"
+    ],
+    "text": "Press along the full horizontal midpoint crease from left midpoint to right midpoint."
+  },
+  "executor_profile": "human-hand",
+  "executor_profile_definition": {
+    "contact_primitives": [
+      "pinch",
+      "press",
+      "drag",
+      "hold",
+      "release"
+    ],
+    "id": "human-hand",
+    "landmark_language": {
+      "center": "Use the intersection of diagonals or midpoint creases.",
+      "corners": "Identify named paper corners by their visible square positions.",
+      "crease_line": "Follow the visible dashed or pressed line across the paper.",
+      "edges": "Use the visible paper boundary as the reference edge.",
+      "midpoint": "Find the halfway point between two adjacent corners by eye."
+    },
+    "name": "Human hand",
+    "risk_notes": [
+      "Paper can slide if the stable panel is not held before the fold.",
+      "A fingertip may occlude midpoint landmarks during alignment."
+    ],
+    "unavailable_actions": []
+  },
+  "failure_modes": [
+    "If the paper slides, re-anchor near left midpoint and repeat the fold slowly.",
+    "Human hand: Paper can slide if the stable panel is not held before the fold."
+  ],
+  "fold": {
+    "assignment": "V",
+    "edge": [
+      5,
+      6
+    ],
+    "landmarks": {
+      "end": "right midpoint",
+      "line": "horizontal midpoint crease",
+      "start": "left midpoint"
+    }
+  },
+  "fold_direction": {
+    "direction": "free panel moves toward the executor over the marked crease",
+    "phase": "fold",
+    "primitives": [
+      "pinch",
+      "drag"
+    ],
+    "text": "Move the free panel along the horizontal midpoint crease as a valley fold."
+  },
+  "instruction": "Add a centerline wing valley.",
+  "operation_id": "bird-centerline-wing",
+  "pre_state": "Paper lies flat with the target face up and the reference square visible.",
+  "release": {
+    "phase": "release",
+    "primitives": [
+      "release"
+    ],
+    "text": "Release the moving panel while keeping the new valley crease visible."
+  },
+  "step": 1,
+  "supported_executor_profiles": [
+    "human-hand",
+    "two-finger-gripper",
+    "cat-paw-profile",
+    "dog-paw-profile"
+  ],
+  "title": "Add a centerline wing valley",
+  "type": "foldgen.diagram_step.v1"
+}

@@ -1,0 +1,137 @@
+{
+  "edges_assignment": [
+    "B",
+    "B",
+    "B",
+    "B",
+    "V",
+    "V",
+    "M",
+    "M",
+    "M",
+    "V"
+  ],
+  "edges_vertices": [
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      0
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      1,
+      4
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      3,
+      4
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      5,
+      6
+    ]
+  ],
+  "faces_vertices": [
+    [
+      0,
+      1,
+      4
+    ],
+    [
+      1,
+      2,
+      4
+    ],
+    [
+      2,
+      3,
+      4
+    ],
+    [
+      3,
+      0,
+      4
+    ]
+  ],
+  "file_classes": [
+    "singleModel"
+  ],
+  "file_creator": "foldgen",
+  "file_spec": 1.2,
+  "file_title": "kite base structural fixture - Add a mast centerline valley - Tilt hull diagonal",
+  "foldgen_history": [
+    {
+      "assignment": "V",
+      "edge": [
+        5,
+        6
+      ],
+      "id": "boat-mast-centerline",
+      "name": "Add a mast centerline valley"
+    },
+    {
+      "assignment": "M",
+      "edge": [
+        0,
+        2
+      ],
+      "id": "boat-hull-diagonal",
+      "name": "Tilt hull diagonal"
+    }
+  ],
+  "frame_classes": [
+    "creasePattern"
+  ],
+  "vertices_coords": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      0.5,
+      0.5
+    ],
+    [
+      0,
+      0.5
+    ],
+    [
+      1,
+      0.5
+    ]
+  ]
+}

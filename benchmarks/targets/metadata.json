@@ -1,0 +1,89 @@
+{
+  "targets": [
+    {
+      "name": "simple bird",
+      "file": "simple-bird.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M0 public target fixture",
+      "license": "CC0-1.0",
+      "executor_readability_notes": "Simple silhouette is paired with bird-base landmarks that expose midpoint and diagonal fold cues."
+    },
+    {
+      "name": "simple fish",
+      "file": "simple-fish.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M0 public target fixture",
+      "license": "CC0-1.0",
+      "executor_readability_notes": "Simple fish target maps to visible fish-base tail/body landmarks for a one-step executor action flow."
+    },
+    {
+      "name": "simple flower",
+      "file": "simple-flower.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M0 public target fixture",
+      "license": "CC0-1.0",
+      "executor_readability_notes": "Radial flower shape maps to waterbomb center and petal midpoint landmarks."
+    },
+    {
+      "name": "simple boat",
+      "file": "simple-boat.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M2 curated pipeline target",
+      "license": "CC0-1.0",
+      "executor_readability_notes": "Boat target uses kite-base mast/hull landmarks and includes the two-finger-gripper optional profile path."
+    },
+    {
+      "name": "simple star",
+      "file": "simple-star.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M2 curated pipeline target",
+      "license": "CC0-1.0",
+      "executor_readability_notes": "Star target maps to frog-base point and center landmarks for structured checks and failure modes."
+    },
+    {
+      "name": "creative crane",
+      "file": "creative-crane.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M10 creative/reference image-to-fold case",
+      "license": "CC0-1.0",
+      "profile_hint": "simple-bird",
+      "executor_readability_notes": "Crane-like reference reuses bird-base wing and beak landmarks while testing a distinct silhouette."
+    },
+    {
+      "name": "creative shark",
+      "file": "creative-shark.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M10 creative/reference image-to-fold case",
+      "license": "CC0-1.0",
+      "profile_hint": "simple-fish",
+      "executor_readability_notes": "Shark-like reference reuses fish-base tail and body landmarks with an added dorsal cue."
+    },
+    {
+      "name": "creative lotus",
+      "file": "creative-lotus.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M10 creative/reference image-to-fold case",
+      "license": "CC0-1.0",
+      "profile_hint": "simple-flower",
+      "executor_readability_notes": "Lotus-like reference reuses waterbomb radial petal and center landmarks."
+    },
+    {
+      "name": "creative sailboat",
+      "file": "creative-sailboat.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M10 creative/reference image-to-fold case",
+      "license": "CC0-1.0",
+      "profile_hint": "simple-boat",
+      "executor_readability_notes": "Sailboat reference reuses kite-base mast, sail, and hull landmarks while testing a wider hull."
+    },
+    {
+      "name": "creative sunstar",
+      "file": "creative-sunstar.svg",
+      "source": "hand-authored geometric SVG fixture",
+      "usage": "M10 creative/reference image-to-fold case",
+      "license": "CC0-1.0",
+      "profile_hint": "simple-star",
+      "executor_readability_notes": "Sunstar reference reuses frog-base point, radial, and center landmarks for a denser point silhouette."
+    }
+  ]
+}

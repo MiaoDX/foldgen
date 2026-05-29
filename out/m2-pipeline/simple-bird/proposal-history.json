@@ -1,0 +1,125 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "bird-wing-beak-sequence",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "id": "bird-centerline-wing",
+        "instruction": "Add a centerline wing valley.",
+        "name": "Add a centerline wing valley",
+        "rationale": "Adds a broad wing crease across the bird base."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "id": "bird-centerline-wing",
+          "instruction": "Add a centerline wing valley.",
+          "name": "Add a centerline wing valley",
+          "rationale": "Adds a broad wing crease across the bird base."
+        },
+        {
+          "assignment": "M",
+          "edge": [
+            0,
+            2
+          ],
+          "id": "bird-diagonal-beak",
+          "instruction": "Sharpen the beak diagonal.",
+          "name": "Sharpen the beak diagonal",
+          "rationale": "Reuses the diagonal to emphasize a beak-like point."
+        }
+      ],
+      "rank": 1,
+      "rationale": "Combines a broad wing crease with a diagonal beak cue.",
+      "selected": true,
+      "validation_errors": [],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "bird-centerline-wing",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "id": "bird-centerline-wing",
+        "instruction": "Add a centerline wing valley.",
+        "name": "Add a centerline wing valley",
+        "rationale": "Adds a broad wing crease across the bird base."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "id": "bird-centerline-wing",
+          "instruction": "Add a centerline wing valley.",
+          "name": "Add a centerline wing valley",
+          "rationale": "Adds a broad wing crease across the bird base."
+        }
+      ],
+      "rank": 2,
+      "rationale": "Adds a broad wing crease across the bird base.",
+      "selected": false,
+      "validation_errors": [],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "bird-overextended-tail",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          0,
+          99
+        ],
+        "id": "bird-overextended-tail",
+        "instruction": "Reject out-of-range exploratory fold.",
+        "name": "Reject out-of-range exploratory fold",
+        "rationale": "Records how invalid proposals are kept as pipeline data."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            0,
+            99
+          ],
+          "id": "bird-overextended-tail",
+          "instruction": "Reject out-of-range exploratory fold.",
+          "name": "Reject out-of-range exploratory fold",
+          "rationale": "Records how invalid proposals are kept as pipeline data."
+        }
+      ],
+      "rank": 3,
+      "rationale": "Records how invalid proposals are kept as pipeline data.",
+      "selected": false,
+      "validation_errors": [
+        "edges_vertices[10] references an out-of-range vertex"
+      ],
+      "validation_status": "invalid"
+    }
+  ],
+  "case_id": "simple-bird",
+  "selected_base_form": "bird-base.fold",
+  "strategy": "deterministic-curated-profile-v0",
+  "target": {
+    "file": "simple-bird.svg",
+    "name": "simple bird"
+  },
+  "target_features": [
+    "wings",
+    "beak",
+    "upright silhouette"
+  ]
+}

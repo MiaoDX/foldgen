@@ -1,0 +1,40 @@
+{
+  "case_id": "simple-flower",
+  "entries": [
+    {
+      "candidate_id": "flower-petal-cross-sequence",
+      "notes": [
+        "Combines midpoint and cross-diagonal petal cues."
+      ],
+      "score": 0.85,
+      "selected": true,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "flower-petal-centerline",
+      "notes": [
+        "Adds a simple petal split while preserving radial structure."
+      ],
+      "score": 0.8,
+      "selected": false,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "flower-outside-paper",
+      "notes": [
+        "edges_vertices[10] references an out-of-range vertex"
+      ],
+      "score": 0,
+      "selected": false,
+      "validation_ok": false,
+      "verdict": "rejected-invalid"
+    }
+  ],
+  "evaluator": "deterministic-validation-and-profile-score-v0",
+  "target": {
+    "file": "simple-flower.svg",
+    "name": "simple flower"
+  }
+}

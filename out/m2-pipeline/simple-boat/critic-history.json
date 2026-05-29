@@ -1,0 +1,40 @@
+{
+  "case_id": "simple-boat",
+  "entries": [
+    {
+      "candidate_id": "boat-mast-hull-sequence",
+      "notes": [
+        "Combines a mast centerline with a hull diagonal cue."
+      ],
+      "score": 0.86,
+      "selected": true,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "boat-mast-centerline",
+      "notes": [
+        "Creates a strong mast-like vertical reference in the kite base."
+      ],
+      "score": 0.83,
+      "selected": false,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "boat-overextended-sail",
+      "notes": [
+        "edges_vertices[9] references an out-of-range vertex"
+      ],
+      "score": 0,
+      "selected": false,
+      "validation_ok": false,
+      "verdict": "rejected-invalid"
+    }
+  ],
+  "evaluator": "deterministic-validation-and-profile-score-v0",
+  "target": {
+    "file": "simple-boat.svg",
+    "name": "simple boat"
+  }
+}

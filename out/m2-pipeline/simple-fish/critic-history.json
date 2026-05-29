@@ -1,0 +1,40 @@
+{
+  "case_id": "simple-fish",
+  "entries": [
+    {
+      "candidate_id": "fish-tail-body-sequence",
+      "notes": [
+        "Combines tail separation with a body diagonal."
+      ],
+      "score": 0.87,
+      "selected": true,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "fish-tail-centerline",
+      "notes": [
+        "Adds a tail/body separation crease to the fish base."
+      ],
+      "score": 0.84,
+      "selected": false,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "fish-overextended-fin",
+      "notes": [
+        "edges_vertices[9] references an out-of-range vertex"
+      ],
+      "score": 0,
+      "selected": false,
+      "validation_ok": false,
+      "verdict": "rejected-invalid"
+    }
+  ],
+  "evaluator": "deterministic-validation-and-profile-score-v0",
+  "target": {
+    "file": "simple-fish.svg",
+    "name": "simple fish"
+  }
+}

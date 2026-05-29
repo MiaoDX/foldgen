@@ -1,0 +1,40 @@
+{
+  "case_id": "simple-bird",
+  "entries": [
+    {
+      "candidate_id": "bird-wing-beak-sequence",
+      "notes": [
+        "Combines a broad wing crease with a diagonal beak cue."
+      ],
+      "score": 0.86,
+      "selected": true,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "bird-centerline-wing",
+      "notes": [
+        "Adds a broad wing crease across the bird base."
+      ],
+      "score": 0.82,
+      "selected": false,
+      "validation_ok": true,
+      "verdict": "ranked-valid"
+    },
+    {
+      "candidate_id": "bird-overextended-tail",
+      "notes": [
+        "edges_vertices[10] references an out-of-range vertex"
+      ],
+      "score": 0,
+      "selected": false,
+      "validation_ok": false,
+      "verdict": "rejected-invalid"
+    }
+  ],
+  "evaluator": "deterministic-validation-and-profile-score-v0",
+  "target": {
+    "file": "simple-bird.svg",
+    "name": "simple bird"
+  }
+}

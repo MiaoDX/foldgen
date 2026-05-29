@@ -1,0 +1,125 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "boat-mast-hull-sequence",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "id": "boat-mast-centerline",
+        "instruction": "Add a mast centerline valley.",
+        "name": "Add a mast centerline valley",
+        "rationale": "Creates a strong mast-like vertical reference in the kite base."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "id": "boat-mast-centerline",
+          "instruction": "Add a mast centerline valley.",
+          "name": "Add a mast centerline valley",
+          "rationale": "Creates a strong mast-like vertical reference in the kite base."
+        },
+        {
+          "assignment": "M",
+          "edge": [
+            0,
+            2
+          ],
+          "id": "boat-hull-diagonal",
+          "instruction": "Tilt hull diagonal.",
+          "name": "Tilt hull diagonal",
+          "rationale": "Keeps a hull-like diagonal cue for the lower shape."
+        }
+      ],
+      "rank": 1,
+      "rationale": "Combines a mast centerline with a hull diagonal cue.",
+      "selected": true,
+      "validation_errors": [],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "boat-mast-centerline",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "id": "boat-mast-centerline",
+        "instruction": "Add a mast centerline valley.",
+        "name": "Add a mast centerline valley",
+        "rationale": "Creates a strong mast-like vertical reference in the kite base."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "id": "boat-mast-centerline",
+          "instruction": "Add a mast centerline valley.",
+          "name": "Add a mast centerline valley",
+          "rationale": "Creates a strong mast-like vertical reference in the kite base."
+        }
+      ],
+      "rank": 2,
+      "rationale": "Creates a strong mast-like vertical reference in the kite base.",
+      "selected": false,
+      "validation_errors": [],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "boat-overextended-sail",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          0,
+          99
+        ],
+        "id": "boat-overextended-sail",
+        "instruction": "Reject out-of-range exploratory fold.",
+        "name": "Reject out-of-range exploratory fold",
+        "rationale": "Records how invalid proposals are kept as pipeline data."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            0,
+            99
+          ],
+          "id": "boat-overextended-sail",
+          "instruction": "Reject out-of-range exploratory fold.",
+          "name": "Reject out-of-range exploratory fold",
+          "rationale": "Records how invalid proposals are kept as pipeline data."
+        }
+      ],
+      "rank": 3,
+      "rationale": "Records how invalid proposals are kept as pipeline data.",
+      "selected": false,
+      "validation_errors": [
+        "edges_vertices[9] references an out-of-range vertex"
+      ],
+      "validation_status": "invalid"
+    }
+  ],
+  "case_id": "simple-boat",
+  "selected_base_form": "kite-base.fold",
+  "strategy": "deterministic-curated-profile-v0",
+  "target": {
+    "file": "simple-boat.svg",
+    "name": "simple boat"
+  },
+  "target_features": [
+    "sail",
+    "hull",
+    "mast"
+  ]
+}

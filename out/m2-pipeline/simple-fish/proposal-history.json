@@ -1,0 +1,125 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "fish-tail-body-sequence",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "id": "fish-tail-centerline",
+        "instruction": "Add a tail centerline valley.",
+        "name": "Add a tail centerline valley",
+        "rationale": "Adds a tail/body separation crease to the fish base."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "id": "fish-tail-centerline",
+          "instruction": "Add a tail centerline valley.",
+          "name": "Add a tail centerline valley",
+          "rationale": "Adds a tail/body separation crease to the fish base."
+        },
+        {
+          "assignment": "M",
+          "edge": [
+            0,
+            2
+          ],
+          "id": "fish-body-diagonal",
+          "instruction": "Bias the body diagonal.",
+          "name": "Bias the body diagonal",
+          "rationale": "Keeps a simple asymmetric body cue."
+        }
+      ],
+      "rank": 1,
+      "rationale": "Combines tail separation with a body diagonal.",
+      "selected": true,
+      "validation_errors": [],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "fish-tail-centerline",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "id": "fish-tail-centerline",
+        "instruction": "Add a tail centerline valley.",
+        "name": "Add a tail centerline valley",
+        "rationale": "Adds a tail/body separation crease to the fish base."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "id": "fish-tail-centerline",
+          "instruction": "Add a tail centerline valley.",
+          "name": "Add a tail centerline valley",
+          "rationale": "Adds a tail/body separation crease to the fish base."
+        }
+      ],
+      "rank": 2,
+      "rationale": "Adds a tail/body separation crease to the fish base.",
+      "selected": false,
+      "validation_errors": [],
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "fish-overextended-fin",
+      "operation": {
+        "assignment": "V",
+        "edge": [
+          0,
+          99
+        ],
+        "id": "fish-overextended-fin",
+        "instruction": "Reject out-of-range exploratory fold.",
+        "name": "Reject out-of-range exploratory fold",
+        "rationale": "Records how invalid proposals are kept as pipeline data."
+      },
+      "operations": [
+        {
+          "assignment": "V",
+          "edge": [
+            0,
+            99
+          ],
+          "id": "fish-overextended-fin",
+          "instruction": "Reject out-of-range exploratory fold.",
+          "name": "Reject out-of-range exploratory fold",
+          "rationale": "Records how invalid proposals are kept as pipeline data."
+        }
+      ],
+      "rank": 3,
+      "rationale": "Records how invalid proposals are kept as pipeline data.",
+      "selected": false,
+      "validation_errors": [
+        "edges_vertices[9] references an out-of-range vertex"
+      ],
+      "validation_status": "invalid"
+    }
+  ],
+  "case_id": "simple-fish",
+  "selected_base_form": "fish-base.fold",
+  "strategy": "deterministic-curated-profile-v0",
+  "target": {
+    "file": "simple-fish.svg",
+    "name": "simple fish"
+  },
+  "target_features": [
+    "tail",
+    "body",
+    "horizontal silhouette"
+  ]
+}

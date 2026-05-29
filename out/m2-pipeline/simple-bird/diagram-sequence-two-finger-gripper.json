@@ -1,0 +1,377 @@
+{
+  "executor_profile": "two-finger-gripper",
+  "executor_profiles": [
+    "two-finger-gripper",
+    "human-hand",
+    "cat-paw-profile",
+    "dog-paw-profile"
+  ],
+  "step_count": 2,
+  "steps": [
+    {
+      "actions": [
+        {
+          "contacts": [
+            "paper boundary",
+            "horizontal midpoint crease"
+          ],
+          "phase": "setup",
+          "text": "Paper lies flat with the target face up and the reference square visible."
+        },
+        {
+          "contacts": [
+            "stable panel near left midpoint",
+            "stable panel near right midpoint"
+          ],
+          "phase": "anchor",
+          "primitives": [
+            "hold",
+            "press"
+          ],
+          "text": "Hold the stable panel with one gripper contact on each side of the horizontal midpoint crease."
+        },
+        {
+          "direction": "free panel moves toward the executor over the marked crease",
+          "phase": "fold",
+          "primitives": [
+            "pinch"
+          ],
+          "text": "Pinch the free panel and rotate it along the horizontal midpoint crease as a valley fold."
+        },
+        {
+          "phase": "align",
+          "target": "left midpoint and right midpoint overlap within visual tolerance",
+          "text": "Use detected endpoints to align left midpoint with right midpoint while the gripper keeps the base panel fixed."
+        },
+        {
+          "contacts": [
+            "left midpoint",
+            "center",
+            "right midpoint"
+          ],
+          "phase": "crease",
+          "primitives": [
+            "press"
+          ],
+          "text": "Press the gripper pad along the horizontal midpoint crease in short segments from left midpoint to right midpoint."
+        },
+        {
+          "phase": "release",
+          "primitives": [
+            "release"
+          ],
+          "text": "Open the gripper slowly and keep the new valley crease in view."
+        }
+      ],
+      "alignment_target": {
+        "phase": "align",
+        "target": "left midpoint and right midpoint overlap within visual tolerance",
+        "text": "Use detected endpoints to align left midpoint with right midpoint while the gripper keeps the base panel fixed."
+      },
+      "anchor_grip": {
+        "contacts": [
+          "stable panel near left midpoint",
+          "stable panel near right midpoint"
+        ],
+        "phase": "anchor",
+        "primitives": [
+          "hold",
+          "press"
+        ],
+        "text": "Hold the stable panel with one gripper contact on each side of the horizontal midpoint crease."
+      },
+      "annotations": [
+        {
+          "assignment": "V",
+          "edge": [
+            5,
+            6
+          ],
+          "label": "horizontal midpoint crease",
+          "type": "fold-line"
+        },
+        {
+          "direction": "free panel moves toward the executor over the marked crease",
+          "from": "free panel",
+          "to": "alignment target",
+          "type": "motion-arrow"
+        },
+        {
+          "labels": [
+            "left midpoint",
+            "right midpoint"
+          ],
+          "type": "landmark"
+        }
+      ],
+      "checks": [
+        "The new valley crease is visible on the horizontal midpoint crease.",
+        "No boundary edge has moved outside the source square."
+      ],
+      "crease_press": {
+        "contacts": [
+          "left midpoint",
+          "center",
+          "right midpoint"
+        ],
+        "phase": "crease",
+        "primitives": [
+          "press"
+        ],
+        "text": "Press the gripper pad along the horizontal midpoint crease in short segments from left midpoint to right midpoint."
+      },
+      "executor_profile": "two-finger-gripper",
+      "executor_profile_definition": {
+        "contact_primitives": [
+          "pinch",
+          "press",
+          "hold",
+          "release"
+        ],
+        "id": "two-finger-gripper",
+        "landmark_language": {
+          "center": "Use the averaged square center or crossing crease estimate.",
+          "corners": "Use detected corner points as grasp or alignment targets.",
+          "crease_line": "Track the commanded edge segment as the crease line.",
+          "edges": "Track boundary segments between corner points.",
+          "midpoint": "Compute midpoint contacts from detected boundary endpoints."
+        },
+        "name": "Two-finger gripper",
+        "risk_notes": [
+          "Narrow gripper contact can rotate the sheet if the opposite panel is not constrained.",
+          "Alignment may fail when the fold line is hidden by the gripper jaws."
+        ],
+        "unavailable_actions": [
+          "broad palm flattening",
+          "multi-point drag"
+        ]
+      },
+      "failure_modes": [
+        "If the paper slides, re-anchor near left midpoint and repeat the fold slowly.",
+        "Two-finger gripper: Narrow gripper contact can rotate the sheet if the opposite panel is not constrained."
+      ],
+      "fold": {
+        "assignment": "V",
+        "edge": [
+          5,
+          6
+        ],
+        "landmarks": {
+          "end": "right midpoint",
+          "line": "horizontal midpoint crease",
+          "start": "left midpoint"
+        }
+      },
+      "fold_direction": {
+        "direction": "free panel moves toward the executor over the marked crease",
+        "phase": "fold",
+        "primitives": [
+          "pinch"
+        ],
+        "text": "Pinch the free panel and rotate it along the horizontal midpoint crease as a valley fold."
+      },
+      "instruction": "Add a centerline wing valley.",
+      "operation_id": "bird-centerline-wing",
+      "pre_state": "Paper lies flat with the target face up and the reference square visible.",
+      "release": {
+        "phase": "release",
+        "primitives": [
+          "release"
+        ],
+        "text": "Open the gripper slowly and keep the new valley crease in view."
+      },
+      "step": 1,
+      "supported_executor_profiles": [
+        "human-hand",
+        "two-finger-gripper",
+        "cat-paw-profile",
+        "dog-paw-profile"
+      ],
+      "title": "Add a centerline wing valley",
+      "type": "foldgen.diagram_step.v1"
+    },
+    {
+      "actions": [
+        {
+          "contacts": [
+            "paper boundary",
+            "main diagonal crease"
+          ],
+          "phase": "setup",
+          "text": "Paper lies flat with the target face up and the reference square visible."
+        },
+        {
+          "contacts": [
+            "stable panel near top-left corner",
+            "stable panel near bottom-right corner"
+          ],
+          "phase": "anchor",
+          "primitives": [
+            "hold",
+            "press"
+          ],
+          "text": "Hold the stable panel with one gripper contact on each side of the main diagonal crease."
+        },
+        {
+          "direction": "free panel moves away from the executor over the marked crease",
+          "phase": "fold",
+          "primitives": [
+            "pinch"
+          ],
+          "text": "Pinch the free panel and rotate it along the main diagonal crease as a mountain fold."
+        },
+        {
+          "phase": "align",
+          "target": "top-left corner and bottom-right corner overlap within visual tolerance",
+          "text": "Use detected endpoints to align top-left corner with bottom-right corner while the gripper keeps the base panel fixed."
+        },
+        {
+          "contacts": [
+            "top-left corner",
+            "center",
+            "bottom-right corner"
+          ],
+          "phase": "crease",
+          "primitives": [
+            "press"
+          ],
+          "text": "Press the gripper pad along the main diagonal crease in short segments from top-left corner to bottom-right corner."
+        },
+        {
+          "phase": "release",
+          "primitives": [
+            "release"
+          ],
+          "text": "Open the gripper slowly and keep the new mountain crease in view."
+        }
+      ],
+      "alignment_target": {
+        "phase": "align",
+        "target": "top-left corner and bottom-right corner overlap within visual tolerance",
+        "text": "Use detected endpoints to align top-left corner with bottom-right corner while the gripper keeps the base panel fixed."
+      },
+      "anchor_grip": {
+        "contacts": [
+          "stable panel near top-left corner",
+          "stable panel near bottom-right corner"
+        ],
+        "phase": "anchor",
+        "primitives": [
+          "hold",
+          "press"
+        ],
+        "text": "Hold the stable panel with one gripper contact on each side of the main diagonal crease."
+      },
+      "annotations": [
+        {
+          "assignment": "M",
+          "edge": [
+            0,
+            2
+          ],
+          "label": "main diagonal crease",
+          "type": "fold-line"
+        },
+        {
+          "direction": "free panel moves away from the executor over the marked crease",
+          "from": "free panel",
+          "to": "alignment target",
+          "type": "motion-arrow"
+        },
+        {
+          "labels": [
+            "top-left corner",
+            "bottom-right corner"
+          ],
+          "type": "landmark"
+        }
+      ],
+      "checks": [
+        "The new mountain crease is visible on the main diagonal crease.",
+        "No boundary edge has moved outside the source square."
+      ],
+      "crease_press": {
+        "contacts": [
+          "top-left corner",
+          "center",
+          "bottom-right corner"
+        ],
+        "phase": "crease",
+        "primitives": [
+          "press"
+        ],
+        "text": "Press the gripper pad along the main diagonal crease in short segments from top-left corner to bottom-right corner."
+      },
+      "executor_profile": "two-finger-gripper",
+      "executor_profile_definition": {
+        "contact_primitives": [
+          "pinch",
+          "press",
+          "hold",
+          "release"
+        ],
+        "id": "two-finger-gripper",
+        "landmark_language": {
+          "center": "Use the averaged square center or crossing crease estimate.",
+          "corners": "Use detected corner points as grasp or alignment targets.",
+          "crease_line": "Track the commanded edge segment as the crease line.",
+          "edges": "Track boundary segments between corner points.",
+          "midpoint": "Compute midpoint contacts from detected boundary endpoints."
+        },
+        "name": "Two-finger gripper",
+        "risk_notes": [
+          "Narrow gripper contact can rotate the sheet if the opposite panel is not constrained.",
+          "Alignment may fail when the fold line is hidden by the gripper jaws."
+        ],
+        "unavailable_actions": [
+          "broad palm flattening",
+          "multi-point drag"
+        ]
+      },
+      "failure_modes": [
+        "If the paper slides, re-anchor near top-left corner and repeat the fold slowly.",
+        "Two-finger gripper: Narrow gripper contact can rotate the sheet if the opposite panel is not constrained."
+      ],
+      "fold": {
+        "assignment": "M",
+        "edge": [
+          0,
+          2
+        ],
+        "landmarks": {
+          "end": "bottom-right corner",
+          "line": "main diagonal crease",
+          "start": "top-left corner"
+        }
+      },
+      "fold_direction": {
+        "direction": "free panel moves away from the executor over the marked crease",
+        "phase": "fold",
+        "primitives": [
+          "pinch"
+        ],
+        "text": "Pinch the free panel and rotate it along the main diagonal crease as a mountain fold."
+      },
+      "instruction": "Sharpen the beak diagonal.",
+      "operation_id": "bird-diagonal-beak",
+      "pre_state": "Paper lies flat with the target face up and the reference square visible.",
+      "release": {
+        "phase": "release",
+        "primitives": [
+          "release"
+        ],
+        "text": "Open the gripper slowly and keep the new mountain crease in view."
+      },
+      "step": 2,
+      "supported_executor_profiles": [
+        "human-hand",
+        "two-finger-gripper",
+        "cat-paw-profile",
+        "dog-paw-profile"
+      ],
+      "title": "Sharpen the beak diagonal",
+      "type": "foldgen.diagram_step.v1"
+    }
+  ],
+  "type": "foldgen.diagram_sequence.v1"
+}

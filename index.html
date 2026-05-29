@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>foldgen demo</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="app-shell" id="app-shell">
+      <aside class="sidebar">
+        <header class="brand-block">
+          <h1>foldgen</h1>
+          <span id="state-pill" class="state-pill" data-state="empty">Empty</span>
+        </header>
+
+        <section class="control-group" aria-labelledby="target-label">
+          <label id="target-label" for="target-select">Target</label>
+          <select id="target-select">
+            <option value="">Select target</option>
+          </select>
+        </section>
+
+        <section class="control-group" aria-labelledby="profile-label">
+          <label id="profile-label" for="profile-select">Executor</label>
+          <select id="profile-select" disabled>
+            <option value="">Select executor</option>
+          </select>
+        </section>
+
+        <section class="control-group" aria-labelledby="text-label">
+          <label id="text-label" for="text-target">Curated Text</label>
+          <div class="inline-control">
+            <input id="text-target" type="text" autocomplete="off" placeholder="bird, fish, flower">
+            <button id="text-submit" type="button">Load</button>
+          </div>
+        </section>
+
+        <section class="control-group" aria-labelledby="upload-label">
+          <label id="upload-label" for="image-upload">Image Upload</label>
+          <input id="image-upload" type="file" accept="image/*">
+          <div id="upload-preview" class="upload-preview" aria-live="polite"></div>
+        </section>
+
+        <section class="status-panel" aria-live="polite">
+          <h2>Status</h2>
+          <p id="state-message">No case selected.</p>
+          <p id="embodiment-status" class="embodiment-status">Claim status: no case selected.</p>
+        </section>
+      </aside>
+
+      <section class="workspace">
+        <header class="workspace-header">
+          <div>
+            <p class="eyebrow">Stage 1</p>
+            <h2 id="case-title">Local Pipeline Output</h2>
+          </div>
+          <nav id="downloads" class="downloads" aria-label="Downloads"></nav>
+        </header>
+
+        <section id="state-banner" class="state-banner" data-state="empty">No case selected.</section>
+
+        <section class="result-grid">
+          <article class="pane target-pane">
+            <h3>Target</h3>
+            <div id="target-art" class="art-frame"></div>
+          </article>
+
+          <article class="pane crease-pane">
+            <h3>Crease</h3>
+            <div id="crease-pattern" class="art-frame"></div>
+          </article>
+
+          <article class="pane preview-pane">
+            <h3>Preview</h3>
+            <canvas id="preview-canvas" width="560" height="360"></canvas>
+          </article>
+
+          <article class="pane step-pane">
+            <h3>Action Flow</h3>
+            <ol id="step-list"></ol>
+          </article>
+        </section>
+
+        <section class="history-grid">
+          <article class="pane">
+            <h3>Proposal</h3>
+            <ul id="proposal-list" class="history-list"></ul>
+          </article>
+
+          <article class="pane">
+            <h3>Critic</h3>
+            <ul id="critic-list" class="history-list"></ul>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
