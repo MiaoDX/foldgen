@@ -7,13 +7,13 @@ import {
   stableStringify,
   validateFold
 } from "../../fold-core/src/index.mjs";
-import { stage1ExecutorProfiles, targetProfiles } from "./pipeline.mjs";
+import { stage1ExecutorProfiles, stage1SimpleTargetFiles, targetProfiles } from "./pipeline.mjs";
 
 export async function runCriticBatch(options = {}) {
   const baseFormsDir = options.baseFormsDir ?? "benchmarks/base-forms";
   const targetsDir = options.targetsDir ?? "benchmarks/targets";
   const outDir = options.outDir ?? "out/m8-critic";
-  const targetFiles = options.targetFiles ?? Object.keys(targetProfiles);
+  const targetFiles = options.targetFiles ?? stage1SimpleTargetFiles;
   const metadata = JSON.parse(await readFile(join(targetsDir, "metadata.json"), "utf8"));
   const targets = selectTargets(metadata.targets, targetFiles);
 

@@ -74,6 +74,7 @@
 
           <article class="pane preview-pane">
             <h3>Preview</h3>
+            <div id="folded-preview-stage" class="folded-preview-stage" aria-label="Solver-backed 3D folded-state preview" hidden></div>
             <canvas id="preview-canvas" width="560" height="360"></canvas>
           </article>
 
@@ -85,8 +86,10 @@
               </div>
               <div id="step-progress" class="step-progress">0 steps</div>
             </div>
+            <aside id="case-evidence" class="case-evidence" aria-live="polite"></aside>
             <section class="walkthrough-stage">
               <div id="step-diagram" class="step-diagram" aria-label="Step diagram"></div>
+              <div id="step-folded-preview-stage" class="step-folded-preview-stage" aria-label="Solver-backed 3D step-state preview" hidden></div>
               <canvas id="step-preview-canvas" width="420" height="300"></canvas>
               <figure class="executor-figure">
                 <img id="executor-image" alt="">

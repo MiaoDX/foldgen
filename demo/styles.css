@@ -343,6 +343,7 @@ input[type="file"] {
 
 .step-diagram,
 #step-preview-canvas,
+.step-folded-preview-stage,
 .executor-figure {
   min-height: 260px;
   border: 1px solid var(--line);
@@ -365,6 +366,18 @@ input[type="file"] {
 #step-preview-canvas {
   width: 100%;
   aspect-ratio: 7 / 5;
+  display: block;
+}
+
+.step-folded-preview-stage {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.step-folded-preview-stage canvas {
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
@@ -418,6 +431,58 @@ input[type="file"] {
   gap: 8px;
 }
 
+.case-evidence {
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff7ed;
+  color: var(--ink);
+  display: grid;
+  gap: 6px;
+}
+
+.case-evidence[data-status="empty"] {
+  display: none;
+}
+
+.case-evidence strong {
+  color: var(--amber);
+}
+
+.case-evidence p {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.case-evidence dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.case-evidence[data-status="complete"] {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.case-evidence[data-status="complete"] strong {
+  color: var(--green);
+}
+
+.case-evidence dt {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.case-evidence dd {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 .step-detail-title {
   display: flex;
   align-items: center;
@@ -463,6 +528,32 @@ input[type="file"] {
   overflow-wrap: anywhere;
 }
 
+.step-visual-semantics {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.step-visual-semantics h4 {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.step-visual-semantics ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.step-visual-semantics p {
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .subsection-title {
   margin: 4px 0 0;
   font-size: 12px;
@@ -491,6 +582,26 @@ input[type="file"] {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: #ffffff;
+  display: block;
+}
+
+.folded-preview-stage {
+  width: 100%;
+  aspect-ratio: 14 / 9;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fafc;
+  display: block;
+  overflow: hidden;
+}
+
+.folded-preview-stage[hidden] {
+  display: none;
+}
+
+.folded-preview-stage canvas {
+  width: 100%;
+  height: 100%;
   display: block;
 }
 

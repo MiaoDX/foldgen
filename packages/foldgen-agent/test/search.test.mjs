@@ -7,7 +7,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { parseFold, validateExecutorReadableStep, validateFold } from "../../fold-core/src/index.mjs";
-import { runLocalSearchBatch, searchOperationSequence, stage1ExecutorProfiles, targetProfiles } from "../src/index.mjs";
+import {
+  buildSolverBackedSearchRecord,
+  runLocalSearchBatch,
+  runSolverBackedSearchGate,
+  searchOperationSequence,
+  stage1ExecutorProfiles,
+  targetProfiles
+} from "../src/index.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -102,4 +109,88 @@ test("local search CLI writes a five-case summary", async () => {
   } finally {
     await rm(outDir, { recursive: true, force: true });
   }
+});
+
+test("solver-backed search gate selects candidates from display-decision evidence", async () => {
+  const outDir = await mkdtemp(join(tmpdir(), "foldgen-solver-backed-search-"));
+  try {
+    const result = await runSolverBackedSearchGate({ outDir });
+    assert.equal(result.ok, true, result.errors.join("\n"));
+    assert.equal(result.completed_usable_selection_count, 4);
+    assert.equal(result.completed_usable_generated_selection_count, 1);
+    const triangle = result.cases.find((entry) => entry.case_id === "known-good-triangle");
+    const generatedTriangle = result.cases.find((entry) => entry.case_id === "generated-triangle");
+    const paperHat = result.cases.find((entry) => entry.case_id === "known-good-paper-hat");
+    const squarePacket = result.cases.find((entry) => entry.case_id === "known-good-square-packet");
+    const fish = result.cases.find((entry) => entry.case_id === "simple-fish");
+    const boat = result.cases.find((entry) => entry.case_id === "simple-boat");
+    assert.equal(triangle.selected_display_mode, "completed-usable");
+    assert.equal(generatedTriangle.selected_display_mode, "completed-usable-generated");
+    assert.equal(paperHat.selected_display_mode, "completed-usable");
+    assert.equal(squarePacket.selected_display_mode, "completed-usable");
+    assert.equal(fish.selected_display_mode, "completed-3d-partial-walkthrough");
+    assert.equal(boat.selected_display_mode, "blocked-solver");
+    const triangleRecord = JSON.parse(await readFile(join(process.cwd(), triangle.record_path), "utf8"));
+    assert.equal(triangleRecord.selected_candidate_id, "known-good-triangle-sequence");
+    assert.equal(triangleRecord.candidates.find((candidate) => candidate.selected).completed_usable, true);
+    const generatedRecord = JSON.parse(await readFile(join(process.cwd(), generatedTriangle.record_path), "utf8"));
+    assert.equal(generatedRecord.selected_candidate_id, "generated-triangle-sequence");
+    assert.equal(generatedRecord.candidates.find((candidate) => candidate.selected).completed_usable, true);
+    const paperHatRecord = JSON.parse(await readFile(join(process.cwd(), paperHat.record_path), "utf8"));
+    assert.equal(paperHatRecord.selected_candidate_id, "known-good-paper-hat-sequence");
+    assert.equal(paperHatRecord.candidates.find((candidate) => candidate.selected).completed_usable, true);
+    const squarePacketRecord = JSON.parse(await readFile(join(process.cwd(), squarePacket.record_path), "utf8"));
+    assert.equal(squarePacketRecord.selected_candidate_id, "known-good-square-packet-sequence");
+    assert.equal(squarePacketRecord.candidates.find((candidate) => candidate.selected).completed_usable, true);
+    const boatRecord = JSON.parse(await readFile(join(process.cwd(), boat.record_path), "utf8"));
+    assert.equal(boatRecord.candidates.find((candidate) => candidate.selected).hard_gate_passed, false);
+  } finally {
+    await rm(outDir, { recursive: true, force: true });
+  }
+});
+
+test("solver-backed search record rejects blocked display as hard-gate pass", () => {
+  const record = buildSolverBackedSearchRecord({
+    pipelineCase: {
+      case_id: "simple-boat",
+      selected_candidate_id: "boat-mast-hull-sequence",
+      display_mode: "blocked-solver",
+      validation_status: true,
+      external_validation: {
+        flat_folder_state: { status: "failed" },
+        target_match: { status: "blocked" },
+        step_states: { status: "inspection-only" },
+        executor_overlays: { status: "complete" }
+      },
+      artifact_paths: {
+        display_decision: "display-decision.json",
+        folded_state_fold: null,
+        target_match: "target-match.json",
+        step_states: "step-states.json",
+        executor_overlays: "executor-overlays.json"
+      }
+    },
+    proposalHistory: {
+      candidates: [
+        {
+          candidate_id: "boat-mast-hull-sequence",
+          validation_status: "valid",
+          operations: [{ id: "boat-mast-centerline" }]
+        }
+      ]
+    },
+    displayDecision: {
+      display_mode: "blocked-solver",
+      target_complete: false,
+      completed_usable: false
+    },
+    targetMatch: {
+      status: "blocked",
+      score: 0
+    }
+  });
+  const selected = record.candidates.find((candidate) => candidate.selected);
+  assert.equal(selected.display_mode, "blocked-solver");
+  assert.equal(selected.hard_gate_passed, false);
+  assert.equal(selected.completed_usable, false);
 });

@@ -13,6 +13,8 @@ try {
     cases: summary.cases.map((pipelineCase) => ({
       case_id: pipelineCase.case_id,
       status: pipelineCase.status,
+      display_mode: pipelineCase.display_mode,
+      display_decision: pipelineCase.display_decision,
       claim_status: pipelineCase.claim_status,
       executor_readable: pipelineCase.executor_readable,
       executor_profile: pipelineCase.executor_profile,

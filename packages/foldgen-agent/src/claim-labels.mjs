@@ -127,7 +127,10 @@ async function validatePipelineSummary(rootDir, path, errors, warnings) {
     return;
   }
 
-  validateClaimStatus(summary.claim_status, `${path}: summary`, { requireSimulatorValid: summary.ok === true, errors });
+  const allCasesSimulatorValid = Array.isArray(summary.cases)
+    && summary.cases.length > 0
+    && summary.cases.every((pipelineCase) => pipelineCase.status === "valid" && pipelineCase.claim_status?.simulator_valid === true);
+  validateClaimStatus(summary.claim_status, `${path}: summary`, { requireSimulatorValid: allCasesSimulatorValid, errors });
   if (!Array.isArray(summary.cases) || summary.cases.length < 5) {
     errors.push(`${path}: expected at least five pipeline cases`);
     return;
@@ -138,10 +141,47 @@ async function validatePipelineSummary(rootDir, path, errors, warnings) {
       requireSimulatorValid: pipelineCase.status === "valid" && pipelineCase.validation_status === true,
       errors
     });
+    validateSolverBackedEvidence(pipelineCase, `${path}: ${pipelineCase.case_id ?? "<case>"}`, errors);
     await validateExecutorEvidence(rootDir, pipelineCase, `${path}: ${pipelineCase.case_id ?? "<case>"}`, errors);
     if (pipelineCase.claim_status?.final_record_path) {
       warnings.push(`${path}: ${pipelineCase.case_id} links a final record; run npm run validate:embodiment before launch copy`);
     }
+  }
+}
+
+function validateSolverBackedEvidence(pipelineCase, label, errors) {
+  if (pipelineCase.status === "valid") {
+    if (pipelineCase.external_validation?.flat_folder?.status !== "passed") {
+      errors.push(`${label}: valid completed-target cases require passed Flat-Folder validation`);
+    }
+    if (pipelineCase.external_validation?.flat_folder_state?.status !== "passed") {
+      errors.push(`${label}: valid completed-target cases require solver-backed folded-state evidence`);
+    }
+    if (!pipelineCase.artifact_paths?.folded_state_fold) {
+      errors.push(`${label}: valid completed-target cases require folded_state_fold artifact path`);
+    }
+    if (!pipelineCase.artifact_paths?.display_decision) {
+      errors.push(`${label}: valid completed-target cases require display_decision artifact path`);
+    }
+    if (!["completed-usable", "completed-usable-generated", "completed-3d-partial-walkthrough"].includes(pipelineCase.display_mode)) {
+      errors.push(`${label}: valid completed-target cases require a completed display decision mode`);
+    }
+    if ((pipelineCase.display_mode === "completed-usable" || pipelineCase.display_mode === "completed-usable-generated")
+      && pipelineCase.display_decision?.completed_usable !== true) {
+      errors.push(`${label}: completed usable display requires completed_usable display decision evidence`);
+    }
+    if (pipelineCase.display_mode === "completed-usable-generated" && pipelineCase.display_decision?.generated_usable !== true) {
+      errors.push(`${label}: completed-usable-generated display requires generated_usable display decision evidence`);
+    }
+    if (pipelineCase.display_mode === "completed-3d-partial-walkthrough" && pipelineCase.display_decision?.safe_to_render_completed_card === true) {
+      errors.push(`${label}: partial walkthrough cases cannot be safe_to_render_completed_card`);
+    }
+    if (pipelineCase.result_quality?.preview_status !== "solver-backed-folded-state") {
+      errors.push(`${label}: valid completed-target cases must use solver-backed-folded-state preview status`);
+    }
+  }
+  if (pipelineCase.external_validation?.flat_folder?.status === "failed" && pipelineCase.claim_status?.simulator_valid === true) {
+    errors.push(`${label}: failed Flat-Folder validation cannot have simulator_valid=true`);
   }
 }
 

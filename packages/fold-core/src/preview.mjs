@@ -1,18 +1,8 @@
 export function createPreviewModel(fold) {
   const vertices = fold.vertices_coords ?? [];
-  const zTotals = vertices.map(() => 0);
-  const zCounts = vertices.map(() => 0);
   const edges = (fold.edges_vertices ?? []).map(([a, b], index) => {
     const assignment = fold.edges_assignment?.[index] ?? "U";
     const lift = liftForAssignment(assignment);
-    if (zTotals[a] !== undefined) {
-      zTotals[a] += lift;
-      zCounts[a] += 1;
-    }
-    if (zTotals[b] !== undefined) {
-      zTotals[b] += lift;
-      zCounts[b] += 1;
-    }
     return {
       index,
       vertices: [a, b],
@@ -20,12 +10,7 @@ export function createPreviewModel(fold) {
       lift
     };
   });
-  const previewVertices = vertices.map(([x, y], index) => ({
-    index,
-    x: round(x),
-    y: round(y),
-    z: round(zCounts[index] === 0 ? 0 : zTotals[index] / zCounts[index])
-  }));
+  const previewVertices = createPreviewVertices(fold, edges);
   const faces = (fold.faces_vertices ?? []).map((faceVertices, index) => {
     const zValues = faceVertices
       .map((vertexIndex) => previewVertices[vertexIndex]?.z)
@@ -47,6 +32,117 @@ export function createPreviewModel(fold) {
     vertices: previewVertices,
     edges,
     faces
+  };
+}
+
+function createPreviewVertices(fold, edges) {
+  const vertices = (fold.vertices_coords ?? []).map(([x, y], index) => ({
+    index,
+    x,
+    y,
+    z: 0
+  }));
+  const history = Array.isArray(fold.foldgen_history) ? fold.foldgen_history : [];
+  if (history.length === 0) {
+    return vertices.map(roundVertex);
+  }
+  const edgeAssignments = new Map(edges.map((edge) => [edgeKey(edge.vertices), edge.assignment]));
+  for (const operation of history) {
+    applyPreviewFold(vertices, {
+      ...operation,
+      assignment: operation.assignment ?? edgeAssignments.get(edgeKey(operation.edge))
+    });
+  }
+  return vertices.map(roundVertex);
+}
+
+function applyPreviewFold(vertices, operation) {
+  const edge = operation.edge;
+  if (!Array.isArray(edge) || edge.length !== 2) {
+    return;
+  }
+  const start = vertices[edge[0]];
+  const end = vertices[edge[1]];
+  if (!start || !end) {
+    return;
+  }
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const length = Math.hypot(dx, dy);
+  if (length === 0) {
+    return;
+  }
+  const normal = { x: -dy / length, y: dx / length };
+  const distances = vertices.map((vertex) => ({
+    vertex,
+    distance: signedDistance(vertex, start, normal)
+  }));
+  const movableSign = chooseMovableSign(distances);
+  const angle = foldAngleForAssignment(operation.assignment);
+  const zDirection = zDirectionForAssignment(operation.assignment);
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+
+  for (const { vertex, distance } of distances) {
+    if (Math.abs(distance) < 0.0001 || Math.sign(distance) !== movableSign) {
+      continue;
+    }
+    const projectedDistance = distance * cos;
+    const delta = projectedDistance - distance;
+    vertex.x += normal.x * delta;
+    vertex.y += normal.y * delta;
+    vertex.z += Math.abs(distance) * sin * zDirection;
+  }
+}
+
+function signedDistance(vertex, start, normal) {
+  return (vertex.x - start.x) * normal.x + (vertex.y - start.y) * normal.y;
+}
+
+function chooseMovableSign(distances) {
+  const totals = distances.reduce((result, { distance }) => {
+    if (Math.abs(distance) < 0.0001) {
+      return result;
+    }
+    if (distance > 0) {
+      result.positive += Math.abs(distance);
+    } else {
+      result.negative += Math.abs(distance);
+    }
+    return result;
+  }, { positive: 0, negative: 0 });
+  return totals.positive >= totals.negative ? 1 : -1;
+}
+
+function foldAngleForAssignment(assignment) {
+  switch (assignment) {
+    case "F":
+      return Math.PI / 10;
+    case "M":
+    case "V":
+      return Math.PI / 5;
+    default:
+      return Math.PI / 12;
+  }
+}
+
+function zDirectionForAssignment(assignment) {
+  switch (assignment) {
+    case "V":
+      return -1;
+    case "F":
+      return 0.35;
+    default:
+      return 1;
+  }
+}
+
+function roundVertex(vertex) {
+  return {
+    index: vertex.index,
+    x: round(vertex.x),
+    y: round(vertex.y),
+    z: round(vertex.z)
   };
 }
 

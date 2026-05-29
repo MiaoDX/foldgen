@@ -19,6 +19,30 @@
     "m9:image-to-fold": "node packages/foldgen-agent/bin/run-image-to-fold.mjs",
     "m10:testbed": "node packages/foldgen-agent/bin/run-testbed.mjs",
     "m11:preview": "node packages/fold-core/bin/run-preview-animation.mjs",
+    "m12:solver-state": "node packages/foldgen-agent/bin/run-solver-state.mjs",
+    "m13:display-modes": "node packages/foldgen-agent/bin/validate-display-modes.mjs",
+    "m13:three-preview": "node packages/foldgen-agent/bin/validate-three-preview.mjs",
+    "m14:known-good-targets": "node packages/foldgen-agent/bin/validate-known-good-targets.mjs",
+    "m15:step-state-walkthrough": "node packages/foldgen-agent/bin/validate-step-state-walkthrough.mjs",
+    "m18:display-decision": "node packages/foldgen-agent/bin/validate-display-decision.mjs",
+    "m19:origami-simulator-spike": "node packages/foldgen-agent/bin/validate-origami-simulator-spike.mjs",
+    "m20:known-good-tutorials": "node packages/foldgen-agent/bin/validate-known-good-tutorials.mjs",
+    "m21:full-step-states": "node packages/foldgen-agent/bin/validate-full-step-states.mjs",
+    "m22:executor-overlay-artifacts": "node packages/foldgen-agent/bin/validate-executor-overlay-artifacts.mjs",
+    "m23:solver-backed-search": "node packages/foldgen-agent/bin/validate-solver-backed-search.mjs",
+    "m24:artifact-graph": "node packages/foldgen-agent/bin/validate-artifact-graph.mjs",
+    "m25:recognizable-known-good": "node packages/foldgen-agent/bin/validate-recognizable-known-good.mjs",
+    "m26:progressive-state-backend": "node packages/foldgen-agent/bin/validate-progressive-state-backend.mjs",
+    "m27:three-step-walkthrough": "node packages/foldgen-agent/bin/validate-three-step-walkthrough.mjs",
+    "m28:candidate-graduation": "node packages/foldgen-agent/bin/validate-candidate-graduation.mjs",
+    "m29:local-preview-review": "node packages/foldgen-agent/bin/validate-local-preview-review.mjs",
+    "m30:generated-candidate-harness": "node packages/foldgen-agent/bin/validate-generated-candidate-harness.mjs",
+    "m31:backend-state-router": "node packages/foldgen-agent/bin/validate-backend-state-router.mjs",
+    "m32:generated-target-scorer": "node packages/foldgen-agent/bin/validate-generated-target-scorer.mjs",
+    "m33:generated-step-replay": "node packages/foldgen-agent/bin/validate-generated-step-replay.mjs",
+    "m34:generated-executor-feasibility": "node packages/foldgen-agent/bin/validate-generated-executor-feasibility.mjs",
+    "m35:generated-preview-review": "node packages/foldgen-agent/bin/validate-generated-preview-review.mjs",
+    "m36:original-gap-closure-audit": "node packages/foldgen-agent/bin/validate-original-gap-closure-audit.mjs",
     "demo": "node demo/server.mjs"
   },
   "engines": {
@@ -29,7 +53,8 @@
   ],
   "dependencies": {
     "flat-folder": "https://github.com/origamimagiro/flat-folder/archive/e00732c4cf9137f76caea22fd8f284ec23af0aff.tar.gz",
-    "fold": "^0.12.0"
+    "fold": "^0.12.0",
+    "three": "^0.184.0"
   },
   "overrides": {
     "@xmldom/xmldom": "^0.9.10"

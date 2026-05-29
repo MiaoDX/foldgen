@@ -369,3 +369,297 @@ Proof:
   data.
 
 Depends on: Phase 10
+
+## Phase 12: Solver-backed Real Folding Pipeline
+
+Goal: replace schematic target-completion claims with solver-backed folded-state
+evidence for at least one target, using `simple-boat` as the forcing function.
+
+Success criteria:
+- A Flat-Folder solver-state adapter writes folded-state artifacts for a
+  passing case.
+- Completed-target status requires external solver pass and a folded-state
+  artifact.
+- `simple-boat` either passes the solver-backed gate or is demoted from
+  completed output with visible conflict evidence.
+- The existing 2.5D preview is explicitly inspection-only and cannot be used as
+  final folded-result evidence.
+
+Status: Implemented
+
+Gate:
+- `npm run m12:solver-state`
+- `npm test`
+- `npm run validate:stage1`
+
+Proof:
+- `npm run m12:solver-state` reports one completed case
+  (`simple-fish`) and four blocked cases with explicit solver or target-match
+  reasons.
+- `simple-boat` is blocked by Flat-Folder taco-taco conflict evidence and is no
+  longer reported as a completed target.
+- `simple-flower` passes solver-state extraction but is blocked by the
+  silhouette target-match gate.
+- `npm run m13:three-preview` verifies the solver-backed Three.js preview path
+  for `simple-fish`, the blocked fallback path for `simple-boat`, and writes
+  screenshots under `tmp/qa/`.
+- `npm test`
+- `npm run validate:stage1`
+
+Depends on: Phase 11
+
+## Phase 13: Usable Origami Generation Pipeline
+
+Goal: finish the shift from schematic explanation to usable, artifact-backed
+origami generation.
+
+Success criteria:
+- Completed cases render from solver-backed `folded-state.fold` through
+  Three.js/WebGL.
+- Blocked or inspection-only cases cannot look like completed results.
+- At least three default targets pass solver-state and target-match gates before
+  the UI uses completed-results language.
+- Step walkthrough visuals are backed by step-state artifacts or explicitly
+  marked inspection-only.
+- Human hand, two-finger gripper, cat paw, and dog paw visuals are
+  geometry-linked contact overlays, not decorative side images.
+- Candidate search ranks by solver-backed target-match score rather than
+  curated operation names.
+
+Status: Implemented for Slices A-F. Slice A hard display decision is
+implemented and
+verified. Slice B Origami Simulator spike is implemented as a blocker/route
+decision: compatible input frames are generated, but automated solved-state
+export is not available yet. Slice C known-good tutorial provenance is
+implemented for the first two solver-derived fixtures. Slice D full step-state
+validator is implemented. Slice E executor overlay artifacts are implemented.
+Slice F solver-backed search records are implemented.
+Slice F solver-backed search records are implemented.
+
+Slice A status: Implemented. Case summaries carry `display_mode`; the demo
+drives completed/blocked panels from that field; step detail preserves the
+selected step number; ambiguous dashed helper lines are removed from step SVGs;
+and step visual artifacts include profile-specific executor overlays plus
+annotation legends.
+
+Slice B status: Implemented for a first solver-derived known-good set. Default
+pipeline now completes `known-good-triangle`, `known-good-corner`, and
+`simple-fish`; `simple-boat` remains blocked by solver evidence.
+
+Slice C status: Implemented as per-step post-state extraction. Known-good
+single-step targets have complete solver-backed walkthrough steps with changed
+frame evidence; multi-step cases record partial or inspection-only prefix
+states instead of implying unavailable intermediate solver support.
+
+Gate:
+- Slice A: `npm run m13:display-modes`, `npm run m13:three-preview`,
+  `npm test`, `npm run validate:stage1`
+- Slice B: `npm run m14:known-good-targets`, `npm test`,
+  `npm run validate:stage1`
+- Slice C: `npm run m15:step-state-walkthrough`, `npm test`,
+  `npm run validate:stage1`
+- Slice D: `npm run m16:executor-overlays`, `npm test`,
+  `npm run validate:stage1`
+- Slice E: `npm run m17:solver-search`, `npm test`,
+  `npm run validate:stage1`
+
+Depends on: Phase 12
+
+## Phase 14: Real Usable Origami Generation Pipeline
+
+Goal: completed origami cases become genuinely usable instead of clearer
+schematics. A completed case must be backend-folded, target-like, full
+step-state walkthrough-backed, executor-overlay-backed, and selected by a hard
+display decision artifact.
+
+Canonical plan:
+- `docs/plans/real-usable-origami-generation-pipeline.md`
+- `.planning/phases/14-real-usable-origami-generation-pipeline/PLAN.md`
+
+Requirements:
+- Add `display-decision.json` as the only trusted source for completed display.
+- Introduce `completed-usable` and stricter blocked/partial modes.
+- Spike Origami Simulator as a progressive-state backend or reject it with a
+  concrete blocker.
+- Build a known-good tutorial case set with provenance and full artifact graph.
+- Require full pre/post state walkthrough artifacts for completed-usable cases.
+- Promote executor overlays into geometry-linked artifacts.
+- Route candidate search through backend pass, target-match, walkthrough
+  completeness, and overlay completeness.
+
+Success criteria:
+- At least two local demo cases are `completed-usable`.
+- At least one recognizable object either passes all gates or is blocked with
+  exact evidence.
+- Boat cannot show as successful unless it passes every hard gate.
+- Heuristic previews are inspection-only and cannot drive completed display.
+
+Status: Implemented. Slice A hard display decision is implemented and
+verified. Slice B Origami Simulator spike is implemented as a blocker/route
+decision: compatible input frames are generated, but automated solved-state
+export is not available yet. Slice C known-good tutorial provenance is
+implemented for solver-derived fixtures. Slice D full step-state validator is
+implemented. Slice E executor overlay artifacts are implemented. Slice F
+solver-backed search records are implemented.
+
+Gate:
+- `npm run m18:display-decision` (implemented)
+- `npm run m19:origami-simulator-spike` (implemented, blocked as automated backend)
+- `npm run m20:known-good-tutorials` (implemented)
+- `npm run m21:full-step-states` (implemented)
+- `npm run m22:executor-overlay-artifacts` (implemented)
+- `npm run m23:solver-backed-search` (implemented)
+- `npm test`
+- `npm run validate:stage1`
+
+Depends on: Phase 12 and Phase 13 solver/display foundations
+
+## Phase 15: Production Usable Origami Generation
+
+Goal: move from honest blocked/partial evidence to at least one genuinely
+recognizable, completed, usable origami demo. Known-good tutorials and generated
+candidates must pass the same hard promotion gate before the demo can display
+them as completed.
+
+Canonical plan:
+- `docs/plans/production-usable-origami-generation.md`
+- `.planning/phases/15-production-usable-origami-generation/PLAN.md`
+
+Requirements:
+- Lock the full artifact graph so `completed-usable` cannot be inferred from
+  labels or heuristic previews.
+- Add one recognizable known-good tutorial that passes every gate, or keep boat
+  blocked and promote a different simple recognizable object.
+- Add a validated route for progressive state artifacts, including manual
+  simulator-state import if automation is still blocked.
+- Render selected step pre/post states through Three.js.
+- Graduate generated candidates only through backend state, target-match,
+  complete step-state, and overlay gates.
+- Add local screenshot and pixel review gates for the demo.
+
+Success criteria:
+- At least one recognizable object is `completed-usable`.
+- At least two simple fixtures remain `completed-usable`.
+- Boat is either truly completed or explicitly blocked with exact evidence.
+- Completed step views come from backend pre/post state artifacts.
+- Hand, gripper, cat paw, and dog paw overlays are profile-specific and linked
+  to geometry.
+- The demo never uses heuristic preview as a completed result.
+
+Status: Implemented and verified. The default pipeline now has four
+`completed-usable` known-good cases: `known-good-triangle`,
+`known-good-corner`, `known-good-paper-hat`, and
+`known-good-square-packet`. `known-good-paper-hat` and
+`known-good-square-packet` are the recognizable completed fixtures added in
+this phase. `known-good-square-packet` is the multi-step backend-state proof
+case. `simple-boat` remains `blocked-solver` and is not a completed product
+demo. Selected-step walkthroughs now animate from backend pre-state FOLD to
+backend post-state FOLD in Three.js/WebGL, with profile-specific 3D executor
+contact overlays in the same scene.
+
+Gate:
+- `npm run m24:artifact-graph` (implemented)
+- `npm run m25:recognizable-known-good` (implemented)
+- `npm run m26:progressive-state-backend` (implemented)
+- `npm run m27:three-step-walkthrough` (implemented)
+- `npm run m28:candidate-graduation` (implemented)
+- `npm run m29:local-preview-review` (implemented)
+- `npm test`
+- `npm run validate:stage1`
+
+Proof:
+- `npm run m24:artifact-graph`
+- `npm run m25:recognizable-known-good`
+- `npm run m26:progressive-state-backend`
+- `npm run m27:three-step-walkthrough`
+- `npm run m28:candidate-graduation`
+- `npm run m29:local-preview-review`
+- `npm test`
+- `npm run validate:stage1`
+- Local screenshots are written under `tmp/qa/`, including
+  `foldgen-square-packet-completed-usable.png`.
+- `npm run m29:local-preview-review` verifies selected-step pre/post WebGL
+  animation frame differences and same-step human-hand vs cat-paw WebGL pixel
+  differences.
+
+Known remaining blocker:
+- Origami Simulator automation is still `blocked-automated-state-export`; the
+  accepted production path is validated known-good or manual/imported state
+  artifacts with provenance and checksums.
+
+Depends on: Phase 14
+
+## Phase 16: Generated Usable Origami Graduation
+
+Goal: move from known-good fixture success to evidence-backed generated success.
+Generated candidates must pass the same hard artifact chain as known-good
+fixtures before the demo can display them as completed.
+
+Canonical plan:
+- `docs/plans/generated-usable-origami-graduation.md`
+- `.planning/phases/16-generated-usable-origami-graduation/PLAN.md`
+
+Requirements:
+- Add a reproducible candidate recipe and run contract.
+- Route generated candidates through backend folded-state evidence or validated
+  imported simulator-state artifacts.
+- Score generated backend renders against deterministic target fixtures.
+- Require full pre/post step replay for generated candidates.
+- Add executor profile feasibility gates for hand, gripper, cat paw, and dog
+  paw profiles.
+- Add browser QA proving generated success is real and rejected generation does
+  not look completed.
+
+Success criteria:
+- At least one generated candidate is evaluated end to end.
+- A generated candidate cannot be promoted by label, target name, or operation
+  name.
+- Any generated success is visibly labeled as generated and backed by backend
+  state, target-match, step replay, executor feasibility, and QA artifacts.
+- Any generated failure records the exact failed gate and cannot render as
+  completed.
+- Boat remains blocked/rejected unless it truly passes every hard gate.
+
+Status: Implemented and verified. The default pipeline now has one generated
+graduate, `generated-triangle`, with display mode
+`completed-usable-generated`. It carries `candidate-recipe.json`,
+`candidate-run.json`, backend folded-state evidence, target-match, full
+step-replay artifacts, executor feasibility overlays, and passing browser QA.
+Known-good tutorial success remains separate from generated success.
+`simple-boat` remains `blocked-solver` and is not a completed demo.
+
+Gate:
+- `npm run m30:generated-candidate-harness`
+- `npm run m31:backend-state-router`
+- `npm run m32:generated-target-scorer`
+- `npm run m33:generated-step-replay`
+- `npm run m34:generated-executor-feasibility`
+- `npm run m35:generated-preview-review`
+- `npm run m36:original-gap-closure-audit`
+- `npm test`
+- `npm run validate:stage1`
+- `npm run validate:claims`
+
+Proof:
+- `npm run m30:generated-candidate-harness`
+- `npm run m31:backend-state-router`
+- `npm run m32:generated-target-scorer`
+- `npm run m33:generated-step-replay`
+- `npm run m34:generated-executor-feasibility`
+- `npm run m35:generated-preview-review`
+- `npm run m36:original-gap-closure-audit`
+- `npm test`
+- `npm run validate:stage1`
+- `npm run validate:claims`
+
+User-feedback closure:
+- `npm run m36:original-gap-closure-audit` proves the original UI/product gaps:
+  completed generated output renders with WebGL/Three.js from backend state;
+  selected-step panels animate backend pre/post states; clicked step numbers and
+  content are preserved; step frame changes are pixel-detected; executor
+  overlays are geometry-linked and visually distinct; decorative dashed helper
+  lines are absent from step SVGs; boat remains blocked while solver evidence
+  fails; generated success stays separate from known-good tutorial success; and
+  no arbitrary generation or physical embodiment claim is made.
+
+Depends on: Phase 15

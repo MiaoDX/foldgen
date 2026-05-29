@@ -41,6 +41,51 @@
       "executor_readability_notes": "Star target maps to frog-base point and center landmarks for structured checks and failure modes."
     },
     {
+      "name": "known good triangle",
+      "file": "known-good-triangle.svg",
+      "source": "hand-authored SVG fixture derived from the Flat-Folder folded-state silhouette for the known-good triangle sequence",
+      "usage": "M14 solver-backed known-good target",
+      "license": "CC0-1.0",
+      "profile_hint": "known-good-triangle",
+      "executor_readability_notes": "Triangle target is intentionally matched to a solver-passing folded-state silhouette so it can serve as a completed-result regression case."
+    },
+    {
+      "name": "known good corner",
+      "file": "known-good-corner.svg",
+      "source": "hand-authored SVG fixture derived from the Flat-Folder folded-state silhouette for the known-good corner-fold sequence",
+      "usage": "M14 solver-backed known-good target",
+      "license": "CC0-1.0",
+      "profile_hint": "known-good-corner",
+      "executor_readability_notes": "Corner-fold target is intentionally matched to a solver-passing folded-state silhouette so it can serve as a completed-result regression case."
+    },
+    {
+      "name": "known good paper party hat",
+      "file": "known-good-paper-hat.svg",
+      "source": "hand-authored SVG fixture derived from the Flat-Folder folded-state silhouette for the known-good paper-hat sequence",
+      "usage": "M15 solver-backed recognizable known-good target",
+      "license": "CC0-1.0",
+      "profile_hint": "known-good-paper-hat",
+      "executor_readability_notes": "Paper-hat target uses the same solver-passing cone silhouette as the folded-state geometry; decorative SVG lines are not part of the target silhouette gate."
+    },
+    {
+      "name": "known good square packet",
+      "file": "known-good-square-packet.svg",
+      "source": "hand-authored SVG fixture derived from the Flat-Folder folded-state silhouette for a two-step known-good square-packet sequence",
+      "usage": "M15 solver-backed multi-step known-good target",
+      "license": "CC0-1.0",
+      "profile_hint": "known-good-square-packet",
+      "executor_readability_notes": "Square-packet target has two backend-backed intermediate folded states, so it exercises real multi-step walkthrough evidence instead of inspection-only prefix states."
+    },
+    {
+      "name": "generated triangle",
+      "file": "generated-triangle.svg",
+      "source": "deterministic local generated candidate fixture derived from the Phase 16 generated-candidate recipe",
+      "usage": "M30-M35 generated usable graduation case",
+      "license": "CC0-1.0",
+      "profile_hint": "generated-triangle",
+      "executor_readability_notes": "Generated triangle is intentionally routed through the same backend-state, target-match, step-replay, and executor-feasibility gates as known-good fixtures; it is labeled separately from known-good tutorial sources."
+    },
+    {
       "name": "creative crane",
       "file": "creative-crane.svg",
       "source": "hand-authored geometric SVG fixture",

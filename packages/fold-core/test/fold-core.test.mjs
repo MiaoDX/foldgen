@@ -122,6 +122,33 @@ test("preview animation output follows operation history", async () => {
   assert.equal(animation.frames.at(-1).preview.edges.some((edge) => edge.assignment === "M"), true);
 });
 
+test("preview animation changes paper geometry across steps", async () => {
+  const fold = await loadFoldFile("benchmarks/base-forms/waterbomb-base.fold");
+  const operations = [
+    {
+      id: "petal-centerline",
+      name: "Add petal centerline",
+      assignment: "V",
+      edge: [5, 6],
+      instruction: "Add the center petal valley."
+    },
+    {
+      id: "petal-rim",
+      name: "Soften petal rim",
+      assignment: "F",
+      edge: [2, 4],
+      instruction: "Soften the top petal rim."
+    }
+  ];
+  const derived = applyLocalFoldOperations(fold, operations);
+  const animation = createPreviewAnimation(derived);
+  const firstStep = animation.frames[1].preview;
+  const finalStep = animation.frames.at(-1).preview;
+
+  assert.notDeepEqual(firstStep.vertices, finalStep.vertices);
+  assert.ok(maxVertexDelta(firstStep.vertices, finalStep.vertices) > 0.08);
+});
+
 test("diagram step contains executor-readable action structure", () => {
   const step = createDiagramStep(deterministicDemoOperation, 1);
   const result = validateExecutorReadableStep(step);
@@ -148,6 +175,31 @@ test("diagram step contains executor-readable action structure", () => {
   assert.equal(validateExecutorReadableStep(invalid).ok, false);
 });
 
+test("diagram steps use operation-specific action copy", () => {
+  const centerLock = createDiagramStep({
+    id: "flower-center-lock",
+    name: "Press the center lock",
+    assignment: "M",
+    edge: [0, 4],
+    instruction: "Lock the flower center so petals stay open.",
+    rationale: "Emphasizes the flower center without changing the outer boundary."
+  }, 4);
+  const petalRim = createDiagramStep({
+    id: "flower-petal-soften",
+    name: "Soften the petal rim",
+    assignment: "F",
+    edge: [2, 4],
+    instruction: "Soften the upper petal rim into a rounded guide.",
+    rationale: "Marks a soft rim fold for the upper petal."
+  }, 5);
+
+  assert.notEqual(centerLock.pre_state, petalRim.pre_state);
+  assert.match(centerLock.actions.find((action) => action.phase === "setup").text, /center lock/i);
+  assert.match(petalRim.actions.find((action) => action.phase === "setup").text, /petal rim/i);
+  assert.match(centerLock.actions.find((action) => action.phase === "fold").text, /lock/i);
+  assert.match(petalRim.actions.find((action) => action.phase === "fold").text, /soften|rim/i);
+});
+
 test("diagram sequence contains multi-step executor-readable profiles", () => {
   for (const executorProfile of ["human-hand", "two-finger-gripper", "cat-paw-profile", "dog-paw-profile"]) {
     const steps = deterministicDemoOperations.map((operation, index) => createDiagramStep(operation, index + 1, {
@@ -163,6 +215,14 @@ test("diagram sequence contains multi-step executor-readable profiles", () => {
     assert.equal(sequence.steps.every((step) => validateExecutorReadableStep(step).ok), true);
   }
 });
+
+function maxVertexDelta(firstVertices, secondVertices) {
+  const secondByIndex = new Map(secondVertices.map((vertex) => [vertex.index, vertex]));
+  return Math.max(...firstVertices.map((vertex) => {
+    const next = secondByIndex.get(vertex.index);
+    return next ? Math.hypot(vertex.x - next.x, vertex.y - next.y, vertex.z - next.z) : 0;
+  }));
+}
 
 test("deterministic case writes valid FOLD, SVG, validation, and diagram step", async () => {
   const outDir = await mkdtemp(join(tmpdir(), "foldgen-m1-"));

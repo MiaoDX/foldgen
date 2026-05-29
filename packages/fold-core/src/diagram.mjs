@@ -80,7 +80,8 @@ export function createDiagramStep(operation, index = 1, options = {}) {
   const profileDefinition = getExecutorProfile(executorProfile);
   const edge = normalizeEdge(operation.edge);
   const landmarks = normalizeLandmarks(operation.landmarks, edge);
-  const preState = options.preState ?? operation.pre_state ?? "Paper lies flat with the target face up and the reference square visible.";
+  const operationIntent = describeOperationIntent(operation);
+  const preState = options.preState ?? operation.pre_state ?? buildPreState(operation, operationIntent);
   const fields = buildActionFields(operation, landmarks, profileDefinition);
 
   return {
@@ -117,7 +118,7 @@ export function createDiagramStep(operation, index = 1, options = {}) {
     checks: buildChecks(operation, landmarks),
     failure_modes: buildFailureModes(profileDefinition, landmarks),
     annotations: buildAnnotations(operation, edge, landmarks),
-    instruction: operation.instruction ?? buildInstruction(operation, landmarks)
+    instruction: buildInstruction(operation, landmarks)
   };
 }
 
@@ -194,13 +195,14 @@ export function validateExecutorReadableStep(step) {
 
 function buildActionFields(operation, landmarks, profileDefinition) {
   const foldKind = assignmentName(operation.assignment);
-  const foldDirection = operation.direction ?? defaultDirection(operation.assignment);
   const profileId = profileDefinition.id;
-  const anchorText = actionText(profileId, "anchor", landmarks, foldKind);
-  const foldText = actionText(profileId, "fold", landmarks, foldKind);
-  const alignText = actionText(profileId, "align", landmarks, foldKind);
-  const creaseText = actionText(profileId, "crease", landmarks, foldKind);
-  const releaseText = actionText(profileId, "release", landmarks, foldKind);
+  const intent = describeOperationIntent(operation);
+  const foldDirection = operation.direction ?? `${intent.commandLower}; ${defaultDirection(operation.assignment)}`;
+  const anchorText = actionText(profileId, "anchor", landmarks, foldKind, intent);
+  const foldText = actionText(profileId, "fold", landmarks, foldKind, intent);
+  const alignText = actionText(profileId, "align", landmarks, foldKind, intent);
+  const creaseText = actionText(profileId, "crease", landmarks, foldKind, intent);
+  const releaseText = actionText(profileId, "release", landmarks, foldKind, intent);
   return {
     anchor: {
       phase: "anchor",
@@ -217,7 +219,7 @@ function buildActionFields(operation, landmarks, profileDefinition) {
     align: {
       phase: "align",
       text: alignText,
-      target: operation.alignment_target ?? `${landmarks.start} and ${landmarks.end} overlap within visual tolerance`
+      target: operation.alignment_target ?? intent.target
     },
     crease: {
       phase: "crease",
@@ -233,38 +235,42 @@ function buildActionFields(operation, landmarks, profileDefinition) {
   };
 }
 
-function actionText(profileId, phase, landmarks, foldKind) {
+function actionText(profileId, phase, landmarks, foldKind, intent) {
   const generic = {
-    anchor: `Anchor the stable panel on both sides of the ${landmarks.line}.`,
-    fold: `Move the free panel along the ${landmarks.line} as a ${foldKind} fold.`,
-    align: `Align ${landmarks.start} with ${landmarks.end} without letting the anchored panel slide.`,
-    crease: `Press along the full ${landmarks.line} from ${landmarks.start} to ${landmarks.end}.`,
-    release: `Release the moving panel while keeping the new ${foldKind} crease visible.`
+    anchor: `Anchor the panels that must stay still before you ${intent.commandLower} on the ${landmarks.line}.`,
+    fold: `${intent.command} along the ${landmarks.line} as a ${foldKind} fold.`,
+    align: `Align the ${intent.target} while keeping ${landmarks.start} and ${landmarks.end} within visual tolerance.`,
+    crease: `Press the ${intent.crease} from ${landmarks.start} to ${landmarks.end}.`,
+    release: `Release after the ${intent.result}.`
   };
   const variants = {
     "two-finger-gripper": {
-      anchor: `Hold the stable panel with one gripper contact on each side of the ${landmarks.line}.`,
-      fold: `Pinch the free panel and rotate it along the ${landmarks.line} as a ${foldKind} fold.`,
-      align: `Use detected endpoints to align ${landmarks.start} with ${landmarks.end} while the gripper keeps the base panel fixed.`,
-      crease: `Press the gripper pad along the ${landmarks.line} in short segments from ${landmarks.start} to ${landmarks.end}.`,
-      release: `Open the gripper slowly and keep the new ${foldKind} crease in view.`
+      anchor: `Hold the stable panel with one gripper contact on each side before you ${intent.commandLower}.`,
+      fold: `Pinch the free panel and rotate it to ${intent.commandLower} along the ${landmarks.line}.`,
+      align: `Use detected endpoints to preserve the ${intent.target} while the gripper keeps the base panel fixed.`,
+      crease: `Press the gripper pad in short segments to set the ${intent.crease}.`,
+      release: `Open the gripper slowly after the ${intent.result} is visible.`
     },
     "cat-paw-profile": {
-      anchor: `Press a broad paw pad on the stable panel below the ${landmarks.line}.`,
-      fold: `Sweep the free panel over the ${landmarks.line} with a slow paw drag to form a ${foldKind} fold.`,
-      align: `Use broad visual zones near ${landmarks.start} and ${landmarks.end}; do not require point-perfect alignment.`,
-      crease: `Press along the ${landmarks.line} with repeated gentle paw-pad presses from ${landmarks.start} to ${landmarks.end}.`,
-      release: `Lift the paw vertically so the new ${foldKind} crease is not dragged out of place.`
+      anchor: `Press a broad paw pad on the stable panel before you ${intent.commandLower}.`,
+      fold: `Sweep the free panel slowly to ${intent.commandLower}; use the ${landmarks.line} as a broad guide.`,
+      align: `Use broad visual zones to keep the ${intent.target}; do not require point-perfect alignment.`,
+      crease: `Use repeated gentle paw-pad presses to set the ${intent.crease}.`,
+      release: `Lift the paw vertically after the ${intent.target} reads clearly, without dragging it out of place.`
     },
     "dog-paw-profile": {
-      anchor: `Brace the stable panel with a broad paw contact beside the ${landmarks.line}.`,
-      fold: `Nudge the free panel over the ${landmarks.line} with a controlled paw sweep to form a ${foldKind} fold.`,
-      align: `Align the broad regions around ${landmarks.start} and ${landmarks.end}; keep the paw from covering both landmarks at once.`,
-      crease: `Press the ${landmarks.line} with slow paw-pad pressure, moving from ${landmarks.start} through the center to ${landmarks.end}.`,
-      release: `Ease pressure off the paw without dragging claws across the new ${foldKind} crease.`
+      anchor: `Brace the stable panel with a broad paw contact before you ${intent.commandLower}.`,
+      fold: `Nudge the free panel with a controlled paw sweep to ${intent.commandLower}.`,
+      align: `Keep the paw from covering both landmarks while preserving the ${intent.target}.`,
+      crease: `Apply slow paw-pad pressure to set the ${intent.crease}.`,
+      release: `Ease pressure off the paw without dragging across the ${intent.result}.`
     }
   };
   return variants[profileId]?.[phase] ?? generic[phase];
+}
+
+function buildPreState(operation, intent) {
+  return `Before this step, keep the current model stable and prepare to ${intent.short}.`;
 }
 
 function buildChecks(operation, landmarks) {
@@ -303,7 +309,89 @@ function buildAnnotations(operation, edge, landmarks) {
 }
 
 function buildInstruction(operation, landmarks) {
+  if (typeof operation.instruction === "string" && operation.instruction.length > 0) {
+    return operation.rationale
+      ? `${operation.instruction} ${operation.rationale}`
+      : operation.instruction;
+  }
   return `${operation.name}: fold along the ${landmarks.line} from ${landmarks.start} to ${landmarks.end}.`;
+}
+
+function describeOperationIntent(operation) {
+  const name = String(operation.name ?? "complete the fold");
+  const rationale = typeof operation.rationale === "string" && operation.rationale.length > 0
+    ? operation.rationale
+    : operation.instruction ?? name;
+  const short = name.charAt(0).toLowerCase() + name.slice(1);
+  const command = intentCommand(name);
+  return {
+    short,
+    command,
+    commandLower: command.charAt(0).toLowerCase() + command.slice(1),
+    target: intentTarget(name, rationale),
+    crease: intentCrease(name, rationale),
+    result: intentResult(name, rationale)
+  };
+}
+
+function intentCommand(name) {
+  const lower = name.toLowerCase();
+  if (lower.includes("center lock")) {
+    return "Press the center lock inward";
+  }
+  if (lower.includes("soften") || lower.includes("rim")) {
+    return "Soften the petal rim with a shallow bend";
+  }
+  if (lower.includes("diagonal")) {
+    return "Swing the diagonal panel into its guide line";
+  }
+  if (lower.includes("centerline")) {
+    return "Bring the centerline panel into the marked crease";
+  }
+  if (lower.includes("tail")) {
+    return "Separate the tail panel from the body";
+  }
+  if (lower.includes("fin")) {
+    return "Lift the small fin panel";
+  }
+  if (lower.includes("keel")) {
+    return "Press the keel guide into the lower panel";
+  }
+  return name;
+}
+
+function intentTarget(name, rationale) {
+  const text = `${name} ${rationale}`.toLowerCase();
+  if (text.includes("center")) {
+    return "center patch";
+  }
+  if (text.includes("rim")) {
+    return "outer petal rim";
+  }
+  if (text.includes("petal")) {
+    return "petal guide";
+  }
+  if (text.includes("tail")) {
+    return "tail separation";
+  }
+  if (text.includes("fin")) {
+    return "fin crease";
+  }
+  if (text.includes("keel")) {
+    return "keel guide";
+  }
+  if (text.includes("diagonal")) {
+    return "diagonal guide";
+  }
+  return "new fold guide";
+}
+
+function intentCrease(name, rationale) {
+  return `${intentTarget(name, rationale)} crease`;
+}
+
+function intentResult(name, rationale) {
+  return `${intentTarget(name, rationale)} reads clearly`;
 }
 
 function normalizeLandmarks(landmarks, edge) {
@@ -453,6 +541,8 @@ function assignmentName(assignment) {
       return "mountain";
     case "V":
       return "valley";
+    case "F":
+      return "flat";
     default:
       return String(assignment ?? "unassigned").toLowerCase();
   }

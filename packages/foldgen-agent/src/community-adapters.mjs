@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 
 export const COMMUNITY_FOLD_ADAPTER_ID = "community-fold";
 export const FLAT_FOLDER_ADAPTER_ID = "flat-folder";
+export const FLAT_FOLDER_STATE_ADAPTER_ID = "flat-folder-state";
 export const DEFAULT_PIPELINE_DIR = "out/m2-pipeline";
 export const DEFAULT_FOLD_COMPATIBILITY_PATH = "out/community-validation/fold-compatibility.json";
 
@@ -164,6 +165,18 @@ export async function validateFlatFolderArtifact(inputPath, outputPath, adapter)
   return result;
 }
 
+export async function createFlatFolderStateArtifact(inputPath, outputRecordPath, outputFoldPath, adapter) {
+  adapter ??= await flatFolderAdapterInfo();
+  const result = adapter.available
+    ? await runFlatFolderState(inputPath, outputRecordPath, outputFoldPath, adapter)
+    : unsupportedFlatFolderStateResult(inputPath, outputRecordPath, outputFoldPath, adapter);
+  await writeJson(outputRecordPath, result);
+  if (result.status === "passed" && result.folded_state_fold) {
+    await writeJson(outputFoldPath, result.folded_state_fold);
+  }
+  return withoutLargeFoldPayload(result);
+}
+
 export function buildExternalValidationStatus({ foldCompatibility, flatFolder } = {}) {
   return {
     community_fold: foldCompatibility ? summarizeExternalResult(foldCompatibility) : missingExternalResult(COMMUNITY_FOLD_ADAPTER_ID),
@@ -194,7 +207,7 @@ export function getExecutorVisualMetadata(profileId) {
     profile_id: profileId,
     contact_zones: contactZones[profileId] ?? [],
     unsupported_actions: unsupportedActions[profileId] ?? [],
-    instruction_label: "template executor instructions",
+    instruction_label: "profile visual instructions",
     visual_asset_status: assetPaths[profileId] ? "imagegen-illustration" : "missing",
     visual_asset_path: assetPaths[profileId] ?? null
   };
@@ -262,6 +275,242 @@ async function runFlatFolderBatch(inputPath, outputPath, adapter) {
   };
 }
 
+async function runFlatFolderState(inputPath, outputRecordPath, outputFoldPath, adapter) {
+  const errors = [];
+  const warnings = [];
+  const notes = [];
+  let solverState = null;
+
+  try {
+    adapter.CON.build();
+    const fold = normalizeForFlatFolder(parseFold(await readFile(inputPath, "utf8"), inputPath));
+    solverState = await withCapturedConsole(() => computeFlatFolderState(fold, adapter), notes);
+  } catch (error) {
+    const detail = error.message && error.message !== "Error"
+      ? error.message
+      : lastUsefulNote(notes) ?? error.name ?? "Flat-Folder state extraction failed";
+    errors.push(detail);
+  }
+
+  const status = errors.length === 0 && solverState?.status === "passed" ? "passed" : "failed";
+  const stateFold = status === "passed" ? solverState.folded_state_fold : null;
+  return {
+    adapter_id: FLAT_FOLDER_STATE_ADAPTER_ID,
+    tool_name: adapter.tool_name,
+    tool_version: adapter.tool_version,
+    input_artifact_path: toRepoPath(inputPath),
+    output_artifact_paths: [
+      toRepoPath(outputRecordPath),
+      ...(stateFold ? [toRepoPath(outputFoldPath)] : [])
+    ],
+    status,
+    errors: [...errors, ...(solverState?.errors ?? [])],
+    warnings: [...warnings, ...(solverState?.warnings ?? [])],
+    notes,
+    claim_effect: status === "passed"
+      ? "provides solver-backed folded-state geometry for preview and gating; does not prove embodiment"
+      : "no solver-backed folded state; completed-target display must be blocked",
+    solver_limit: 1,
+    state_count: solverState?.state_count ?? 0,
+    component_count: solverState?.component_count ?? 0,
+    face_order_count: solverState?.face_order_count ?? 0,
+    folded_vertex_count: solverState?.folded_vertex_count ?? 0,
+    normalized_input: solverState?.normalized_input ?? null,
+    conflict: solverState?.conflict ?? null,
+    folded_state_fold: stateFold
+  };
+}
+
+function computeFlatFolderState(fold, adapter) {
+  const { M, X, SOLVER, CON } = adapter;
+  const V = fold.vertices_coords;
+  const EV = fold.edges_vertices;
+  const EA = fold.edges_assignment;
+  const FV = fold.faces_vertices;
+  const [EF] = X.EV_FV_2_EF_FE(EV, FV);
+  const [Vf, Ff] = X.V_FV_EV_EA_2_Vf_Ff(V, FV, EV, EA);
+  const lines = EV.map((edge) => M.expand(edge, Vf));
+  const [P, SP, SE, epsIndex] = X.L_2_V_EV_EL(lines);
+  if (P.length === 0) {
+    return {
+      status: "failed",
+      errors: ["Flat-Folder could not construct a stable folded graph"],
+      warnings: [],
+      conflict: { stage: "folded-graph", faces: [] }
+    };
+  }
+  const [, CP] = X.V_EV_2_VV_FV(P, SP);
+  const [SC] = X.EV_FV_2_EF_FE(SP, CP);
+  const [CF, FC] = X.EF_FV_P_SP_SE_CP_SC_2_CF_FC(EF, FV, P, SP, SE, CP, SC);
+  const BF = X.EF_SP_SE_CP_CF_2_BF(EF, SP, SE, CP, CF);
+  const BI = new Map();
+  for (const [index, faces] of BF.entries()) {
+    BI.set(faces, index);
+  }
+  const BT = X.BF_BI_EF_SE_CF_SC_2_BT(BF, BI, EF, SE, CF, SC);
+  const CC = X.FC_BF_BI_BT_2_CC(FC, BF, BI, BT);
+  const BA0 = SOLVER.EF_EA_Ff_BF_BI_2_BA0(EF, EA, Ff, BF, BI);
+  const transCount = { all: 0, reduced: 0 };
+  const initialAssignment = SOLVER.initial_assignment(BA0, BF, BT, BI, FC, CF, CC, transCount);
+  const initialConflict = decodeInitialAssignmentConflict(initialAssignment, CON);
+  if (initialConflict) {
+    return {
+      status: "failed",
+      errors: [initialConflict.message],
+      warnings: [],
+      conflict: initialConflict
+    };
+  }
+  const GB = SOLVER.get_components(BI, BF, BT, initialAssignment, FC, CF, CC, transCount);
+  const GA = SOLVER.solve(BI, BF, BT, initialAssignment, GB, FC, CF, CC, 1);
+  if (GA.length === undefined) {
+    return {
+      status: "failed",
+      errors: [`Unable to resolve Flat-Folder component ${GA}`],
+      warnings: [],
+      conflict: {
+        stage: "component-solve",
+        component: GA,
+        faces: facesForComponent(GB[GA], BF, M)
+      }
+    };
+  }
+  const selectedStateIndices = GA.map(() => 0);
+  const orderEdges = X.BF_GB_GA_GI_2_edges(BF, GB, GA, selectedStateIndices);
+  const faceOrders = X.edges_Ff_2_FO(orderEdges, Ff);
+  const foldedStateFold = buildFoldedStateFold({ fold, Vf, Ff, faceOrders });
+
+  return {
+    status: "passed",
+    errors: [],
+    warnings: [],
+    state_count: GA.reduce((total, assignments) => total * BigInt(assignments.length), 1n).toString(),
+    component_count: GB.length,
+    face_order_count: faceOrders.length,
+    folded_vertex_count: foldedStateFold.vertices_coords.length,
+    normalized_input: {
+      vertex_count: V.length,
+      edge_count: EV.length,
+      face_count: FV.length,
+      point_count: P.length,
+      segment_count: SP.length,
+      cell_count: CP.length,
+      eps_index: epsIndex
+    },
+    folded_state_fold: foldedStateFold
+  };
+}
+
+function decodeInitialAssignmentConflict(initialAssignment, CON) {
+  if (!Array.isArray(initialAssignment) || initialAssignment.length !== 3 || Array.isArray(initialAssignment[0])) {
+    return null;
+  }
+  const [type, faces, evidenceFaces] = initialAssignment;
+  if (!Array.isArray(faces)) {
+    return null;
+  }
+  return {
+    stage: "initial-assignment",
+    constraint_type: CON.names[type] ?? `constraint-${type}`,
+    faces,
+    evidence_faces: Array.isArray(evidenceFaces) ? evidenceFaces : [],
+    message: `Unable to resolve ${CON.names[type] ?? "Flat-Folder constraint"} on faces [${faces}]`
+  };
+}
+
+function facesForComponent(component, BF, M) {
+  const faces = new Set();
+  for (const variableIndex of component ?? []) {
+    for (const faceIndex of M.decode(BF[variableIndex])) {
+      faces.add(faceIndex);
+    }
+  }
+  return [...faces].sort((a, b) => a - b);
+}
+
+function buildFoldedStateFold({ fold, Vf, Ff, faceOrders }) {
+  const usedVertexIndices = new Set();
+  for (const face of fold.faces_vertices ?? []) {
+    for (const vertexIndex of face) {
+      usedVertexIndices.add(vertexIndex);
+    }
+  }
+  const vertexMap = new Map();
+  const vertices = [];
+  for (const oldIndex of [...usedVertexIndices].sort((a, b) => a - b)) {
+    const point = Vf[oldIndex];
+    if (!Array.isArray(point)) {
+      continue;
+    }
+    vertexMap.set(oldIndex, vertices.length);
+    vertices.push(point.map(roundCoordinate));
+  }
+  const faces = (fold.faces_vertices ?? [])
+    .map((face) => face.map((vertexIndex) => vertexMap.get(vertexIndex)))
+    .filter((face) => face.every((vertexIndex) => Number.isInteger(vertexIndex)) && face.length >= 3);
+  const faceEdgeKeys = new Set();
+  for (const face of faces) {
+    for (const [index, vertexIndex] of face.entries()) {
+      faceEdgeKeys.add(edgeKey([vertexIndex, face[(index + 1) % face.length]]));
+    }
+  }
+  const edgeByKey = new Map();
+  for (const [index, edge] of (fold.edges_vertices ?? []).entries()) {
+    const remapped = edge.map((vertexIndex) => vertexMap.get(vertexIndex));
+    if (!remapped.every((vertexIndex) => Number.isInteger(vertexIndex))) {
+      continue;
+    }
+    const key = edgeKey(remapped);
+    if (!faceEdgeKeys.has(key) || edgeByKey.has(key)) {
+      continue;
+    }
+    edgeByKey.set(key, {
+      edge: canonicalEdge(remapped),
+      assignment: fold.edges_assignment?.[index] ?? "U"
+    });
+  }
+  const edges = [...edgeByKey.values()];
+  return {
+    file_spec: fold.file_spec ?? 1.1,
+    file_creator: "foldgen flat-folder-state adapter",
+    file_title: `${fold.file_title ?? "foldgen"} folded state`,
+    file_classes: ["singleModel", "foldedForm"],
+    vertices_coords: vertices,
+    edges_vertices: edges.map((entry) => entry.edge),
+    edges_assignment: edges.map((entry) => entry.assignment),
+    faces_vertices: faces,
+    faceOrders: faceOrders.map(([a, b, order]) => [a, b, order]),
+    foldgen_solver_state: {
+      adapter_id: FLAT_FOLDER_STATE_ADAPTER_ID,
+      source_title: fold.file_title ?? null,
+      faces_flip: Ff
+    }
+  };
+}
+
+function unsupportedFlatFolderStateResult(inputPath, outputRecordPath, outputFoldPath, adapter) {
+  return {
+    adapter_id: FLAT_FOLDER_STATE_ADAPTER_ID,
+    tool_name: adapter.tool_name,
+    tool_version: adapter.tool_version,
+    input_artifact_path: toRepoPath(inputPath),
+    output_artifact_paths: [toRepoPath(outputRecordPath)],
+    status: "unsupported",
+    errors: [],
+    warnings: [adapter.unavailable_reason],
+    claim_effect: "Flat-Folder state extraction did not run; no solver-backed folded-state claim",
+    solver_limit: 1,
+    state_count: 0,
+    component_count: 0,
+    face_order_count: 0,
+    folded_vertex_count: 0,
+    normalized_input: null,
+    conflict: null,
+    folded_state_fold: null,
+    expected_fold_path: toRepoPath(outputFoldPath)
+  };
+}
+
 function unsupportedFlatFolderResult(inputPath, outputPath, adapter) {
   return {
     adapter_id: FLAT_FOLDER_ADAPTER_ID,
@@ -308,14 +557,20 @@ function normalizeForFlatFolder(fold) {
 
 async function flatFolderAdapterInfo() {
   try {
-    const [{ BATCH }, { CON }] = await Promise.all([
+    const [{ BATCH }, { CON }, { M }, { X }, { SOLVER }] = await Promise.all([
       import("flat-folder/src/batch.js"),
-      import("flat-folder/src/constraints.js")
+      import("flat-folder/src/constraints.js"),
+      import("flat-folder/src/math.js"),
+      import("flat-folder/src/conversion.js"),
+      import("flat-folder/src/solver.js")
     ]);
     return {
       available: true,
       BATCH,
       CON,
+      M,
+      X,
+      SOLVER,
       tool_name: "Flat-Folder",
       tool_version: flatFolderVersion()
     };
@@ -324,6 +579,9 @@ async function flatFolderAdapterInfo() {
       available: false,
       BATCH: null,
       CON: null,
+      M: null,
+      X: null,
+      SOLVER: null,
       tool_name: "Flat-Folder",
       tool_version: "unavailable",
       unavailable_reason: `Flat-Folder package is unavailable: ${error.message}`
@@ -389,6 +647,14 @@ function normalizeMetrics(metrics) {
   )));
 }
 
+function withoutLargeFoldPayload(result) {
+  if (!result?.folded_state_fold) {
+    return result;
+  }
+  const { folded_state_fold: _foldedStateFold, ...summary } = result;
+  return summary;
+}
+
 function canonicalEdge(edge) {
   return [...edge].sort((a, b) => a - b);
 }
@@ -403,6 +669,10 @@ function toRepoPath(path) {
 
 function cloneJson(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function roundCoordinate(value) {
+  return Number(value.toFixed(12));
 }
 
 function withSuppressedConsoleSync(fn) {

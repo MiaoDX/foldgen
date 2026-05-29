@@ -37,9 +37,10 @@ test("claim label validator rejects missing executor-readable evidence", async (
   const rootDir = await mkdtemp(join(tmpdir(), "foldgen-claim-labels-executor-missing-"));
   try {
     const summary = validSummary();
-    summary.cases[0].artifact_paths.diagram_sequence = "out/m2-pipeline/simple-bird/missing.json";
+    const completedCase = summary.cases.find((pipelineCase) => pipelineCase.status === "valid");
+    completedCase.artifact_paths.diagram_sequence = `out/m2-pipeline/${completedCase.case_id}/missing.json`;
     await writeFixtureTree(rootDir, summary);
-    await unlink(join(rootDir, summary.cases[0].artifact_paths.diagram_sequence));
+    await unlink(join(rootDir, completedCase.artifact_paths.diagram_sequence));
     const result = await validateStage1ClaimLabels({ rootDir });
     assert.equal(result.ok, false);
     assert.match(result.errors.join("\n"), /missing or invalid diagram sequence/);
@@ -118,14 +119,18 @@ async function writeFixtureTree(rootDir, summary, options = {}) {
 }
 
 function validSummary() {
-  const cases = ["simple-bird", "simple-fish", "simple-flower", "simple-boat", "simple-star"].map((caseId) => ({
+  const cases = ["simple-bird", "simple-fish", "simple-flower", "simple-boat", "simple-star"].map((caseId) => {
+    const simulatorValid = caseId === "simple-fish" || caseId === "simple-flower";
+    return {
     case_id: caseId,
-    status: "valid",
+    status: simulatorValid ? "valid" : "blocked",
     validation_status: true,
     executor_readable: true,
     executor_profile: "human-hand",
     executor_profiles: stage1ExecutorProfiles,
     artifact_paths: {
+      folded_state_fold: simulatorValid ? `out/m2-pipeline/${caseId}/folded-state.fold` : null,
+      display_decision: `out/m2-pipeline/${caseId}/display-decision.json`,
       diagram_sequence: `out/m2-pipeline/${caseId}/diagram-sequence.json`,
       diagram_sequences: Object.fromEntries(
         stage1ExecutorProfiles.map((executorProfile) => [
@@ -141,23 +146,37 @@ function validSummary() {
       },
       flat_folder: {
         adapter_id: "flat-folder",
-        status: "failed"
+        status: simulatorValid ? "passed" : "failed"
+      },
+      flat_folder_state: {
+        adapter_id: "flat-folder-state",
+        status: simulatorValid ? "passed" : "failed"
       }
     },
-    claim_status: validClaimStatus()
-  }));
+    display_mode: simulatorValid ? "completed-usable" : "blocked-solver",
+    display_decision: {
+      display_mode: simulatorValid ? "completed-usable" : "blocked-solver",
+      completed_usable: simulatorValid,
+      safe_to_render_completed_card: simulatorValid
+    },
+    result_quality: {
+      preview_status: simulatorValid ? "solver-backed-folded-state" : "2.5d-inspection-only"
+    },
+    claim_status: validClaimStatus({ simulatorValid })
+  };
+  });
   return {
     ok: true,
     case_count: cases.length,
-    claim_status: validClaimStatus(),
+    claim_status: validClaimStatus({ simulatorValid: false }),
     cases
   };
 }
 
-function validClaimStatus() {
+function validClaimStatus({ simulatorValid = true } = {}) {
   return {
-    claim_label: "simulator-valid / executor-readable / embodiment-untested",
-    simulator_valid: true,
+    claim_label: `${simulatorValid ? "simulator-valid" : "simulator-invalid"} / executor-readable / embodiment-untested`,
+    simulator_valid: simulatorValid,
     executor_readable: true,
     embodiment_validated: false,
     embodiment_status: "untested",

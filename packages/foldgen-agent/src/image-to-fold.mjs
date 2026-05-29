@@ -9,7 +9,9 @@ const FEATURE_HINTS = {
   fish: ["fish", "tail", "body", "horizontal"],
   flower: ["flower", "petal", "petals", "radial", "center", "circle"],
   boat: ["boat", "sail", "hull", "mast"],
-  star: ["star", "point", "points", "radial", "center"]
+  star: ["star", "point", "points", "radial", "center"],
+  triangle: ["triangle", "generated", "solver-backed"],
+  corner: ["corner", "corner-fold", "solver-backed"]
 };
 
 export async function runImageToFold(options = {}) {
