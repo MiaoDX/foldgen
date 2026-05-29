@@ -20,6 +20,10 @@ The small set of FOLD fixtures, target images, and expected outputs that can liv
 
 A raster reference or target image generated through Codex's built-in `$imagegen` skill. For this project, `$imagegen` can be treated as a free, high-quality source for target images and demo/blog visuals. These images are inputs or presentation assets; they do not prove FOLD validity or embodiment validation.
 
+### executor visual asset
+
+A visual representation of an executor morphology, such as a human hand, robot gripper, cat paw, or dog paw, used in the teaching surface. These assets may be generated with Codex `$imagegen` for demo purposes, but they are presentation and instruction aids only. They do not prove physical executability unless paired with final embodiment-validation records.
+
 ### valid output
 
 For M1, an output is valid when it is a parseable FOLD artifact, produces a deterministic crease pattern SVG, and passes the fold validation checks available through `fold-core`. A rendered 3D preview is useful for inspection but is not proof of validity by itself.
@@ -31,6 +35,14 @@ A demo case is embodiment validated only after a documented physical executor at
 ### teaching diagram
 
 A sequence of executor-facing folding instructions where each step has a clear pre-fold state, fold line or operation marker, direction cue, and concise instruction. It is the product surface that differentiates foldgen from benchmark-oriented origami generation work.
+
+### case-specific visual walkthrough
+
+The intended demo standard: a case-specific, step-by-step replay from the initial paper state to the final target, where every step shows the current paper state, fold line, motion arrow, executor contact zones, and profile-specific limitations. A walkthrough must be derived from a real case fold sequence or tutorial source. Template text copied across cases is not enough.
+
+### pre-existing object geometry
+
+The origami object's geometry or fold sequence is expected to come from pre-existing artifacts such as FOLD files, tutorial data, or simulator-compatible assets. foldgen may adapt and explain this geometry, but the demo should not pretend that the current local 2.5D canvas preview is a full 3D origami model or physical simulation.
 
 ### related work backend
 

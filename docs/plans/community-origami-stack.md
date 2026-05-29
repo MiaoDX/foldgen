@@ -36,6 +36,8 @@ Today we do not have:
 - A learning-based backend.
 - Per-executor visualizations of hands, grippers, paws, contact zones, or tool
   geometry.
+- Case-specific visual walkthroughs from the initial paper state to the final
+  target.
 - Evidence that the generated executor steps are physically executable.
 
 The current internal "language" is not a DSL in the usual sense. It is a small
@@ -89,6 +91,11 @@ The product boundary should be:
 The custom part is step 5: executor-aware teaching. Geometry and simulation
 should be delegated wherever possible.
 
+The intended teaching surface is not just a text list. Each case should become
+a visual walkthrough: step-by-step paper state, fold line, motion arrow,
+executor contact zones, and explicit unsupported/needs-fixture states when a
+profile cannot perform the step.
+
 ## DSL Decision
 
 Do not build a textual DSL now.
@@ -126,7 +133,7 @@ FoldProgramIR
         +--> Flat-Folder validation
         +--> optional ORIPA validation
         +--> Origami Simulator preview route
-        +--> executor-aware diagram renderer
+        +--> executor-aware visual walkthrough renderer
         +--> optional GamiBench eval
         +--> future Learn2Fold / OrigamiBench backend
 ```
@@ -262,7 +269,7 @@ The order should be:
 The demo should stop implying that four executor profiles are materially
 different if the visual output is identical.
 
-Minimum honest upgrade:
+Near-term honest upgrade:
 
 - Show the selected executor profile's contact primitives and unavailable
   actions.
@@ -274,13 +281,53 @@ Minimum honest upgrade:
 - Keep the claim label as `simulator-valid / executor-readable /
   embodiment-untested`.
 
-Better upgrade:
+Target demo upgrade:
 
+- Use pre-existing object geometry or tutorial/fold-sequence data for each case.
+- Generate executor visual assets with Codex `$imagegen` for human hand, robot
+  gripper, cat paw, and dog paw.
 - Generate different action primitives per profile.
-- Visualize anchor/fold/crease/release contacts on the paper.
+- Visualize anchor/fold/align/crease/release contacts on the paper for every
+  step.
+- Show motion arrows and fold lines on top of the current paper state.
 - Add fixture/tool requirements for paw profiles.
 - Reject executor profiles when the current fold requires an unavailable
   primitive, instead of always producing a complete-looking sequence.
+
+## Visual Walkthrough Standard
+
+Each case is only "walkthrough-complete" when it has:
+
+- A case-specific fold sequence from real tutorial data, FOLD history, or a
+  simulator-compatible artifact.
+- A frame for every step from start to finish.
+- The current paper/object state for that frame.
+- Fold line and assignment marker.
+- Motion arrow or panel movement cue.
+- Executor visual asset or silhouette for the selected profile.
+- Contact zones for anchor, fold, align, crease, and release phases.
+- A profile-specific unsupported state when the executor lacks a required
+  primitive.
+
+The current Stage 1 output does not meet this standard. It is
+schema-complete/template-complete only.
+
+## Asset Policy For Executor Hands
+
+Codex `$imagegen` is acceptable for the executor visual assets:
+
+- human hand
+- robot gripper
+- cat paw
+- dog paw
+
+These assets should be saved with prompt and usage metadata. They are visual
+instruction aids, not physical evidence. They must not be used to claim that an
+executor can actually perform the case.
+
+The origami object's geometry should come from pre-existing FOLD, tutorial, or
+simulator-compatible assets. Do not use generated hand images as a substitute
+for real object geometry or fold sequence data.
 
 ## Definition Of Done For This Plan
 
@@ -291,8 +338,9 @@ and preview for credibility:
 - At least one external foldability/solver adapter is integrated.
 - The demo visibly distinguishes local preview, external validation, and
   executor instructions.
-- Executor profiles have visible differences or are clearly labeled as template
-  profiles.
+- Executor profiles have visible contact-zone differences, executor visual
+  assets, or explicit unsupported states.
+- At least one case reaches the visual walkthrough standard from initial paper
+  state to final target.
 - The internal fold-program structure is documented as thin IR, not as a final
   proprietary DSL.
-
