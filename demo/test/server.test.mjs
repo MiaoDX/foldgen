@@ -1,5 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import vm from "node:vm";
+import { readFile } from "node:fs/promises";
+import { setTimeout as delay } from "node:timers/promises";
 
 import { runCuratedPipeline } from "../../packages/foldgen-agent/src/index.mjs";
 import { createDemoServer } from "../server.mjs";
@@ -61,6 +64,37 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
   }
 });
 
+test("demo app boots on project pages and requests pipeline summary", async () => {
+  const script = await readFile(new URL("../app.js", import.meta.url), "utf8");
+  const requested = [];
+  let resolveFetch;
+  const fetchSeen = new Promise((resolve) => {
+    resolveFetch = resolve;
+  });
+
+  const context = createBrowserStub({
+    href: "https://miaodx.com/foldgen/",
+    fetch: async (url) => {
+      requested.push(String(url));
+      resolveFetch();
+      return {
+        ok: true,
+        json: async () => ({ cases: [] })
+      };
+    }
+  });
+
+  vm.runInNewContext(script, context, { filename: "demo/app.js" });
+  await Promise.race([
+    fetchSeen,
+    delay(100).then(() => {
+      throw new Error("demo app did not request pipeline summary");
+    })
+  ]);
+
+  assert.deepEqual(requested, ["https://miaodx.com/foldgen/out/m2-pipeline/summary.json"]);
+});
+
 function listen(server) {
   return new Promise((resolve) => {
     server.listen(0, "127.0.0.1", resolve);
@@ -89,4 +123,68 @@ async function fetchJson(url) {
   const response = await fetch(url);
   assert.equal(response.status, 200);
   return response.json();
+}
+
+function createBrowserStub({ href, fetch }) {
+  const elements = new Map();
+  const location = new URL(href);
+
+  return {
+    URL,
+    URLSearchParams,
+    Option: class Option {
+      constructor(text, value) {
+        this.text = text;
+        this.textContent = text;
+        this.value = value;
+      }
+    },
+    document: {
+      querySelector(selector) {
+        if (!elements.has(selector)) {
+          elements.set(selector, createElementStub());
+        }
+        return elements.get(selector);
+      },
+      createElement() {
+        return createElementStub();
+      }
+    },
+    window: {
+      location: {
+        href: location.href,
+        search: location.search
+      },
+      addEventListener() {}
+    },
+    fetch,
+    setInterval,
+    clearInterval
+  };
+}
+
+function createElementStub() {
+  return {
+    dataset: {},
+    style: {},
+    children: [],
+    textContent: "",
+    innerHTML: "",
+    value: "",
+    disabled: false,
+    files: null,
+    addEventListener() {},
+    append(child) {
+      this.children.push(child);
+    },
+    replaceChildren(...children) {
+      this.children = children;
+    },
+    getBoundingClientRect() {
+      return { width: 560, height: 360 };
+    },
+    getContext() {
+      return null;
+    }
+  };
 }

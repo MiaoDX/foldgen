@@ -38,9 +38,9 @@ const stateLabels = {
   success: "Success"
 };
 
-init();
-
 const assetBase = resolveAssetBase();
+
+init();
 
 function init() {
   els.targetSelect.addEventListener("change", () => {
