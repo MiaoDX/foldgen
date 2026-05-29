@@ -40,7 +40,7 @@ const stateLabels = {
 
 init();
 
-const assetBase = new URL("./", window.location.href);
+const assetBase = resolveAssetBase();
 
 function init() {
   els.targetSelect.addEventListener("change", () => {
@@ -527,6 +527,14 @@ function artifactUrl(path) {
 
 function assetUrl(path) {
   return new URL(path.replace(/^\/+/, ""), assetBase).href;
+}
+
+function resolveAssetBase() {
+  const currentDir = new URL("./", window.location.href);
+  if (currentDir.pathname.endsWith("/demo/")) {
+    return new URL("../", currentDir);
+  }
+  return currentDir;
 }
 
 function getBounds(vertices) {
