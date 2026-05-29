@@ -14,6 +14,15 @@ import {
   validateFold
 } from "../../fold-core/src/index.mjs";
 
+import {
+  buildExternalValidationStatus,
+  checkCommunityFoldArtifact,
+  getExecutorVisualMetadata,
+  validateFlatFolderArtifact
+} from "./community-adapters.mjs";
+import { createOrigamiSimulatorExport, summarizeCommunityPreview } from "./community-preview.mjs";
+import { createFoldProgramIr, createVisualWalkthrough } from "./fold-program-ir.mjs";
+
 export const stage1ExecutorProfiles = ["human-hand", "two-finger-gripper", "cat-paw-profile", "dog-paw-profile"];
 
 export const targetProfiles = {
@@ -98,9 +107,10 @@ export async function runCuratedPipeline(options = {}) {
 
   await mkdir(outDir, { recursive: true });
 
-  const cases = await Promise.all(
-    targets.map((target) => runTargetCase({ target, profile: targetProfiles[target.file], baseFormsDir, targetsDir, outDir }))
-  );
+  const cases = [];
+  for (const target of targets) {
+    cases.push(await runTargetCase({ target, profile: targetProfiles[target.file], baseFormsDir, targetsDir, outDir }));
+  }
 
   const simulatorValid = cases.length >= 5 && cases.every((pipelineCase) => pipelineCase.status === "valid");
   const executorReadable = cases.length >= 5 && cases.every((pipelineCase) => pipelineCase.executor_readable === true);
@@ -133,6 +143,9 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
   };
 
   let selectedValidation = { ok: false, errors: ["No valid candidate selected"], warnings: [] };
+  let communityFoldValidation = null;
+  let flatFolderValidation = null;
+  let communityPreview = null;
   let diagramStepValidation = { ok: false, errors: ["No executor-readable step emitted"] };
   let diagramProfileValidation = {};
   let executorReadable = false;
@@ -141,18 +154,27 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     artifactPaths.derived_fold = artifactPath(join(caseDir, "derived.fold"));
     artifactPaths.crease_svg = artifactPath(join(caseDir, "crease.svg"));
     artifactPaths.validation = artifactPath(join(caseDir, "validation.json"));
+    artifactPaths.community_fold_validation = artifactPath(join(caseDir, "community-fold-validation.json"));
+    artifactPaths.flat_folder_validation = artifactPath(join(caseDir, "flat-folder-validation.json"));
+    artifactPaths.origami_simulator_fold = artifactPath(join(caseDir, "origami-simulator.fold"));
+    artifactPaths.origami_simulator_preview = artifactPath(join(caseDir, "origami-simulator-preview.json"));
     artifactPaths.diagram_step = artifactPath(join(caseDir, "diagram-step.json"));
     artifactPaths.diagram_sequence = artifactPath(join(caseDir, "diagram-sequence.json"));
     artifactPaths.diagram_sequences = {};
     artifactPaths.preview = artifactPath(join(caseDir, "preview.json"));
     artifactPaths.preview_animation = artifactPath(join(caseDir, "preview-animation.json"));
+    artifactPaths.fold_program_ir = artifactPath(join(caseDir, "fold-program-ir.json"));
+    artifactPaths.visual_walkthrough = artifactPath(join(caseDir, "visual-walkthrough.json"));
 
     const profileSequences = Object.fromEntries(stage1ExecutorProfiles.map((executorProfile) => {
       const steps = selected.operations.map((operation, index) => createDiagramStep(operation, index + 1, {
         executorProfile,
         supportedExecutorProfiles: stage1ExecutorProfiles
       }));
-      const sequence = createDiagramSequence(steps, { executorProfile });
+      const sequence = {
+        ...createDiagramSequence(steps, { executorProfile }),
+        executor_visual_metadata: getExecutorVisualMetadata(executorProfile)
+      };
       return [executorProfile, {
         steps,
         sequence,
@@ -171,8 +193,16 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     executorReadable = selectedValidation.ok && Object.values(diagramProfileValidation).every((result) => result.ok);
 
     await writeFile(join(caseDir, "derived.fold"), serializeFold(selected.derived), "utf8");
+    communityFoldValidation = await checkCommunityFoldArtifact(join(caseDir, "derived.fold"));
+    flatFolderValidation = await validateFlatFolderArtifact(join(caseDir, "derived.fold"), join(caseDir, "flat-folder-validation.json"));
+    communityPreview = await createOrigamiSimulatorExport(
+      join(caseDir, "derived.fold"),
+      join(caseDir, "origami-simulator.fold"),
+      join(caseDir, "origami-simulator-preview.json")
+    );
     await writeFile(join(caseDir, "crease.svg"), createCreasePatternSvg(selected.derived), "utf8");
     await writeJson(join(caseDir, "validation.json"), selected.validation);
+    await writeJson(join(caseDir, "community-fold-validation.json"), communityFoldValidation);
     await writeJson(join(caseDir, "diagram-step.json"), diagramStep);
     await writeJson(join(caseDir, "diagram-sequence.json"), diagramSequence);
     for (const [executorProfile, value] of Object.entries(profileSequences)) {
@@ -181,8 +211,40 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
       await writeJson(join(caseDir, fileName), value.sequence);
     }
     await writeJson(join(caseDir, "preview.json"), createPreviewModel(selected.derived));
-    await writeJson(join(caseDir, "preview-animation.json"), createPreviewAnimation(selected.derived));
+    const previewAnimation = createPreviewAnimation(selected.derived);
+    const externalValidation = buildExternalValidationStatus({
+      foldCompatibility: communityFoldValidation,
+      flatFolder: flatFolderValidation
+    });
+    externalValidation.community_preview = summarizeCommunityPreview(communityPreview);
+    await writeJson(join(caseDir, "preview-animation.json"), previewAnimation);
+    await writeJson(join(caseDir, "fold-program-ir.json"), createFoldProgramIr({
+      caseId: profile.caseId,
+      target,
+      baseForm: profile.baseForm,
+      baseFold,
+      selected,
+      artifactPaths,
+      externalValidation
+    }));
+    const visualWalkthroughStatus = profile.caseId === "simple-bird" ? "walkthrough-complete" : "walkthrough-generated";
+    await writeJson(join(caseDir, "visual-walkthrough.json"), createVisualWalkthrough({
+      caseId: profile.caseId,
+      target,
+      fold: selected.derived,
+      operations: selected.operations,
+      executorProfile: "human-hand",
+      sequence: profileSequences["human-hand"].sequence,
+      animation: previewAnimation,
+      status: visualWalkthroughStatus
+    }));
   }
+
+  const externalValidation = buildExternalValidationStatus({
+    foldCompatibility: communityFoldValidation,
+    flatFolder: flatFolderValidation
+  });
+  externalValidation.community_preview = summarizeCommunityPreview(communityPreview);
 
   const caseSummary = {
     case_id: profile.caseId,
@@ -193,6 +255,9 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     selected_base_form: profile.baseForm,
     status: selected ? "valid" : "failed",
     claim_status: buildClaimStatus({ simulatorValid: selectedValidation.ok, executorReadable }),
+    external_validation: externalValidation,
+    fold_program_ir_status: selected ? "thin-ir" : "missing",
+    visual_walkthrough_status: selected && profile.caseId === "simple-bird" ? "walkthrough-complete" : "walkthrough-generated",
     executor_readable: executorReadable,
     executor_profile: "human-hand",
     executor_profiles: stage1ExecutorProfiles,

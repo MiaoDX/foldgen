@@ -2,6 +2,79 @@
 
 Last checked: 2026-05-29
 
+## Autoplan Status
+
+Full interactive `$autoplan` was degraded on this host, but a read-only
+pre-implementation review ran against this plan before code changes. Accepted
+decisions from that review:
+
+- Keep FOLD as the canonical artifact and treat local JS objects as temporary
+  IR, not a proprietary origami language.
+- Keep the public Stage 1 claim unchanged until external validators pass.
+- Treat Flat-Folder as an external solver adapter whose failed result is useful
+  evidence, not a reason to upgrade claims.
+- Add adapter result records before demo claim changes, so UI copy is backed by
+  artifacts rather than prose.
+- Keep ORIPA, GamiBench, Learn2Fold, OrigamiBench, and a textual DSL out of the
+  first implementation slice.
+
+Hard-stop decisions reconciled into this plan:
+
+- Adapter result semantics are defined in
+  `docs/contracts/community-adapter-contract.md`.
+- `FoldProgramIR` is implemented as generated `fold-program-ir.json` with FOLD
+  edge/assignment links, artifact paths, adapter summaries, and explicit
+  deferred DSL policy.
+- New community validation is separate from `npm run validate:stage1` for now
+  because Flat-Folder currently fails the generated crease patterns.
+- GPL/Java tools remain optional until explicit license and distribution
+  decisions exist.
+
+Hard stops still open after the first adapter slice:
+
+- Decide the custom FOLD metadata strategy for community parser compatibility:
+  accepted namespaced metadata, stripped metadata, or adapter-specific exports.
+- Upgrade Flat-Folder failures into at least one passing external solver case or
+  keep the current failed records as the explicit external-validation blocker.
+
+Current test gates for this plan:
+
+- `npm run m2:pipeline`
+- `npm run validate:community-fold`
+- `npm run validate:flat-folder` (expected to fail until generated crease
+  patterns satisfy Flat-Folder)
+- `npm test`
+- `npm run validate:stage1`
+
+## Implementation Audit
+
+Verified on 2026-05-29:
+
+- Generated FOLD files pass the community compatibility check:
+  `npm run validate:community-fold` checks fixtures plus generated
+  `derived.fold` and `origami-simulator.fold` files.
+- External foldability/solver adapter is integrated:
+  `npm run validate:flat-folder` writes per-case records and currently fails
+  all five generated cases, which keeps the public claim unchanged.
+- The demo separates local preview, community FOLD compatibility, Flat-Folder
+  solver output, Origami Simulator export route, and template executor
+  instructions.
+- Executor profiles expose visible contact-zone differences and unsupported
+  action notes through generated profile sequence metadata.
+- `simple-bird` is marked `walkthrough-complete`; other generated cases keep
+  generated walkthrough artifacts without claiming complete walkthrough status.
+- `fold-program-ir.json` documents the internal structure as thin IR over FOLD
+  references and explicitly defers a textual DSL.
+
+Parked work after this implementation:
+
+- Custom FOLD metadata policy remains a follow-up decision because current
+  generated files already pass the community parser.
+- Flat-Folder failures remain the explicit external-validation blocker until
+  at least one generated crease pattern passes the solver.
+- ORIPA, GamiBench, Learn2Fold, OrigamiBench, and textual DSL work remain
+  optional/deferred by the accepted scope decisions above.
+
 ## Why This Plan Exists
 
 The current foldgen demo proves that the repository can generate deterministic

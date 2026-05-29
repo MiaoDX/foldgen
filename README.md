@@ -9,10 +9,11 @@ AI origami design as the **second case study of the roboharness paradigm** — g
 
 **Stage 1 technical gate** — public testbed fixtures, deterministic
 `fold-core`, a five-target local pipeline, a local web demo, executor-readable
-action-flow artifacts, and claim-label guardrails are implemented. The current
-demo cases are
-**simulator-valid / executor-readable / embodiment-untested**: no live provider
-adapter and no final embodiment claim yet.
+action-flow artifacts, community FOLD compatibility checks, a Flat-Folder solver
+adapter, and claim-label guardrails are implemented. The current demo cases are
+**simulator-valid / executor-readable / embodiment-untested**: community FOLD
+parsing passes, Flat-Folder currently fails the generated crease patterns, and
+there is no final embodiment claim yet.
 
 The executor-readable contract is defined in
 `docs/contracts/stage-1-output-contract.md`; generated diagram artifacts retain
@@ -28,6 +29,8 @@ npm test
 npm run validate:fixtures
 npm run m1:deterministic
 npm run m2:pipeline
+npm run validate:community-fold
+npm run validate:flat-folder
 npm run validate:claims
 npm run demo
 npm run validate:stage1
@@ -44,8 +47,22 @@ npm run validate:stage1
 `npm run m2:pipeline` writes five curated case runs to `out/m2-pipeline/`. Each
 case includes selected output artifacts, `diagram-sequence.json`, one
 profile-specific diagram sequence for each Stage 1 executor profile, proposal
-and critic history, and claim status. Each valid case is labeled
+and critic history, thin `fold-program-ir.json`, `visual-walkthrough.json`,
+community/solver validation records, and claim status. Each valid case is labeled
 `simulator-valid / executor-readable / embodiment-untested`.
+
+`npm run validate:community-fold` writes
+`out/community-validation/fold-compatibility.json` after checking committed
+fixtures and generated pipeline `.fold` files with the community `fold` package.
+`npm run validate:flat-folder` writes `flat-folder-validation.json` per generated
+case. A failed Flat-Folder result is external evidence that the public claim must
+not be upgraded beyond local simulator/executor-readable status.
+
+`fold-program-ir.json` is a thin handoff artifact, not a textual DSL. It links
+selected operations back to FOLD edges/assignments and to generated artifacts.
+`visual-walkthrough.json` records the current paper state, fold marker, motion
+cue, executor silhouette placeholder, contact zones, and unsupported-state notes
+for the generated sequence.
 
 `npm run demo` serves the local UI at `http://localhost:4173/demo/`. Run
 `npm run m2:pipeline` first when `out/m2-pipeline/` is missing or stale.

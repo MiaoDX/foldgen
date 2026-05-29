@@ -18,12 +18,14 @@ const els = {
   statePill: document.querySelector("#state-pill"),
   stateMessage: document.querySelector("#state-message"),
   embodimentStatus: document.querySelector("#embodiment-status"),
+  validationStatus: document.querySelector("#validation-status"),
   stateBanner: document.querySelector("#state-banner"),
   caseTitle: document.querySelector("#case-title"),
   downloads: document.querySelector("#downloads"),
   targetArt: document.querySelector("#target-art"),
   creasePattern: document.querySelector("#crease-pattern"),
   previewCanvas: document.querySelector("#preview-canvas"),
+  instructionLabel: document.querySelector("#instruction-label"),
   stepList: document.querySelector("#step-list"),
   proposalList: document.querySelector("#proposal-list"),
   criticList: document.querySelector("#critic-list")
@@ -176,6 +178,9 @@ async function fetchCaseArtifacts(pipelineCase) {
     fetchTextMaybe(assetUrl(`benchmarks/targets/${pipelineCase.target.file}`), "target"),
     fetchTextMaybe(artifactUrl(paths.crease_svg), "crease"),
     fetchJsonMaybe(artifactUrl(paths.validation), "validation"),
+    fetchJsonMaybe(artifactUrl(paths.community_fold_validation), "communityFoldValidation"),
+    fetchJsonMaybe(artifactUrl(paths.flat_folder_validation), "flatFolderValidation"),
+    fetchJsonMaybe(artifactUrl(paths.origami_simulator_preview), "origamiSimulatorPreview"),
     fetchJsonMaybe(artifactUrl(paths.diagram_sequence), "sequence"),
     ...Object.entries(paths.diagram_sequences ?? {}).map(([profile, path]) => (
       fetchJsonMaybe(artifactUrl(path), `sequence:${profile}`)
@@ -198,6 +203,9 @@ async function fetchCaseArtifacts(pipelineCase) {
     targetSvg: valueFor(results, "target"),
     creaseSvg: valueFor(results, "crease"),
     validation: valueFor(results, "validation"),
+    communityFoldValidation: valueFor(results, "communityFoldValidation"),
+    flatFolderValidation: valueFor(results, "flatFolderValidation"),
+    origamiSimulatorPreview: valueFor(results, "origamiSimulatorPreview"),
     diagramSequence: valueFor(results, "sequence"),
     profileSequences,
     diagramStep: valueFor(results, "step"),
@@ -216,6 +224,12 @@ function renderDownloads(pipelineCase) {
     ["Preview", paths.preview],
     ["Animation", paths.preview_animation],
     ["Validation", paths.validation],
+    ["FOLD Check", paths.community_fold_validation],
+    ["Flat-Folder", paths.flat_folder_validation],
+    ["Simulator Export", paths.origami_simulator_fold],
+    ["Simulator Route", paths.origami_simulator_preview],
+    ["Program IR", paths.fold_program_ir],
+    ["Walkthrough", paths.visual_walkthrough],
     ["Diagram", paths.diagram_sequence],
     ["Proposal", paths.proposal_history],
     ["Critic", paths.critic_history],
@@ -248,6 +262,7 @@ function renderCrease(svgText) {
 
 function renderStep(sequence, fallbackStep) {
   els.stepList.innerHTML = "";
+  renderInstructionLabel(sequence);
   const steps = Array.isArray(sequence?.steps) ? sequence.steps : fallbackStep ? [fallbackStep] : [];
   if (steps.length === 0) {
     return;
@@ -260,6 +275,7 @@ function renderStep(sequence, fallbackStep) {
       `<div class="step-summary"><strong>${escapeHtml(step.title)}</strong><span>${escapeHtml(step.executor_profile)}</span></div>`,
       `<p class="step-prestate">${escapeHtml(step.pre_state)}</p>`,
       renderProfile(profile),
+      renderExecutorVisualMetadata(sequence?.executor_visual_metadata),
       renderActionFlow(step.actions),
       renderChecks("Checks", step.checks),
       renderChecks("Failure Modes", step.failure_modes)
@@ -277,6 +293,13 @@ function renderSelectedProfile() {
   const selectedProfile = els.profileSelect.value || state.currentCase?.executor_profile || "human-hand";
   const sequence = artifacts.profileSequences?.[selectedProfile] ?? artifacts.diagramSequence;
   renderStep(sequence, artifacts.diagramStep);
+  renderValidationStatus(state.currentCase, artifacts);
+}
+
+function renderInstructionLabel(sequence) {
+  els.instructionLabel.textContent = sequence?.executor_visual_metadata?.instruction_label
+    ? formatTitle(sequence.executor_visual_metadata.instruction_label)
+    : "Template executor instructions";
 }
 
 function renderProfile(profile) {
@@ -288,6 +311,19 @@ function renderProfile(profile) {
     `<div><dt>Profile</dt><dd>${escapeHtml(profile.name)} (${escapeHtml(profile.id)})</dd></div>`,
     `<div><dt>Primitives</dt><dd>${escapeHtml(profile.contact_primitives.join(", "))}</dd></div>`,
     `<div><dt>Unavailable</dt><dd>${escapeHtml(profile.unavailable_actions.join(", ") || "none")}</dd></div>`,
+    `</dl>`
+  ].join("");
+}
+
+function renderExecutorVisualMetadata(metadata) {
+  if (!metadata) {
+    return "";
+  }
+  return [
+    `<dl class="executor-profile executor-visuals">`,
+    `<div><dt>Contact Zones</dt><dd>${escapeHtml(metadata.contact_zones.join(", ") || "none")}</dd></div>`,
+    `<div><dt>Unsupported</dt><dd>${escapeHtml(metadata.unsupported_actions.join(", ") || "none")}</dd></div>`,
+    `<div><dt>Visual</dt><dd>${escapeHtml(formatTitle(metadata.visual_asset_status))}</dd></div>`,
     `</dl>`
   ].join("");
 }
@@ -432,6 +468,7 @@ function clearCaseView() {
   els.targetArt.innerHTML = "";
   els.creasePattern.innerHTML = "";
   els.stepList.innerHTML = "";
+  els.instructionLabel.textContent = "No executor selected.";
   els.proposalList.innerHTML = "";
   els.criticList.innerHTML = "";
   els.profileSelect.replaceChildren(new Option("Select executor", ""));
@@ -444,6 +481,7 @@ function clearCaseView() {
     state.animationTimer = null;
   }
   setEmbodimentStatus("No case selected.");
+  renderValidationStatus(null, null);
   renderPreview(null);
 }
 
@@ -457,6 +495,35 @@ function setUiState(kind, message) {
 
 function setEmbodimentStatus(message) {
   els.embodimentStatus.textContent = `Claim status: ${message}`;
+}
+
+function renderValidationStatus(pipelineCase, artifacts) {
+  const external = pipelineCase?.external_validation ?? {};
+  const rows = [
+    ["Local Preview", pipelineCase?.claim_status?.simulator_valid ? "simulator-valid" : "not loaded"],
+    ["Community FOLD", statusLabel(artifacts?.communityFoldValidation ?? external.community_fold)],
+    ["Flat-Folder", statusLabel(artifacts?.flatFolderValidation ?? external.flat_folder)],
+    ["Simulator", statusLabel(artifacts?.origamiSimulatorPreview ?? external.community_preview)],
+    ["Executor", pipelineCase?.executor_readable ? "template executor-readable" : "not loaded"]
+  ];
+  els.validationStatus.replaceChildren(...rows.map(([label, value]) => {
+    const wrapper = document.createElement("div");
+    const term = document.createElement("dt");
+    const desc = document.createElement("dd");
+    term.textContent = label;
+    desc.textContent = value;
+    wrapper.append(term, desc);
+    return wrapper;
+  }));
+}
+
+function statusLabel(result) {
+  if (!result) {
+    return "not run";
+  }
+  const status = result.status ?? "unknown";
+  const effect = result.claim_effect ? `: ${result.claim_effect}` : "";
+  return `${status}${effect}`;
 }
 
 function formatClaimStatus(claimStatus) {
@@ -578,6 +645,14 @@ function colorForAssignment(assignment) {
 function formatPhase(phase) {
   return String(phase)
     .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function formatTitle(value) {
+  return String(value)
+    .split(/[-_ ]+/)
+    .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
 }

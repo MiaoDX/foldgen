@@ -8,6 +8,8 @@
     "validate:fixtures": "node packages/fold-core/bin/validate-fixtures.mjs",
     "validate:stage1": "npm test && npm run validate:fixtures && npm run m1:deterministic && npm run m2:pipeline && npm run validate:claims",
     "validate:claims": "node packages/foldgen-agent/bin/validate-claim-labels.mjs",
+    "validate:community-fold": "node packages/foldgen-agent/bin/validate-community-fold.mjs",
+    "validate:flat-folder": "node packages/foldgen-agent/bin/validate-flat-folder.mjs",
     "validate:embodiment": "node packages/foldgen-agent/bin/validate-embodiment-gate.mjs",
     "m1:deterministic": "node packages/fold-core/bin/run-deterministic-case.mjs",
     "m6:multistep": "node packages/fold-core/bin/run-multistep-case.mjs",
@@ -24,5 +26,12 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "flat-folder": "https://github.com/origamimagiro/flat-folder/archive/e00732c4cf9137f76caea22fd8f284ec23af0aff.tar.gz",
+    "fold": "^0.12.0"
+  },
+  "overrides": {
+    "@xmldom/xmldom": "^0.9.10"
+  }
 }

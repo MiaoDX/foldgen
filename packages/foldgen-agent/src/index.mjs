@@ -5,3 +5,14 @@ export { runLocalSearchBatch, runLocalSearchCase, searchOperationSequence } from
 export { runExpandedTestbed } from "./testbed.mjs";
 export { validateEmbodimentGate } from "./embodiment-gate.mjs";
 export { validateStage1ClaimLabels } from "./claim-labels.mjs";
+export {
+  buildExternalValidationStatus,
+  checkCommunityFoldArtifact,
+  collectFoldArtifactPaths,
+  getExecutorVisualMetadata,
+  runCommunityFoldCompatibility,
+  runFlatFolderValidation,
+  validateFlatFolderArtifact
+} from "./community-adapters.mjs";
+export { createOrigamiSimulatorExport, summarizeCommunityPreview } from "./community-preview.mjs";
+export { createFoldProgramIr, createVisualWalkthrough, validateVisualWalkthrough } from "./fold-program-ir.mjs";

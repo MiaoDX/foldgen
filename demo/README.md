@@ -6,6 +6,9 @@ Local Stage 1 demo for rendering pipeline outputs. Current cases are labeled
 The demo renders a selector for `human-hand`, `two-finger-gripper`,
 `cat-paw-profile`, and `dog-paw-profile`, then shows the selected followable
 action flow. It does not treat simulator output as final embodiment evidence.
+It also separates local preview, community FOLD compatibility, Flat-Folder
+solver output, and template executor instructions so a failed external adapter
+does not silently look like a successful physical claim.
 
 Run from the repo root:
 

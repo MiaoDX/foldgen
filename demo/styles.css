@@ -219,6 +219,33 @@ input[type="file"] {
   color: var(--amber);
 }
 
+.validation-status {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.validation-status div {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.validation-status dt {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.validation-status dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .workspace {
   min-width: 0;
   padding: 20px;
@@ -255,6 +282,12 @@ input[type="file"] {
   align-items: center;
   padding: 0 14px;
   color: var(--muted);
+}
+
+.instruction-label {
+  color: var(--amber);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .result-grid {
@@ -376,6 +409,11 @@ input[type="file"] {
   border-radius: 6px;
   padding: 8px;
   background: var(--panel-2);
+}
+
+.executor-visuals div {
+  background: #fff7ed;
+  border-color: #fed7aa;
 }
 
 .executor-profile dt {

@@ -22,6 +22,8 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.match(html, /id="preview-canvas"/);
     assert.match(html, /id="downloads"/);
     assert.match(html, /id="embodiment-status"/);
+    assert.match(html, /id="validation-status"/);
+    assert.match(html, /id="instruction-label"/);
 
     const script = await fetchText(`${baseUrl}/demo/app.js`);
     assert.match(script, /fetchCaseArtifacts/);
@@ -30,6 +32,9 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.match(script, /executor_profile/);
     assert.match(script, /renderActionFlow/);
     assert.match(script, /previewAnimation/);
+    assert.match(script, /renderValidationStatus/);
+    assert.match(script, /community_fold_validation/);
+    assert.match(script, /flat_folder_validation/);
     assert.match(script, /drawPreviewFrame/);
 
     const summary = await fetchJson(`${baseUrl}/out/m2-pipeline/summary.json`);
@@ -42,6 +47,8 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.equal(firstCase.executor_readable, true);
     assert.deepEqual(firstCase.executor_profiles, ["human-hand", "two-finger-gripper", "cat-paw-profile", "dog-paw-profile"]);
     assert.equal(firstCase.selected_operation_count > 1, true);
+    assert.equal(firstCase.external_validation.community_fold.status, "passed");
+    assert.equal(firstCase.external_validation.flat_folder.status, "failed");
     const sequence = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.diagram_sequence}`);
     assert.equal(sequence.step_count, firstCase.selected_operation_count);
     assert.equal(sequence.steps.length, firstCase.selected_operation_count);
@@ -50,6 +57,21 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     const dogSequence = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.diagram_sequences["dog-paw-profile"]}`);
     assert.equal(dogSequence.steps[0].executor_profile, "dog-paw-profile");
     assert.equal(dogSequence.step_count, firstCase.selected_operation_count);
+    assert.ok(dogSequence.executor_visual_metadata.contact_zones.length > 0);
+    assert.equal(dogSequence.executor_visual_metadata.instruction_label, "template executor instructions");
+
+    const communityFold = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.community_fold_validation}`);
+    assert.equal(communityFold.status, "passed");
+    const flatFolder = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.flat_folder_validation}`);
+    assert.equal(flatFolder.status, "failed");
+    const simulatorPreview = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.origami_simulator_preview}`);
+    assert.equal(simulatorPreview.status, "passed");
+    assert.match(simulatorPreview.import_url, /origamisimulator/);
+    const foldProgramIr = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.fold_program_ir}`);
+    assert.equal(foldProgramIr.type, "foldgen.fold_program_ir.v1");
+    const walkthrough = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.visual_walkthrough}`);
+    assert.equal(walkthrough.status, "walkthrough-complete");
+    assert.equal(walkthrough.frame_count, firstCase.selected_operation_count + 1);
 
     const preview = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.preview}`);
     assert.equal(preview.type, "foldgen.preview.v1");

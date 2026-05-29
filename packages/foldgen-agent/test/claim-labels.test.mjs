@@ -134,6 +134,16 @@ function validSummary() {
         ])
       )
     },
+    external_validation: {
+      community_fold: {
+        adapter_id: "community-fold",
+        status: "passed"
+      },
+      flat_folder: {
+        adapter_id: "flat-folder",
+        status: "failed"
+      }
+    },
     claim_status: validClaimStatus()
   }));
   return {
