@@ -47,9 +47,10 @@ npm run validate:stage1
 `npm run m2:pipeline` writes five curated case runs to `out/m2-pipeline/`. Each
 case includes selected output artifacts, `diagram-sequence.json`, one
 profile-specific diagram sequence for each Stage 1 executor profile, proposal
-and critic history, thin `fold-program-ir.json`, `visual-walkthrough.json`,
-community/solver validation records, and claim status. Each valid case is labeled
-`simulator-valid / executor-readable / embodiment-untested`.
+and critic history, `step-visuals.json` with per-step SVG diagrams and preview
+frames, thin `fold-program-ir.json`, `visual-walkthrough.json`,
+community/solver validation records, and claim status. Each valid case is
+labeled `simulator-valid / executor-readable / embodiment-untested`.
 
 `npm run validate:community-fold` writes
 `out/community-validation/fold-compatibility.json` after checking committed
@@ -61,8 +62,10 @@ not be upgraded beyond local simulator/executor-readable status.
 `fold-program-ir.json` is a thin handoff artifact, not a textual DSL. It links
 selected operations back to FOLD edges/assignments and to generated artifacts.
 `visual-walkthrough.json` records the current paper state, fold marker, motion
-cue, executor silhouette placeholder, contact zones, and unsupported-state notes
-for the generated sequence.
+cue, executor visual asset path, contact zones, and unsupported-state notes for
+the generated sequence. The demo executor images are generated with `$imagegen`
+and stored under `demo/assets/executors/`; they are presentation aids, not
+embodiment validation evidence.
 
 `npm run demo` serves the local UI at `http://localhost:4173/demo/`. Run
 `npm run m2:pipeline` first when `out/m2-pipeline/` is missing or stale.

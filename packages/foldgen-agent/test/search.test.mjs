@@ -20,7 +20,11 @@ test("local search sequence records iterations and selected operations", async (
 
   assert.equal(result.status, "complete");
   assert.equal(result.operations.length, 2);
-  assert.deepEqual(new Set(result.operations.map((operation) => operation.id)), new Set(["bird-centerline-wing", "bird-diagonal-beak"]));
+  const profileOperationIds = new Set(targetProfiles["simple-bird.svg"].candidates.flatMap((candidate) => (
+    candidate.operations ?? [candidate.operation]
+  )).filter(Boolean).map((operation) => operation.id));
+  assert.equal(result.operations.every((operation) => profileOperationIds.has(operation.id)), true);
+  assert.equal(new Set(result.operations.map((operation) => operation.id)).size, 2);
   assert.equal(validateFold(result.derived).ok, true);
   assert.equal(result.derived.foldgen_history.length, 2);
   assert.equal(result.history.iterations.length, 2);

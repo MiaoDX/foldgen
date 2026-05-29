@@ -172,6 +172,12 @@ export function buildExternalValidationStatus({ foldCompatibility, flatFolder } 
 }
 
 export function getExecutorVisualMetadata(profileId) {
+  const assetPaths = {
+    "human-hand": "demo/assets/executors/human-hand.png",
+    "two-finger-gripper": "demo/assets/executors/two-finger-gripper.png",
+    "cat-paw-profile": "demo/assets/executors/cat-paw-profile.png",
+    "dog-paw-profile": "demo/assets/executors/dog-paw-profile.png"
+  };
   const contactZones = {
     "human-hand": ["left fingertip anchor", "right fingertip fold", "index-finger crease press"],
     "two-finger-gripper": ["fixed jaw anchor", "moving jaw pinch", "short segment press"],
@@ -189,7 +195,8 @@ export function getExecutorVisualMetadata(profileId) {
     contact_zones: contactZones[profileId] ?? [],
     unsupported_actions: unsupportedActions[profileId] ?? [],
     instruction_label: "template executor instructions",
-    visual_asset_status: "silhouette-placeholder"
+    visual_asset_status: assetPaths[profileId] ? "imagegen-illustration" : "missing",
+    visual_asset_path: assetPaths[profileId] ?? null
   };
 }
 

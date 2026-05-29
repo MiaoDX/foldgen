@@ -33,7 +33,8 @@ export const targetProfiles = {
     candidates: [
       sequenceCandidate("bird-wing-beak-sequence", "Add wing and beak folds", [
         operation("bird-centerline-wing", "Add a centerline wing valley", "V", [5, 6], "Adds a broad wing crease across the bird base."),
-        operation("bird-diagonal-beak", "Sharpen the beak diagonal", "M", [0, 2], "Reuses the diagonal to emphasize a beak-like point.")
+        operation("bird-diagonal-beak", "Sharpen the beak diagonal", "M", [0, 2], "Reuses the diagonal to emphasize a beak-like point."),
+        operation("bird-tail-counterfold", "Set a tail counterfold", "V", [1, 3], "Adds a counter crease so the tail reads separately from the wings.")
       ], 0.86, "Combines a broad wing crease with a diagonal beak cue."),
       candidate("bird-centerline-wing", "Add a centerline wing valley", "V", [5, 6], 0.82, "Adds a broad wing crease across the bird base."),
       invalidCandidate("bird-overextended-tail")
@@ -46,7 +47,9 @@ export const targetProfiles = {
     candidates: [
       sequenceCandidate("fish-tail-body-sequence", "Add tail and body folds", [
         operation("fish-tail-centerline", "Add a tail centerline valley", "V", [5, 6], "Adds a tail/body separation crease to the fish base."),
-        operation("fish-body-diagonal", "Bias the body diagonal", "M", [0, 2], "Keeps a simple asymmetric body cue.")
+        operation("fish-body-diagonal", "Bias the body diagonal", "M", [0, 2], "Keeps a simple asymmetric body cue."),
+        operation("fish-fin-cross-crease", "Lift a small fin crease", "V", [1, 3], "Adds a secondary fin cue across the fish body."),
+        operation("fish-nose-flatten", "Flatten the nose guide", "F", [2, 4], "Softens the front point into a readable head guide.")
       ], 0.87, "Combines tail separation with a body diagonal."),
       candidate("fish-tail-centerline", "Add a tail centerline valley", "V", [5, 6], 0.84, "Adds a tail/body separation crease to the fish base."),
       invalidCandidate("fish-overextended-fin")
@@ -59,7 +62,10 @@ export const targetProfiles = {
     candidates: [
       sequenceCandidate("flower-petal-cross-sequence", "Add petal and cross folds", [
         operation("flower-petal-centerline", "Add a petal centerline valley", "V", [5, 6], "Adds a simple petal split while preserving radial structure."),
-        operation("flower-cross-diagonal", "Reinforce flower diagonal", "M", [1, 3], "Uses a crossing diagonal as a second petal cue.")
+        operation("flower-cross-diagonal", "Reinforce flower diagonal", "M", [1, 3], "Uses a crossing diagonal as a second petal cue."),
+        operation("flower-second-diagonal", "Open the opposite petal diagonal", "V", [0, 2], "Balances the flower with a second diagonal petal guide."),
+        operation("flower-center-lock", "Press the center lock", "M", [0, 4], "Emphasizes the flower center without changing the outer boundary."),
+        operation("flower-petal-soften", "Soften the petal rim", "F", [2, 4], "Marks a soft rim fold for the upper petal.")
       ], 0.85, "Combines midpoint and cross-diagonal petal cues."),
       candidate("flower-petal-centerline", "Add a petal centerline valley", "V", [5, 6], 0.8, "Adds a simple petal split while preserving radial structure."),
       invalidCandidate("flower-outside-paper")
@@ -72,7 +78,9 @@ export const targetProfiles = {
     candidates: [
       sequenceCandidate("boat-mast-hull-sequence", "Add mast and hull folds", [
         operation("boat-mast-centerline", "Add a mast centerline valley", "V", [5, 6], "Creates a strong mast-like vertical reference in the kite base."),
-        operation("boat-hull-diagonal", "Tilt hull diagonal", "M", [0, 2], "Keeps a hull-like diagonal cue for the lower shape.")
+        operation("boat-hull-diagonal", "Tilt hull diagonal", "M", [0, 2], "Keeps a hull-like diagonal cue for the lower shape."),
+        operation("boat-sail-balance", "Balance the sail fold", "V", [1, 3], "Adds a second sail guide for a clearer mast and hull separation."),
+        operation("boat-keel-press", "Press the keel guide", "M", [3, 4], "Adds a short keel cue along the lower panel.")
       ], 0.86, "Combines a mast centerline with a hull diagonal cue."),
       candidate("boat-mast-centerline", "Add a mast centerline valley", "V", [5, 6], 0.83, "Creates a strong mast-like vertical reference in the kite base."),
       invalidCandidate("boat-overextended-sail")
@@ -163,6 +171,7 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     artifactPaths.diagram_sequences = {};
     artifactPaths.preview = artifactPath(join(caseDir, "preview.json"));
     artifactPaths.preview_animation = artifactPath(join(caseDir, "preview-animation.json"));
+    artifactPaths.step_visuals = artifactPath(join(caseDir, "step-visuals.json"));
     artifactPaths.fold_program_ir = artifactPath(join(caseDir, "fold-program-ir.json"));
     artifactPaths.visual_walkthrough = artifactPath(join(caseDir, "visual-walkthrough.json"));
 
@@ -218,6 +227,13 @@ async function runTargetCase({ target, profile, baseFormsDir, targetsDir, outDir
     });
     externalValidation.community_preview = summarizeCommunityPreview(communityPreview);
     await writeJson(join(caseDir, "preview-animation.json"), previewAnimation);
+    await writeJson(join(caseDir, "step-visuals.json"), createStepVisuals({
+      caseId: profile.caseId,
+      target,
+      operations: selected.operations,
+      animation: previewAnimation,
+      sequence: profileSequences["human-hand"].sequence
+    }));
     await writeJson(join(caseDir, "fold-program-ir.json"), createFoldProgramIr({
       caseId: profile.caseId,
       target,
@@ -348,6 +364,109 @@ function buildCriticHistory(target, profile, records, selected) {
   };
 }
 
+function createStepVisuals({ caseId, target, operations, animation, sequence }) {
+  const frames = animation.frames.slice(1);
+  return {
+    type: "foldgen.step_visuals.v1",
+    case_id: caseId,
+    target: {
+      name: target.name,
+      file: target.file
+    },
+    step_count: operations.length,
+    steps: operations.map((operation, index) => {
+      const step = sequence.steps[index];
+      const frame = frames[index] ?? animation.frames[0];
+      return {
+        step: index + 1,
+        operation_id: operation.id,
+        title: operation.name,
+        assignment: operation.assignment,
+        edge: operation.edge,
+        svg: createStepDiagramSvg(frame.preview, operation, step, index + 1),
+        preview_3d: frame.preview
+      };
+    })
+  };
+}
+
+function createStepDiagramSvg(preview, operation, step, stepNumber) {
+  const size = 360;
+  const padding = 34;
+  const bounds = getPreviewBounds(preview.vertices);
+  const projected = new Map(preview.vertices.map((vertex) => [vertex.index, project2d(vertex, bounds, size, padding)]));
+  const activeKey = edgeKey(operation.edge);
+  const lines = preview.edges.map((edge) => {
+    const start = projected.get(edge.vertices[0]);
+    const end = projected.get(edge.vertices[1]);
+    if (!start || !end) {
+      return "";
+    }
+    const isActive = edgeKey(edge.vertices) === activeKey;
+    const color = isActive ? "#f97316" : colorForAssignment(edge.assignment);
+    const width = isActive ? 5 : edge.assignment === "B" ? 3 : 2;
+    const dash = isActive ? "" : edge.assignment === "V" ? " stroke-dasharray=\"8 6\"" : edge.assignment === "U" ? " stroke-dasharray=\"3 5\"" : "";
+    return `<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}" stroke="${color}" stroke-width="${width}" stroke-linecap="round"${dash}/>`;
+  }).filter(Boolean);
+  const [a, b] = operation.edge;
+  const start = projected.get(a);
+  const end = projected.get(b);
+  const arrow = start && end ? motionArrow(start, end) : "";
+  const contacts = [start, end].filter(Boolean).map((point, index) => (
+    `<circle cx="${point.x}" cy="${point.y}" r="${index === 0 ? 10 : 8}" fill="#facc15" fill-opacity="0.52" stroke="#a16207" stroke-width="1.5"/>`
+  ));
+  return [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${escapeXml(step?.title ?? operation.name)}">`,
+    `<rect width="${size}" height="${size}" rx="18" fill="#fffaf0"/>`,
+    `<text x="22" y="34" fill="#334155" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Step ${stepNumber}</text>`,
+    `<text x="22" y="58" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="12">${escapeXml(operation.assignment)} fold</text>`,
+    `<g transform="translate(0 20)">`,
+    ...lines,
+    ...contacts,
+    arrow,
+    `</g>`,
+    `</svg>`
+  ].join("");
+}
+
+function getPreviewBounds(vertices) {
+  return vertices.reduce((bounds, vertex) => ({
+    minX: Math.min(bounds.minX, vertex.x),
+    maxX: Math.max(bounds.maxX, vertex.x),
+    minY: Math.min(bounds.minY, vertex.y),
+    maxY: Math.max(bounds.maxY, vertex.y)
+  }), { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity });
+}
+
+function project2d(vertex, bounds, size, padding) {
+  const xRange = Math.max(bounds.maxX - bounds.minX, 1);
+  const yRange = Math.max(bounds.maxY - bounds.minY, 1);
+  const scale = Math.min((size - padding * 2) / xRange, (size - padding * 2) / yRange);
+  return {
+    x: round(padding + (vertex.x - bounds.minX) * scale),
+    y: round(size - padding - (vertex.y - bounds.minY) * scale - vertex.z * 160)
+  };
+}
+
+function motionArrow(start, end) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const length = Math.hypot(dx, dy) || 1;
+  const normal = { x: -dy / length, y: dx / length };
+  const from = {
+    x: round((start.x + end.x) / 2 - normal.x * 34),
+    y: round((start.y + end.y) / 2 - normal.y * 34)
+  };
+  const to = {
+    x: round((start.x + end.x) / 2 + normal.x * 34),
+    y: round((start.y + end.y) / 2 + normal.y * 34)
+  };
+  return [
+    `<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f97316"/></marker></defs>`,
+    `<line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" stroke="#f97316" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>`
+  ].join("");
+}
+
 function selectTargets(targets, targetFiles) {
   const byFile = new Map(targets.map((target) => [target.file, target]));
   return targetFiles.map((file) => {
@@ -432,6 +551,37 @@ function artifactPath(path) {
 
 function toPosix(path) {
   return path.split("\\").join("/");
+}
+
+function colorForAssignment(assignment) {
+  switch (assignment) {
+    case "B":
+      return "#0f172a";
+    case "M":
+      return "#dc2626";
+    case "V":
+      return "#2563eb";
+    case "F":
+      return "#64748b";
+    default:
+      return "#94a3b8";
+  }
+}
+
+function edgeKey(edge) {
+  return [...edge].sort((a, b) => a - b).join(":");
+}
+
+function round(value) {
+  return Number(value.toFixed(3));
+}
+
+function escapeXml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 function cloneJson(value) {

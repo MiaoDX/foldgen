@@ -105,6 +105,8 @@ test("preview model output is deterministic inspection data", async () => {
   assert.equal(preview.type, "foldgen.preview.v1");
   assert.equal(preview.vertices.length, derived.vertices_coords.length);
   assert.equal(preview.edges.length, derived.edges_vertices.length);
+  assert.equal(preview.faces.length, derived.faces_vertices.length);
+  assert.deepEqual(preview.faces[0].vertices, derived.faces_vertices[0]);
 });
 
 test("preview animation output follows operation history", async () => {

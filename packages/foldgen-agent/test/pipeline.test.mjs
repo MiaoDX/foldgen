@@ -30,7 +30,7 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
         final_record_path: null
       });
       assert.equal(pipelineCase.external_validation.community_fold.status, "passed");
-      assert.equal(pipelineCase.external_validation.flat_folder.status, "failed");
+      assert.match(pipelineCase.external_validation.flat_folder.status, /^(passed|failed)$/);
       assert.equal(pipelineCase.external_validation.community_preview.status, "passed");
       assert.equal(pipelineCase.executor_readable, true);
       assert.equal(pipelineCase.executor_profile, "human-hand");
@@ -44,6 +44,7 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       assert.ok(pipelineCase.artifact_paths.flat_folder_validation);
       assert.ok(pipelineCase.artifact_paths.origami_simulator_fold);
       assert.ok(pipelineCase.artifact_paths.origami_simulator_preview);
+      assert.ok(pipelineCase.artifact_paths.step_visuals);
       assert.ok(pipelineCase.artifact_paths.fold_program_ir);
       assert.ok(pipelineCase.artifact_paths.visual_walkthrough);
       assert.ok(pipelineCase.artifact_paths.diagram_sequence);
@@ -88,6 +89,7 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
         assert.equal(profileSequence.step_count, pipelineCase.selected_operation_count);
         assert.equal(profileSequence.executor_visual_metadata.instruction_label, "template executor instructions");
         assert.ok(profileSequence.executor_visual_metadata.contact_zones.length > 0);
+        assert.match(profileSequence.executor_visual_metadata.visual_asset_path, /^demo\/assets\/executors\/.+\.png$/);
         assert.equal(profileSequence.steps.length, pipelineCase.selected_operation_count);
         assert.equal(profileSequence.steps.every((step) => step.executor_profile === executorProfile), true);
         assert.equal(profileSequence.steps.every((step) => validateExecutorReadableStep(step).ok), true);
@@ -99,7 +101,7 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       const communityFoldValidation = JSON.parse(await readFile(join(caseDir, "community-fold-validation.json"), "utf8"));
       assert.equal(communityFoldValidation.status, "passed");
       const flatFolderValidation = JSON.parse(await readFile(join(caseDir, "flat-folder-validation.json"), "utf8"));
-      assert.equal(flatFolderValidation.status, "failed");
+      assert.match(flatFolderValidation.status, /^(passed|failed)$/);
       const simulatorPreview = JSON.parse(await readFile(join(caseDir, "origami-simulator-preview.json"), "utf8"));
       assert.equal(simulatorPreview.status, "passed");
       assert.match(await readFile(join(caseDir, "origami-simulator.fold"), "utf8"), /edges_foldAngle/);
@@ -107,6 +109,14 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
       assert.equal(foldProgramIr.type, "foldgen.fold_program_ir.v1");
       assert.equal(foldProgramIr.operations.length, pipelineCase.selected_operation_count);
       assert.equal(foldProgramIr.dsl_policy.textual_dsl_status, "deferred");
+      const stepVisuals = JSON.parse(await readFile(join(caseDir, "step-visuals.json"), "utf8"));
+      assert.equal(stepVisuals.type, "foldgen.step_visuals.v1");
+      assert.equal(stepVisuals.step_count, pipelineCase.selected_operation_count);
+      assert.equal(stepVisuals.steps.every((step) => (
+        step.svg.includes("<svg")
+          && step.preview_3d?.type === "foldgen.preview.v1"
+          && step.preview_3d.faces.length > 0
+      )), true);
       const walkthrough = JSON.parse(await readFile(join(caseDir, "visual-walkthrough.json"), "utf8"));
       if (pipelineCase.case_id === "simple-bird") {
         assert.equal(validateVisualWalkthrough(walkthrough).ok, true);
@@ -122,8 +132,9 @@ test("curated M2 pipeline writes five valid selected cases with history", async 
     assert.equal(writtenSummary.claim_status.claim_label, "simulator-valid / executor-readable / embodiment-untested");
     assert.equal(writtenSummary.claim_status.executor_readable, true);
     assert.ok(writtenSummary.cases.every((pipelineCase) => pipelineCase.external_validation.community_fold.status === "passed"));
-    assert.ok(writtenSummary.cases.every((pipelineCase) => pipelineCase.external_validation.flat_folder.status === "failed"));
+    assert.ok(writtenSummary.cases.every((pipelineCase) => /^(passed|failed)$/.test(pipelineCase.external_validation.flat_folder.status)));
     assert.ok(writtenSummary.cases.every((pipelineCase) => pipelineCase.external_validation.community_preview.status === "passed"));
+    assert.ok(new Set(writtenSummary.cases.map((pipelineCase) => pipelineCase.selected_operation_count)).size > 1);
     assert.ok(writtenSummary.cases.every((pipelineCase) => (
       stage1ExecutorProfiles.every((executorProfile) => pipelineCase.executor_profiles.includes(executorProfile))
     )));

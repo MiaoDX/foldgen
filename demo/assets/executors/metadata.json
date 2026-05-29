@@ -1,0 +1,22 @@
+{
+  "generated_on": "2026-05-29",
+  "mode": "built-in imagegen",
+  "assets": {
+    "human-hand": {
+      "file": "human-hand.png",
+      "prompt": "Clean educational illustration of a human hand folding plain white origami paper on an off-white background."
+    },
+    "two-finger-gripper": {
+      "file": "two-finger-gripper.png",
+      "prompt": "Clean educational illustration of a two-finger robotic gripper folding plain white origami paper on an off-white background."
+    },
+    "cat-paw-profile": {
+      "file": "cat-paw-profile.png",
+      "prompt": "Clean educational illustration of a cat paw pressing along a plain white origami paper crease on an off-white background."
+    },
+    "dog-paw-profile": {
+      "file": "dog-paw-profile.png",
+      "prompt": "Clean educational illustration of a dog paw bracing a plain white origami paper crease on an off-white background."
+    }
+  }
+}

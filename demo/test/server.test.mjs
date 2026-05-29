@@ -20,6 +20,9 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.match(html, /id="profile-select"/);
     assert.match(html, /id="image-upload"/);
     assert.match(html, /id="preview-canvas"/);
+    assert.match(html, /id="step-diagram"/);
+    assert.match(html, /id="step-preview-canvas"/);
+    assert.match(html, /id="executor-image"/);
     assert.match(html, /id="downloads"/);
     assert.match(html, /id="embodiment-status"/);
     assert.match(html, /id="validation-status"/);
@@ -27,12 +30,16 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
 
     const script = await fetchText(`${baseUrl}/demo/app.js`);
     assert.match(script, /fetchCaseArtifacts/);
+    assert.match(script, /pageParams/);
     assert.match(script, /formatClaimStatus/);
     assert.match(script, /claim_status/);
     assert.match(script, /executor_profile/);
     assert.match(script, /renderActionFlow/);
     assert.match(script, /previewAnimation/);
     assert.match(script, /renderValidationStatus/);
+    assert.match(script, /renderWalkthrough/);
+    assert.match(script, /renderExecutorImage/);
+    assert.match(script, /drawPreviewFaces/);
     assert.match(script, /community_fold_validation/);
     assert.match(script, /flat_folder_validation/);
     assert.match(script, /drawPreviewFrame/);
@@ -49,6 +56,7 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.equal(firstCase.selected_operation_count > 1, true);
     assert.equal(firstCase.external_validation.community_fold.status, "passed");
     assert.equal(firstCase.external_validation.flat_folder.status, "failed");
+    assert.ok(firstCase.artifact_paths.step_visuals);
     const sequence = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.diagram_sequence}`);
     assert.equal(sequence.step_count, firstCase.selected_operation_count);
     assert.equal(sequence.steps.length, firstCase.selected_operation_count);
@@ -59,6 +67,7 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.equal(dogSequence.step_count, firstCase.selected_operation_count);
     assert.ok(dogSequence.executor_visual_metadata.contact_zones.length > 0);
     assert.equal(dogSequence.executor_visual_metadata.instruction_label, "template executor instructions");
+    assert.match(dogSequence.executor_visual_metadata.visual_asset_path, /demo\/assets\/executors\/dog-paw-profile\.png/);
 
     const communityFold = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.community_fold_validation}`);
     assert.equal(communityFold.status, "passed");
@@ -69,6 +78,14 @@ test("demo server serves app shell and local pipeline artifacts", async () => {
     assert.match(simulatorPreview.import_url, /origamisimulator/);
     const foldProgramIr = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.fold_program_ir}`);
     assert.equal(foldProgramIr.type, "foldgen.fold_program_ir.v1");
+    const stepVisuals = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.step_visuals}`);
+    assert.equal(stepVisuals.step_count, firstCase.selected_operation_count);
+    assert.match(stepVisuals.steps[0].svg, /<svg/);
+    assert.equal(stepVisuals.steps[0].preview_3d.type, "foldgen.preview.v1");
+    assert.ok(stepVisuals.steps[0].preview_3d.faces.length > 0);
+    const executorImage = await fetch(`${baseUrl}/${dogSequence.executor_visual_metadata.visual_asset_path}`);
+    assert.equal(executorImage.status, 200);
+    assert.equal(executorImage.headers.get("content-type"), "image/png");
     const walkthrough = await fetchJson(`${baseUrl}/${firstCase.artifact_paths.visual_walkthrough}`);
     assert.equal(walkthrough.status, "walkthrough-complete");
     assert.equal(walkthrough.frame_count, firstCase.selected_operation_count + 1);

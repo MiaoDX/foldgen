@@ -4,6 +4,7 @@ const state = {
   currentArtifacts: null,
   currentPreview: null,
   currentAnimation: null,
+  currentStepIndex: 0,
   animationTimer: null,
   uploadUrl: null
 };
@@ -25,6 +26,13 @@ const els = {
   targetArt: document.querySelector("#target-art"),
   creasePattern: document.querySelector("#crease-pattern"),
   previewCanvas: document.querySelector("#preview-canvas"),
+  stepPreviewCanvas: document.querySelector("#step-preview-canvas"),
+  stepDiagram: document.querySelector("#step-diagram"),
+  stepTabs: document.querySelector("#step-tabs"),
+  stepDetail: document.querySelector("#step-detail"),
+  stepProgress: document.querySelector("#step-progress"),
+  executorImage: document.querySelector("#executor-image"),
+  executorCaption: document.querySelector("#executor-caption"),
   instructionLabel: document.querySelector("#instruction-label"),
   stepList: document.querySelector("#step-list"),
   proposalList: document.querySelector("#proposal-list"),
@@ -41,6 +49,7 @@ const stateLabels = {
 };
 
 const assetBase = resolveAssetBase();
+const pageParams = new URLSearchParams(window.location.search);
 
 init();
 
@@ -75,7 +84,7 @@ async function loadSummary() {
   try {
     state.summary = await fetchJson(assetUrl("out/m2-pipeline/summary.json"));
     populateTargetSelect(state.summary.cases);
-    const requestedCase = new URLSearchParams(window.location.search).get("case");
+    const requestedCase = pageParams.get("case");
     const selected = state.summary.cases.find((pipelineCase) => pipelineCase.case_id === requestedCase);
     if (selected) {
       els.targetSelect.value = selected.case_id;
@@ -181,6 +190,7 @@ async function fetchCaseArtifacts(pipelineCase) {
     fetchJsonMaybe(artifactUrl(paths.community_fold_validation), "communityFoldValidation"),
     fetchJsonMaybe(artifactUrl(paths.flat_folder_validation), "flatFolderValidation"),
     fetchJsonMaybe(artifactUrl(paths.origami_simulator_preview), "origamiSimulatorPreview"),
+    fetchJsonMaybe(artifactUrl(paths.step_visuals), "stepVisuals"),
     fetchJsonMaybe(artifactUrl(paths.diagram_sequence), "sequence"),
     ...Object.entries(paths.diagram_sequences ?? {}).map(([profile, path]) => (
       fetchJsonMaybe(artifactUrl(path), `sequence:${profile}`)
@@ -206,6 +216,7 @@ async function fetchCaseArtifacts(pipelineCase) {
     communityFoldValidation: valueFor(results, "communityFoldValidation"),
     flatFolderValidation: valueFor(results, "flatFolderValidation"),
     origamiSimulatorPreview: valueFor(results, "origamiSimulatorPreview"),
+    stepVisuals: valueFor(results, "stepVisuals"),
     diagramSequence: valueFor(results, "sequence"),
     profileSequences,
     diagramStep: valueFor(results, "step"),
@@ -228,6 +239,7 @@ function renderDownloads(pipelineCase) {
     ["Flat-Folder", paths.flat_folder_validation],
     ["Simulator Export", paths.origami_simulator_fold],
     ["Simulator Route", paths.origami_simulator_preview],
+    ["Step Visuals", paths.step_visuals],
     ["Program IR", paths.fold_program_ir],
     ["Walkthrough", paths.visual_walkthrough],
     ["Diagram", paths.diagram_sequence],
@@ -249,7 +261,10 @@ function populateProfileSelect(pipelineCase) {
   const profiles = pipelineCase.executor_profiles ?? ["human-hand"];
   els.profileSelect.replaceChildren(...profiles.map((profile) => new Option(formatProfileLabel(profile), profile)));
   els.profileSelect.disabled = profiles.length === 0;
-  els.profileSelect.value = pipelineCase.executor_profile ?? profiles[0] ?? "";
+  const requestedProfile = pageParams.get("profile");
+  els.profileSelect.value = profiles.includes(requestedProfile)
+    ? requestedProfile
+    : pipelineCase.executor_profile ?? profiles[0] ?? "";
 }
 
 function renderTarget(svgText) {
@@ -288,12 +303,61 @@ function renderSelectedProfile() {
   const artifacts = state.currentArtifacts;
   if (!artifacts) {
     renderStep(null, null);
+    renderWalkthrough(null, null);
     return;
   }
   const selectedProfile = els.profileSelect.value || state.currentCase?.executor_profile || "human-hand";
   const sequence = artifacts.profileSequences?.[selectedProfile] ?? artifacts.diagramSequence;
   renderStep(sequence, artifacts.diagramStep);
+  renderWalkthrough(sequence, artifacts.stepVisuals);
   renderValidationStatus(state.currentCase, artifacts);
+}
+
+function renderWalkthrough(sequence, stepVisuals) {
+  const steps = Array.isArray(sequence?.steps) ? sequence.steps : [];
+  const visuals = Array.isArray(stepVisuals?.steps) ? stepVisuals.steps : [];
+  state.currentStepIndex = Math.min(state.currentStepIndex, Math.max(steps.length - 1, 0));
+  els.stepTabs.replaceChildren(...steps.map((step, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "step-tab";
+    button.dataset.active = index === state.currentStepIndex ? "true" : "false";
+    button.textContent = `${index + 1}`;
+    button.title = step.title;
+    button.addEventListener("click", () => {
+      state.currentStepIndex = index;
+      renderWalkthrough(sequence, stepVisuals);
+    });
+    return button;
+  }));
+  els.stepProgress.textContent = steps.length === 0 ? "0 steps" : `${steps.length} steps`;
+
+  const selectedStep = steps[state.currentStepIndex];
+  const selectedVisual = visuals[state.currentStepIndex];
+  els.stepDiagram.innerHTML = selectedVisual?.svg ?? "";
+  drawPreviewOnCanvas(els.stepPreviewCanvas, selectedVisual?.preview_3d ?? null, { activeEdge: selectedVisual?.edge });
+  renderExecutorImage(sequence?.executor_visual_metadata);
+  els.stepDetail.innerHTML = selectedStep ? [
+    `<div class="step-detail-title"><strong>${escapeHtml(selectedStep.title)}</strong><span>${escapeHtml(selectedStep.fold.assignment)}</span></div>`,
+    `<p>${escapeHtml(selectedStep.instruction)}</p>`,
+    `<dl>`,
+    `<div><dt>Fold line</dt><dd>${escapeHtml(selectedStep.fold.landmarks.line)}</dd></div>`,
+    `<div><dt>Motion</dt><dd>${escapeHtml(selectedStep.fold_direction.direction ?? selectedStep.fold_direction.text)}</dd></div>`,
+    `<div><dt>Contact</dt><dd>${escapeHtml((selectedStep.crease_press.contacts ?? []).join(", ") || "none")}</dd></div>`,
+    `</dl>`
+  ].join("") : "";
+}
+
+function renderExecutorImage(metadata) {
+  if (!metadata?.visual_asset_path) {
+    els.executorImage.removeAttribute("src");
+    els.executorImage.alt = "";
+    els.executorCaption.textContent = "No executor visual.";
+    return;
+  }
+  els.executorImage.src = assetUrl(metadata.visual_asset_path);
+  els.executorImage.alt = formatProfileLabel(metadata.profile_id);
+  els.executorCaption.textContent = `${formatProfileLabel(metadata.profile_id)} - ${formatTitle(metadata.visual_asset_status)}`;
 }
 
 function renderInstructionLabel(sequence) {
@@ -394,7 +458,10 @@ function renderPreview(preview, animation = state.currentAnimation) {
 }
 
 function drawPreviewFrame(preview) {
-  const canvas = els.previewCanvas;
+  drawPreviewOnCanvas(els.previewCanvas, preview);
+}
+
+function drawPreviewOnCanvas(canvas, preview, options = {}) {
   const context = canvas.getContext("2d");
   const rect = canvas.getBoundingClientRect();
   const ratio = window.devicePixelRatio || 1;
@@ -422,19 +489,28 @@ function drawPreviewFrame(preview) {
   }
   const bounds = getBounds(vertices);
   const scale = Math.min(width / 2.8, height / 2.1);
-  const origin = { x: width / 2, y: height * 0.25 };
+  const origin = { x: width / 2, y: height * 0.28 };
   const projected = new Map(vertices.map((vertex) => [vertex.index, project(vertex, bounds, scale, origin)]));
+  const activeEdge = options.activeEdge ? edgeKey(options.activeEdge) : null;
+  const faces = Array.isArray(preview.faces) ? preview.faces : [];
+
+  drawPreviewShadow(context, faces, projected);
+  drawPreviewFaces(context, faces, projected);
 
   context.lineCap = "round";
+  context.lineJoin = "round";
   for (const edge of edges) {
     const start = projected.get(edge.vertices[0]);
     const end = projected.get(edge.vertices[1]);
     if (!start || !end) {
       continue;
     }
-    context.strokeStyle = colorForAssignment(edge.assignment);
-    context.lineWidth = edge.assignment === "B" ? 3 : 2;
-    if (edge.assignment === "V") {
+    const isActive = activeEdge && edgeKey(edge.vertices) === activeEdge;
+    context.strokeStyle = isActive ? "#f97316" : colorForAssignment(edge.assignment);
+    context.lineWidth = isActive ? 5 : edge.assignment === "B" ? 3 : 2;
+    if (isActive) {
+      context.setLineDash([]);
+    } else if (edge.assignment === "V") {
       context.setLineDash([8, 6]);
     } else if (edge.assignment === "U") {
       context.setLineDash([3, 6]);
@@ -449,11 +525,94 @@ function drawPreviewFrame(preview) {
   context.setLineDash([]);
 
   for (const point of projected.values()) {
-    context.fillStyle = "#171717";
+    context.fillStyle = "#0f172a";
     context.beginPath();
-    context.arc(point.x, point.y, 3, 0, Math.PI * 2);
+    context.arc(point.x, point.y, 2.5, 0, Math.PI * 2);
     context.fill();
   }
+}
+
+function drawPreviewShadow(context, faces, projected) {
+  const points = faces.flatMap((face) => face.vertices.map((vertexIndex) => projected.get(vertexIndex)).filter(Boolean));
+  if (points.length === 0) {
+    return;
+  }
+  const hull = convexHull(points);
+  if (hull.length < 3) {
+    return;
+  }
+  context.save();
+  context.translate(0, 18);
+  context.fillStyle = "rgba(15, 23, 42, 0.12)";
+  context.filter = "blur(12px)";
+  drawPolygon(context, hull);
+  context.fill();
+  context.restore();
+}
+
+function drawPreviewFaces(context, faces, projected) {
+  const orderedFaces = [...faces].sort((a, b) => (a.average_z ?? 0) - (b.average_z ?? 0));
+  for (const face of orderedFaces) {
+    const points = face.vertices.map((vertexIndex) => projected.get(vertexIndex)).filter(Boolean);
+    if (points.length < 3) {
+      continue;
+    }
+    const tone = Math.max(-0.1, Math.min(0.16, face.average_z ?? 0));
+    const gradient = context.createLinearGradient(points[0].x, points[0].y, points.at(-1).x, points.at(-1).y);
+    gradient.addColorStop(0, rgb(250 - tone * 130, 252 - tone * 90, 255 - tone * 60));
+    gradient.addColorStop(1, rgb(224 - tone * 90, 231 - tone * 70, 241 - tone * 50));
+    context.fillStyle = gradient;
+    context.strokeStyle = "rgba(51, 65, 85, 0.38)";
+    context.lineWidth = 1.4;
+    drawPolygon(context, points);
+    context.fill();
+    context.stroke();
+  }
+}
+
+function drawPolygon(context, points) {
+  context.beginPath();
+  context.moveTo(points[0].x, points[0].y);
+  for (const point of points.slice(1)) {
+    context.lineTo(point.x, point.y);
+  }
+  context.closePath();
+}
+
+function convexHull(points) {
+  const sorted = [...points].sort((a, b) => a.x === b.x ? a.y - b.y : a.x - b.x);
+  if (sorted.length <= 1) {
+    return sorted;
+  }
+  const lower = [];
+  for (const point of sorted) {
+    while (lower.length >= 2 && cross(lower.at(-2), lower.at(-1), point) <= 0) {
+      lower.pop();
+    }
+    lower.push(point);
+  }
+  const upper = [];
+  for (const point of sorted.slice().reverse()) {
+    while (upper.length >= 2 && cross(upper.at(-2), upper.at(-1), point) <= 0) {
+      upper.pop();
+    }
+    upper.push(point);
+  }
+  upper.pop();
+  lower.pop();
+  return lower.concat(upper);
+}
+
+function cross(origin, a, b) {
+  return (a.x - origin.x) * (b.y - origin.y) - (a.y - origin.y) * (b.x - origin.x);
+}
+
+function rgb(red, green, blue) {
+  return `rgb(${clampColor(red)}, ${clampColor(green)}, ${clampColor(blue)})`;
+}
+
+function clampColor(value) {
+  return Math.max(0, Math.min(255, Math.round(value)));
 }
 
 function findMatchingCase(query) {
@@ -468,6 +627,13 @@ function clearCaseView() {
   els.targetArt.innerHTML = "";
   els.creasePattern.innerHTML = "";
   els.stepList.innerHTML = "";
+  els.stepDiagram.innerHTML = "";
+  els.stepTabs.innerHTML = "";
+  els.stepDetail.innerHTML = "";
+  els.stepProgress.textContent = "0 steps";
+  els.executorImage.removeAttribute("src");
+  els.executorImage.alt = "";
+  els.executorCaption.textContent = "No executor selected.";
   els.instructionLabel.textContent = "No executor selected.";
   els.proposalList.innerHTML = "";
   els.criticList.innerHTML = "";
@@ -476,6 +642,7 @@ function clearCaseView() {
   state.currentArtifacts = null;
   state.currentPreview = null;
   state.currentAnimation = null;
+  state.currentStepIndex = 0;
   if (state.animationTimer) {
     clearInterval(state.animationTimer);
     state.animationTimer = null;
@@ -483,6 +650,7 @@ function clearCaseView() {
   setEmbodimentStatus("No case selected.");
   renderValidationStatus(null, null);
   renderPreview(null);
+  drawPreviewOnCanvas(els.stepPreviewCanvas, null);
 }
 
 function setUiState(kind, message) {
@@ -640,6 +808,10 @@ function colorForAssignment(assignment) {
     default:
       return "#9ca3af";
   }
+}
+
+function edgeKey(edge) {
+  return [...edge].sort((a, b) => a - b).join(":");
 }
 
 function formatPhase(phase) {

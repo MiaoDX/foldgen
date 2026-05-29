@@ -19,6 +19,7 @@ export function createFoldProgramIr({ caseId, target, baseForm, baseFold, select
       crease_svg: artifactPaths.crease_svg,
       preview: artifactPaths.preview,
       preview_animation: artifactPaths.preview_animation,
+      step_visuals: artifactPaths.step_visuals,
       diagram_sequence: artifactPaths.diagram_sequence,
       visual_walkthrough: artifactPaths.visual_walkthrough
     },
@@ -180,8 +181,9 @@ function findEdgeIndex(edges, [a, b]) {
 function executorFrame(visualMetadata, phase) {
   return {
     profile_id: visualMetadata.profile_id,
-    silhouette: `${visualMetadata.profile_id}-silhouette-placeholder`,
+    silhouette: visualMetadata.visual_asset_path ?? `${visualMetadata.profile_id}-silhouette-placeholder`,
     visual_asset_status: visualMetadata.visual_asset_status,
+    visual_asset_path: visualMetadata.visual_asset_path,
     active_phase: phase
   };
 }

@@ -78,8 +78,24 @@
           </article>
 
           <article class="pane step-pane">
-            <h3>Action Flow</h3>
-            <p id="instruction-label" class="instruction-label">No executor selected.</p>
+            <div class="step-pane-header">
+              <div>
+                <h3>Walkthrough</h3>
+                <p id="instruction-label" class="instruction-label">No executor selected.</p>
+              </div>
+              <div id="step-progress" class="step-progress">0 steps</div>
+            </div>
+            <section class="walkthrough-stage">
+              <div id="step-diagram" class="step-diagram" aria-label="Step diagram"></div>
+              <canvas id="step-preview-canvas" width="420" height="300"></canvas>
+              <figure class="executor-figure">
+                <img id="executor-image" alt="">
+                <figcaption id="executor-caption">No executor selected.</figcaption>
+              </figure>
+            </section>
+            <div id="step-tabs" class="step-tabs" aria-label="Step selector"></div>
+            <article id="step-detail" class="step-detail"></article>
+            <h4 class="subsection-title">Action Flow</h4>
             <ol id="step-list"></ol>
           </article>
         </section>

@@ -20,18 +20,33 @@ export function createPreviewModel(fold) {
       lift
     };
   });
+  const previewVertices = vertices.map(([x, y], index) => ({
+    index,
+    x: round(x),
+    y: round(y),
+    z: round(zCounts[index] === 0 ? 0 : zTotals[index] / zCounts[index])
+  }));
+  const faces = (fold.faces_vertices ?? []).map((faceVertices, index) => {
+    const zValues = faceVertices
+      .map((vertexIndex) => previewVertices[vertexIndex]?.z)
+      .filter((z) => typeof z === "number");
+    const averageZ = zValues.length === 0
+      ? 0
+      : zValues.reduce((total, z) => total + z, 0) / zValues.length;
+    return {
+      index,
+      vertices: [...faceVertices],
+      average_z: round(averageZ)
+    };
+  });
 
   return {
     type: "foldgen.preview.v1",
     title: fold.file_title ?? "fold preview",
     projection: "isometric-inspection",
-    vertices: vertices.map(([x, y], index) => ({
-      index,
-      x: round(x),
-      y: round(y),
-      z: round(zCounts[index] === 0 ? 0 : zTotals[index] / zCounts[index])
-    })),
-    edges
+    vertices: previewVertices,
+    edges,
+    faces
   };
 }
 
