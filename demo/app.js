@@ -40,6 +40,8 @@ const stateLabels = {
 
 init();
 
+const assetBase = new URL("./", window.location.href);
+
 function init() {
   els.targetSelect.addEventListener("change", () => {
     const selected = state.summary?.cases.find((pipelineCase) => pipelineCase.case_id === els.targetSelect.value);
@@ -69,7 +71,7 @@ function init() {
 async function loadSummary() {
   setUiState("loading", "Loading local pipeline output.");
   try {
-    state.summary = await fetchJson("/out/m2-pipeline/summary.json");
+    state.summary = await fetchJson(assetUrl("out/m2-pipeline/summary.json"));
     populateTargetSelect(state.summary.cases);
     const requestedCase = new URLSearchParams(window.location.search).get("case");
     const selected = state.summary.cases.find((pipelineCase) => pipelineCase.case_id === requestedCase);
@@ -171,7 +173,7 @@ async function loadCase(pipelineCase) {
 async function fetchCaseArtifacts(pipelineCase) {
   const paths = pipelineCase.artifact_paths;
   const results = await Promise.all([
-    fetchTextMaybe(`/benchmarks/targets/${pipelineCase.target.file}`, "target"),
+    fetchTextMaybe(assetUrl(`benchmarks/targets/${pipelineCase.target.file}`), "target"),
     fetchTextMaybe(artifactUrl(paths.crease_svg), "crease"),
     fetchJsonMaybe(artifactUrl(paths.validation), "validation"),
     fetchJsonMaybe(artifactUrl(paths.diagram_sequence), "sequence"),
@@ -520,7 +522,11 @@ function artifactUrl(path) {
   if (!path) {
     return null;
   }
-  return `/${path.replace(/^\/+/, "")}`;
+  return assetUrl(path);
+}
+
+function assetUrl(path) {
+  return new URL(path.replace(/^\/+/, ""), assetBase).href;
 }
 
 function getBounds(vertices) {
